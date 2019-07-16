@@ -1,0 +1,39 @@
+@import 'variables';
+
+.showOnDesktop {
+	display: none;
+}
+
+@media (min-width: $mobile-breakpoint) {
+	.showOnDesktop {
+	  display: block;
+	}
+	.nav.showOnDesktop {
+	  display: flex;
+	}
+	#root {
+	  > header > nav.navbar {
+	    .hideOnDesktop {
+	      display: none;
+	    }
+	  }
+	}
+	#root {
+	  > main {
+	    max-width: $mobile-breakpoint;
+	    margin: 2rem auto;
+	  }
+	}
+	.card + .card {
+	  margin-top: 1rem;
+	}
+}
+
+@media (min-width: $wide-breakpoint) {
+	#root {
+	  > header > nav.navbar {
+	    max-width: $wide-breakpoint;
+	    margin: 0 auto;
+	  }
+	}
+}
