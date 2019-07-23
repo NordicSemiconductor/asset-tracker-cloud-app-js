@@ -22,7 +22,7 @@ import { CatsPage } from './Cats/Page'
 import { CatPage } from './Cat/Page'
 import logo from './logo.svg'
 import './App.scss'
-import { Iot } from 'aws-sdk'
+import { Iot, IotData } from 'aws-sdk'
 
 Amplify.configure({
 	Auth: {
@@ -44,8 +44,11 @@ export const CredentialsContext = React.createContext<{
 	sessionToken: '',
 	secretAccessKey: '',
 })
-export const IotContext = React.createContext<{ iot: Iot }>({
+export const IotContext = React.createContext<{ iot: Iot, iotData: IotData }>({
 	iot: new Iot(),
+	iotData: new IotData({
+		endpoint: process.env.REACT_APP_MQTT_ENDPOINT,
+	})
 })
 
 const Navigation = (props: {
@@ -87,9 +90,15 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 				credentials: creds,
 				region: process.env.REACT_APP_REGION,
 			})
+			const iotData = new IotData({
+				credentials: creds,
+				endpoint: process.env.REACT_APP_MQTT_ENDPOINT,
+				region: process.env.REACT_APP_REGION,
+			})
 			setCredentials(c)
 			setIot({
 				iot,
+				iotData
 			})
 
 			// Attach Iot Policy to user

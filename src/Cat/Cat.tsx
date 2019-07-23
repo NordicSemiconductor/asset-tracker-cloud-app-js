@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { IdentityIdContext, IotContext, CredentialsContext } from '../App'
 import { Card, CardHeader } from 'reactstrap'
-import { Iot } from 'aws-sdk'
+import { Iot, IotData } from 'aws-sdk'
 import { Loading } from '../Loading/Loading'
 import { Error } from '../Error/Error'
-import { thingShadow } from 'aws-iot-device-sdk'
+import { device } from 'aws-iot-device-sdk'
+import { RelativeTime } from '../RelativeTime'
 
-const ShowCat = ({ catId, iot, identityId, credentials }: {
+const ShowCat = ({ catId, iot, iotData, identityId, credentials }: {
 	iot: Iot
+	iotData: IotData
 	catId: string
 	identityId: string
 	credentials: {
@@ -18,16 +20,18 @@ const ShowCat = ({ catId, iot, identityId, credentials }: {
 }) => {
 	const [loading, setLoading] = useState(true)
 	const [cat, setCat] = useState({ name: catId })
+	const [reported, setReported] = useState({} as {[key: string]: {v: any, ts: string}})
 	const [error, setError] = useState()
 
 	useEffect(() => {
+		let connection: device
 		Promise.all([
 			iot.describeThing({
 				thingName: catId,
 			})
 				.promise(),
 			new Promise(resolve => {
-				const connection = new thingShadow({
+				connection = new device({
 					clientId: `user-${identityId}`,
 					region: process.env.REACT_APP_REGION,
 					host: process.env.REACT_APP_MQTT_ENDPOINT,
@@ -35,19 +39,35 @@ const ShowCat = ({ catId, iot, identityId, credentials }: {
 					accessKeyId: credentials.accessKeyId,
 					sessionToken: credentials.sessionToken,
 					secretKey: credentials.secretAccessKey,
-					debug: true,
 				})
 				connection.on('connect', async () => {
 					console.log('connected')
-					connection.register(catId, {}, async () => {
+					connection.subscribe(`$aws/things/${catId}/shadow/update/documents`, undefined, () => {
 						resolve(connection)
 					})
 				})
+				connection.on('message', (topic, payload) => {
+					const reported = JSON.parse(payload.toString()).current.state.reported
+					setReported(reported)
+					console.log('Update reported state', catId, reported)
+				})
 			}),
+			iotData.getThingShadow({
+				thingName: catId,
+			})
+				.promise()
+				.then(({ payload }) => payload ? JSON.parse(payload.toString()).state.reported : {})
+				.catch(err => {
+					console.error(err)
+					return {}
+				})
+			,
 		])
 
-			.then(([{ thingName }, connection]) => {
+			.then(([{ thingName }, connection, reported]) => {
 				setLoading(false)
+				console.log('Inital reported state', catId, reported)
+				setReported(reported)
 				if (thingName) {
 					setCat({
 						name: thingName,
@@ -58,17 +78,28 @@ const ShowCat = ({ catId, iot, identityId, credentials }: {
 				setError(err)
 				setLoading(false)
 			})
-	}, [iot, catId, identityId, credentials])
+
+		return () => {
+			connection && connection.end()
+		}
+	}, [iot, iotData, catId, identityId, credentials])
 	if (loading) return <Loading text={`Opening can for ${catId}...`}/>
 	if (error) return <Error error={error}/>
 	return <Card>
 		<CardHeader>{cat.name}</CardHeader>
+		<dl>
+			{reported && reported.batteryVoltage && reported.batteryVoltage.v && <>
+				<dt>Battery</dt>
+				<dd>{reported.batteryVoltage.v} (<RelativeTime ts={reported.batteryVoltage.ts} key={reported.batteryVoltage.ts}/>)</dd>
+			</>}
+		</dl>
 	</Card>
 }
 
 export const Cat = ({ catId }: { catId: string }) => <CredentialsContext.Consumer>{credentials =>
 	<IdentityIdContext.Consumer>
 		{identityId => <IotContext.Consumer>
-			{({ iot }) => <ShowCat catId={catId} iot={iot} identityId={identityId} credentials={credentials}/>}
+			{({ iot, iotData }) => <ShowCat catId={catId} iot={iot} iotData={iotData} identityId={identityId}
+																			credentials={credentials}/>}
 		</IotContext.Consumer>}
 	</IdentityIdContext.Consumer>}</CredentialsContext.Consumer>
