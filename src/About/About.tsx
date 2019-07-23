@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Card, CardBody, CardHeader } from 'reactstrap'
 import { Cache } from 'aws-amplify'
-import { AuthDataContext } from '../App'
+import { IdentityIdContext } from '../App'
 
 export const About = () => (
 	<Card>
@@ -10,9 +10,9 @@ export const About = () => (
 			<dl>
 				<dt>User</dt>
 				<dd>
-					<AuthDataContext.Consumer>
-						{({ identityId }) => identityId}
-					</AuthDataContext.Consumer>
+					<IdentityIdContext.Consumer>
+						{identityId => identityId}
+					</IdentityIdContext.Consumer>
 				</dd>
 			</dl>
 			<hr/>

@@ -18,20 +18,35 @@ import {
 	Redirect,
 } from 'react-router-dom'
 import { AboutPage } from './About/Page'
+import { CatsPage } from './Cats/Page'
+import { CatPage } from './Cat/Page'
 import logo from './logo.svg'
 import './App.scss'
+import { Iot } from 'aws-sdk'
 
 Amplify.configure({
 	Auth: {
 		identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID,
-		region: process.env.REACT_APP_AWS_REGION,
+		region: process.env.REACT_APP_REGION,
 		userPoolId: process.env.REACT_APP_USER_POOL_ID,
 		userPoolWebClientId: process.env.REACT_APP_USER_POOL_CLIENT_ID,
 		mandatorySignIn: true,
 	},
 })
 
-export const AuthDataContext = React.createContext<{ identityId?: string }>({})
+export const IdentityIdContext = React.createContext<string>('unauthorized')
+export const CredentialsContext = React.createContext<{
+	accessKeyId: string;
+	sessionToken: string;
+	secretAccessKey: string;
+}>({
+	accessKeyId: '',
+	sessionToken: '',
+	secretAccessKey: '',
+})
+export const IotContext = React.createContext<{ iot: Iot }>({
+	iot: new Iot(),
+})
 
 const Navigation = (props: {
 	navbar?: boolean
@@ -42,6 +57,11 @@ const Navigation = (props: {
 	const { navbar, logout, onClick } = props
 	return (
 		<Nav navbar={navbar} className={props.className}>
+			<NavItem>
+				<Link className="nav-link" to="/cats" onClick={onClick}>
+					Cats
+				</Link>
+			</NavItem>
 			<NavItem>
 				<Link className="nav-link" to="/about" onClick={onClick}>
 					About
@@ -56,16 +76,44 @@ const Navigation = (props: {
 	)
 }
 
-const App = (_: { authData: CognitoUser }) => {
-	const [identityId, setIdentityId] = useState()
+const App = ({ authData }: { authData: CognitoUser }) => {
+	const [credentials, setCredentials] = useState()
+	const [iot, setIot] = useState()
 
 	useEffect(() => {
-		Auth.currentCredentials().then(({ identityId }) => {
-			setIdentityId(identityId)
+		Auth.currentCredentials().then((creds) => {
+			const c = Auth.essentialCredentials(creds)
+			const iot = new Iot({
+				credentials: creds,
+				region: process.env.REACT_APP_REGION,
+			})
+			setCredentials(c)
+			setIot({
+				iot,
+			})
+
+			// Attach Iot Policy to user
+			iot.listPrincipalPolicies({
+				principal: c.identityId,
+			})
+				.promise()
+				.then(({ policies }) => {
+					if (policies && policies.length) {
+						return
+					}
+					return iot.attachPrincipalPolicy({
+						principal: `${c.identityId}`,
+						policyName: `${process.env.REACT_APP_IOT_POLICY}`,
+					}).promise()
+						.then(() => undefined)
+				})
+				.catch(err => {
+					console.error(err)
+				})
 		}).catch((error) => {
 			//
 		})
-	})
+	}, [authData])
 
 	const [navigationVisible, setNavigationVisible] = useState(false)
 
@@ -105,10 +153,17 @@ const App = (_: { authData: CognitoUser }) => {
 					/>
 				</Navbar>
 			</header>
-			<AuthDataContext.Provider value={{ identityId }}>
-				<Route exact path="/" render={() => <Redirect to="/about"/>}/>
-				<Route exact path="/about" component={AboutPage}/>
-			</AuthDataContext.Provider>
+			<Route exact path="/" render={() => <Redirect to="/cats"/>}/>
+			{credentials && iot && <CredentialsContext.Provider value={credentials}>
+				<IdentityIdContext.Provider value={credentials.identityId}>
+					<IotContext.Provider value={iot}>
+						<Route exact path="/about" component={AboutPage}/>
+						<Route exact path="/cats" component={CatsPage}/>
+						<Route exact path="/cat/:catId" component={CatPage}/>
+					</IotContext.Provider>
+				</IdentityIdContext.Provider>
+			</CredentialsContext.Provider>
+			}
 		</Router>
 	)
 }
