@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { IdentityIdContext, IotContext, CredentialsContext } from '../App'
-import { Card, CardHeader } from 'reactstrap'
+import { Card, CardHeader, CardBody } from 'reactstrap'
 import { Iot, IotData } from 'aws-sdk'
 import { Loading } from '../Loading/Loading'
 import { Error } from '../Error/Error'
@@ -31,6 +31,7 @@ const ShowCat = ({ catId, iot, iotData, identityId, credentials }: {
 			})
 				.promise(),
 			new Promise(resolve => {
+				console.log('Connecting ...')
 				connection = new device({
 					clientId: `user-${identityId}`,
 					region: process.env.REACT_APP_REGION,
@@ -87,12 +88,14 @@ const ShowCat = ({ catId, iot, iotData, identityId, credentials }: {
 	if (error) return <Error error={error}/>
 	return <Card>
 		<CardHeader>{cat.name}</CardHeader>
-		<dl>
-			{reported && reported.batteryVoltage && reported.batteryVoltage.v && <>
-				<dt>Battery</dt>
-				<dd>{reported.batteryVoltage.v} (<RelativeTime ts={reported.batteryVoltage.ts} key={reported.batteryVoltage.ts}/>)</dd>
-			</>}
-		</dl>
+		<CardBody>
+			<dl>
+				{reported && reported.batteryVoltage && reported.batteryVoltage.v && <>
+					<dt>Battery</dt>
+					<dd>{reported.batteryVoltage.v} (<RelativeTime ts={reported.batteryVoltage.ts} key={reported.batteryVoltage.ts}/>)</dd>
+				</>}
+			</dl>
+		</CardBody>
 	</Card>
 }
 
