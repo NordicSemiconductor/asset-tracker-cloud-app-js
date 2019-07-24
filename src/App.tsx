@@ -23,6 +23,7 @@ import { CatPage } from './Cat/Page'
 import logo from './logo.svg'
 import './App.scss'
 import { Iot, IotData } from 'aws-sdk'
+import { getPolicyNameFromArn } from './getPolicyNameFromArn'
 
 Amplify.configure({
 	Auth: {
@@ -112,7 +113,7 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 					}
 					return iot.attachPrincipalPolicy({
 						principal: `${c.identityId}`,
-						policyName: `${process.env.REACT_APP_IOT_POLICY}`,
+						policyName: getPolicyNameFromArn(`${process.env.REACT_APP_USER_IOT_POLICY_ARN}`),
 					}).promise()
 						.then(() => undefined)
 				})
