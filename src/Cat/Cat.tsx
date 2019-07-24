@@ -90,9 +90,9 @@ const ShowCat = ({ catId, iot, iotData, identityId, credentials }: {
 		<CardHeader>{cat.name}</CardHeader>
 		<CardBody>
 			<dl>
-				{reported && reported.batteryVoltage && reported.batteryVoltage.v && <>
+				{reported && reported.bat && reported.bat.v && <>
 					<dt>Battery</dt>
-					<dd>{reported.batteryVoltage.v} (<RelativeTime ts={reported.batteryVoltage.ts} key={reported.batteryVoltage.ts}/>)</dd>
+					<dd>{reported.bat.v} (<RelativeTime ts={reported.bat.ts} key={reported.bat.ts}/>)</dd>
 				</>}
 			</dl>
 		</CardBody>
