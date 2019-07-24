@@ -10,14 +10,22 @@ export const RelativeTime = ({ ts }: { ts: string }) => {
 
 	useEffect(() => {
 			const updateDiffInSeconds = () => {
-				setDiffInSeconds(getDiffInSeconds(ts))
+				const d = getDiffInSeconds(ts)
+				console.log('RelativeTime', d)
+				setDiffInSeconds(d)
 				setLabel(moment(ts).fromNow())
 			}
 
-			if (diffInSeconds < 60) {
-				setTimeout(updateDiffInSeconds, 1000)
+			let t: NodeJS.Timeout
+
+			if (Math.abs(diffInSeconds) < 60) {
+				t = global.setTimeout(updateDiffInSeconds, 1000 * 5)
 			} else {
-				setTimeout(updateDiffInSeconds, 1000 * 60)
+				t = global.setTimeout(updateDiffInSeconds, 1000 * 60)
+			}
+
+			return () => {
+				clearTimeout(t)
 			}
 		},
 		[diffInSeconds, ts],
