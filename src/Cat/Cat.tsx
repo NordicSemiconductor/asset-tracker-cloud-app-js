@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { IdentityIdContext, IotContext, CredentialsContext } from '../App'
 import { Card, CardHeader, CardBody, Alert } from 'reactstrap'
-import { Iot, IotData } from 'aws-sdk'
+import { Iot, IotData, S3 } from 'aws-sdk'
 import { Loading } from '../Loading/Loading'
 import { Error } from '../Error/Error'
 import { device } from 'aws-iot-device-sdk'
@@ -10,16 +10,20 @@ import { Map } from '../Map/Map'
 import { WarningRounded as WarningIcon } from '@material-ui/icons'
 
 import './Cat.scss'
+import { AvatarPicker } from '../Avatar/AvatarPicker'
+import { updateAvatar } from '../Avatar/updateAvatar'
 
 const ShowCat = ({
 	catId,
 	iot,
 	iotData,
+	avatarUploader,
 	identityId,
 	credentials,
 }: {
 	iot: Iot
 	iotData: IotData
+	avatarUploader: (args: { blob: Blob }) => Promise<{ url: string }>
 	catId: string
 	identityId: string
 	credentials: {
@@ -29,7 +33,10 @@ const ShowCat = ({
 	}
 }) => {
 	const [loading, setLoading] = useState(true)
-	const [cat, setCat] = useState({ name: catId })
+	const [cat, setCat] = useState({
+		name: catId,
+		avatar: 'https://placekitten.com/75/75',
+	})
 	const [reported, setReported] = useState({} as {
 		[key: string]: { v: any; ts: string }
 	})
@@ -84,13 +91,16 @@ const ShowCat = ({
 				}),
 		])
 
-			.then(([{ thingName }, connection, reported]) => {
+			.then(([{ thingName, attributes }, connection, reported]) => {
 				setLoading(false)
 				console.log('Inital reported state', catId, reported)
 				setReported(reported)
 				if (thingName) {
 					setCat({
 						name: thingName,
+						avatar:
+							(attributes && attributes.avatar) ||
+							'https://placekitten.com/75/75',
 					})
 				}
 			})
@@ -107,28 +117,69 @@ const ShowCat = ({
 	if (error) return <Error error={error} />
 	return (
 		<>
-			{reported.gps && <Map position={{ lat: reported.gps.v.lat as number, lng: reported.gps.v.lng as number }} label={catId} />}
+			{reported.gps && (
+				<Map
+					position={{
+						lat: reported.gps.v.lat as number,
+						lng: reported.gps.v.lng as number,
+					}}
+					label={catId}
+				/>
+			)}
 			<Card>
 				<CardHeader className={'cat'}>
-					<img src={'https://placekitten.com/75/75'} alt={cat.name} />
+					<AvatarPicker
+						onChange={blob => {
+						  // Display image directly
+							const reader = new FileReader()
+							reader.onload = (e: any) => {
+								setCat({
+									...cat,
+									avatar: e.target.result,
+								})
+							}
+							reader.readAsDataURL(blob)
+
+              // Upload
+							avatarUploader({ blob })
+								.then(({ url }) => {
+									setCat({
+										...cat,
+										avatar: url,
+									})
+								})
+								.catch(error => {
+									console.error(error)
+								})
+						}}
+					>
+						<img src={cat.avatar} alt={cat.name} className={'avatar'} />
+					</AvatarPicker>
+
 					<h2>{cat.name}</h2>
 				</CardHeader>
 				<CardBody>
 					<dl>
 						<dt>Last position</dt>
-						{!reported.gps && <dd>
-							<Alert color={'danger'}>
-								<WarningIcon/> Unknown!
-							</Alert>
-						</dd>}
-						{reported.gps && <dd>
-							updated <RelativeTime ts={reported.gps.ts} key={reported.gps.ts} />
-						</dd>}
+						{!reported.gps && (
+							<dd>
+								<Alert color={'danger'}>
+									<WarningIcon /> Unknown!
+								</Alert>
+							</dd>
+						)}
+						{reported.gps && (
+							<dd>
+								updated{' '}
+								<RelativeTime ts={reported.gps.ts} key={reported.gps.ts} />
+							</dd>
+						)}
 						{reported && reported.bat && reported.bat.v && (
 							<>
 								<dt>Battery</dt>
 								<dd>
-									{reported.bat.v} (updated <RelativeTime ts={reported.bat.ts} key={reported.bat.ts} />)
+									{reported.bat.v} (updated{' '}
+									<RelativeTime ts={reported.bat.ts} key={reported.bat.ts} />)
 								</dd>
 							</>
 						)}
@@ -141,22 +192,34 @@ const ShowCat = ({
 
 export const Cat = ({ catId }: { catId: string }) => (
 	<CredentialsContext.Consumer>
-		{credentials => (
-			<IdentityIdContext.Consumer>
-				{identityId => (
-					<IotContext.Consumer>
-						{({ iot, iotData }) => (
-							<ShowCat
-								catId={catId}
-								iot={iot}
-								iotData={iotData}
-								identityId={identityId}
-								credentials={credentials}
-							/>
-						)}
-					</IotContext.Consumer>
-				)}
-			</IdentityIdContext.Consumer>
-		)}
+		{credentials => {
+			const s3 = new S3({
+				credentials,
+				region: process.env.REACT_APP_REGION,
+			})
+			return (
+				<IdentityIdContext.Consumer>
+					{identityId => (
+						<IotContext.Consumer>
+							{({ iot, iotData }) => (
+								<ShowCat
+									catId={catId}
+									iot={iot}
+									iotData={iotData}
+									identityId={identityId}
+									credentials={credentials}
+									avatarUploader={updateAvatar({
+										s3,
+										iot,
+										bucketName: `${process.env.REACT_APP_AVATAR_BUCKET_NAME}`,
+										thingName: catId,
+									})}
+								/>
+							)}
+						</IotContext.Consumer>
+					)}
+				</IdentityIdContext.Consumer>
+			)
+		}}
 	</CredentialsContext.Consumer>
 )
