@@ -1,8 +1,8 @@
-import React from "react";
-import { About } from "./About";
+import React from 'react'
+import { About } from './About'
 
 export const AboutPage = () => (
-  <main>
-    <About />
-  </main>
-);
+	<main>
+		<About />
+	</main>
+)
