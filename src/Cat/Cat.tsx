@@ -9,6 +9,8 @@ import { RelativeTime } from '../RelativeTime/RelativeTime'
 import { Map } from '../Map/Map'
 import { WarningRounded as WarningIcon } from '@material-ui/icons'
 
+import './Cat.scss'
+
 const ShowCat = ({
 	catId,
 	iot,
@@ -107,7 +109,10 @@ const ShowCat = ({
 		<>
 			{reported.gps && <Map position={{ lat: reported.gps.v.lat as number, lng: reported.gps.v.lng as number }} label={catId} />}
 			<Card>
-				<CardHeader>{cat.name}</CardHeader>
+				<CardHeader className={'cat'}>
+					<img src={'https://placekitten.com/75/75'} alt={cat.name} />
+					<h2>{cat.name}</h2>
+				</CardHeader>
 				<CardBody>
 					<dl>
 						<dt>Last position</dt>
