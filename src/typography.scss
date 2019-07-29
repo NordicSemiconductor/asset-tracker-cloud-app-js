@@ -1,13 +1,13 @@
-@import url('https://rsms.me/inter/inter-ui.css');
+@import url("https://rsms.me/inter/inter-ui.css");
 
 body {
-	font-family: 'Inter UI', sans-serif;
+  font-family: "Inter UI", sans-serif;
 }
 
 @supports (font-variation-settings: normal) {
-	body {
-	  font-family: 'Inter UI var alt', sans-serif;
-	}
+  body {
+    font-family: "Inter UI var alt", sans-serif;
+  }
 }
 
 h1,
@@ -18,9 +18,9 @@ h5,
 h6,
 label,
 legend {
-	font-weight: 600;
+  font-weight: 600;
 }
 
 legend {
-	font-size: 100%;
+  font-size: 100%;
 }
