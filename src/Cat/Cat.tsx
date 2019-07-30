@@ -14,6 +14,7 @@ import { AvatarPicker } from '../Avatar/AvatarPicker'
 import { uploadAvatar } from './uploadAvatar'
 import { Editable } from '../Editable/Editable'
 import { updateThingAttributes } from './updateThingAttributes'
+import { AccelerometerDiagram } from '../AccelerometerDiagram/AccelerometerDiagram'
 
 const ShowCat = ({
 	catId,
@@ -40,7 +41,7 @@ const ShowCat = ({
 	const [cat, setCat] = useState({
 		name: catId,
 		avatar: 'https://placekitten.com/75/75',
-		version: 0
+		version: 0,
 	})
 	const [reported, setReported] = useState({} as {
 		[key: string]: { v: any; ts: string }
@@ -119,6 +120,7 @@ const ShowCat = ({
 			connection && connection.end()
 		}
 	}, [iot, iotData, catId, identityId, credentials])
+
 	if (loading) return <Loading text={`Opening can for ${catId}...`} />
 	if (error) return <Error error={error} />
 	return (
@@ -173,16 +175,34 @@ const ShowCat = ({
 						)}
 						{reported.gps && (
 							<dd>
-								updated{' '}
-								<RelativeTime ts={reported.gps.ts} key={reported.gps.ts} />
+								<small>
+									updated{' '}
+									<RelativeTime ts={reported.gps.ts} key={reported.gps.ts} />
+								</small>
 							</dd>
 						)}
 						{reported && reported.bat && reported.bat.v && (
 							<>
 								<dt>Battery</dt>
 								<dd>
-									{reported.bat.v} (updated{' '}
-									<RelativeTime ts={reported.bat.ts} key={reported.bat.ts} />)
+									{reported.bat.v}
+									<br />
+									<small>
+										updated{' '}
+										<RelativeTime ts={reported.bat.ts} key={reported.bat.ts} />
+									</small>
+								</dd>
+							</>
+						)}
+						{reported && reported.acc && reported.acc.v && (
+							<>
+								<dt>Motion</dt>
+								<dd>
+									<AccelerometerDiagram values={reported.acc.v} />
+									<small>
+										updated{' '}
+										<RelativeTime ts={reported.bat.ts} key={reported.bat.ts} />
+									</small>
 								</dd>
 							</>
 						)}
