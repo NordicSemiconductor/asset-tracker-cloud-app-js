@@ -32,7 +32,7 @@
     "aws-amplify": "^1.1.32",
     "aws-amplify-react": "^2.3.11",
     "aws-iot-device-sdk": "^2.2.1",
-    "aws-sdk": "^2.501.0",
+    "aws-sdk": "^2.503.0",
     "bootstrap": "^4.3.1",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1",
