@@ -11,19 +11,23 @@ import { WarningRounded as WarningIcon } from '@material-ui/icons'
 
 import './Cat.scss'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
-import { updateAvatar } from '../Avatar/updateAvatar'
+import { uploadAvatar } from './uploadAvatar'
+import { Editable } from '../Editable/Editable'
+import { updateThingAttributes } from './updateThingAttributes'
 
 const ShowCat = ({
 	catId,
 	iot,
 	iotData,
-	avatarUploader,
+	onAvatarChange,
+	onNameChange,
 	identityId,
 	credentials,
 }: {
 	iot: Iot
 	iotData: IotData
-	avatarUploader: (args: { blob: Blob }) => Promise<{ url: string }>
+	onAvatarChange: (args: { avatar: Blob }) => void
+	onNameChange: (args: { name: string }) => void
 	catId: string
 	identityId: string
 	credentials: {
@@ -36,6 +40,7 @@ const ShowCat = ({
 	const [cat, setCat] = useState({
 		name: catId,
 		avatar: 'https://placekitten.com/75/75',
+		version: 0
 	})
 	const [reported, setReported] = useState({} as {
 		[key: string]: { v: any; ts: string }
@@ -91,16 +96,17 @@ const ShowCat = ({
 				}),
 		])
 
-			.then(([{ thingName, attributes }, connection, reported]) => {
+			.then(([{ thingName, attributes, version }, _, reported]) => {
 				setLoading(false)
 				console.log('Inital reported state', catId, reported)
 				setReported(reported)
 				if (thingName) {
 					setCat({
-						name: thingName,
+						name: (attributes && attributes.name) || thingName,
 						avatar:
 							(attributes && attributes.avatar) ||
 							'https://placekitten.com/75/75',
+						version: version || 0,
 					})
 				}
 			})
@@ -129,8 +135,9 @@ const ShowCat = ({
 			<Card>
 				<CardHeader className={'cat'}>
 					<AvatarPicker
+						key={`${cat.version}`}
 						onChange={blob => {
-						  // Display image directly
+							// Display image directly
 							const reader = new FileReader()
 							reader.onload = (e: any) => {
 								setCat({
@@ -139,24 +146,20 @@ const ShowCat = ({
 								})
 							}
 							reader.readAsDataURL(blob)
-
-              // Upload
-							avatarUploader({ blob })
-								.then(({ url }) => {
-									setCat({
-										...cat,
-										avatar: url,
-									})
-								})
-								.catch(error => {
-									console.error(error)
-								})
+							onAvatarChange({ avatar: blob })
 						}}
 					>
 						<img src={cat.avatar} alt={cat.name} className={'avatar'} />
 					</AvatarPicker>
-
-					<h2>{cat.name}</h2>
+					<h2>
+						<Editable
+							key={`${cat.version}`}
+							text={cat.name}
+							onChange={v => {
+								onNameChange({ name: v })
+							}}
+						/>
+					</h2>
 				</CardHeader>
 				<CardBody>
 					<dl>
@@ -192,34 +195,50 @@ const ShowCat = ({
 
 export const Cat = ({ catId }: { catId: string }) => (
 	<CredentialsContext.Consumer>
-		{credentials => {
-			const s3 = new S3({
-				credentials,
-				region: process.env.REACT_APP_REGION,
-			})
-			return (
-				<IdentityIdContext.Consumer>
-					{identityId => (
-						<IotContext.Consumer>
-							{({ iot, iotData }) => (
+		{credentials => (
+			<IdentityIdContext.Consumer>
+				{identityId => (
+					<IotContext.Consumer>
+						{({ iot, iotData }) => {
+							const s3 = new S3({
+								credentials,
+								region: process.env.REACT_APP_REGION,
+							})
+							const avatarUploader = uploadAvatar({
+								s3,
+								bucketName: `${process.env.REACT_APP_AVATAR_BUCKET_NAME}`,
+							})
+							const attributeUpdater = updateThingAttributes({
+								iot,
+								thingName: catId,
+							})
+							return (
 								<ShowCat
 									catId={catId}
 									iot={iot}
 									iotData={iotData}
 									identityId={identityId}
 									credentials={credentials}
-									avatarUploader={updateAvatar({
-										s3,
-										iot,
-										bucketName: `${process.env.REACT_APP_AVATAR_BUCKET_NAME}`,
-										thingName: catId,
-									})}
+									onAvatarChange={({ avatar }) => {
+										avatarUploader({
+											avatar,
+										})
+											.then(({ url }) => attributeUpdater({ avatar: url }))
+											.catch(err => {
+												console.error(err)
+											})
+									}}
+									onNameChange={({ name }) => {
+										attributeUpdater({ name }).catch(err => {
+											console.error(err)
+										})
+									}}
 								/>
-							)}
-						</IotContext.Consumer>
-					)}
-				</IdentityIdContext.Consumer>
-			)
-		}}
+							)
+						}}
+					</IotContext.Consumer>
+				)}
+			</IdentityIdContext.Consumer>
+		)}
 	</CredentialsContext.Consumer>
 )

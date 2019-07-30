@@ -7,7 +7,7 @@ import { Error } from '../Error/Error'
 
 const ListCats = ({ iot }: { iot: Iot }) => {
 	const [loading, setLoading] = useState(true)
-	const [cats, setCats] = useState([] as { name: string }[])
+	const [cats, setCats] = useState([] as { id: string, name: string }[])
 	const [error, setError] = useState()
 	useEffect(() => {
 		iot
@@ -15,8 +15,9 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 			.promise()
 			.then(({ things }) => {
 				setCats(
-					(things || []).map(({ thingName }) => ({
-						name: thingName || 'unknown',
+					(things || []).map(({ thingName, attributes }) => ({
+						id: thingName || 'unknown',
+						name: (attributes && attributes.name) || thingName || 'unknown',
 					})),
 				)
 				setLoading(false)
@@ -32,16 +33,11 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 		<Card>
 			<CardHeader>Cats</CardHeader>
 			<Table>
-				<thead>
-					<tr>
-						<th>name</th>
-					</tr>
-				</thead>
 				<tbody>
-					{cats.map(({ name }) => (
-						<tr key={name}>
+					{cats.map(({ id, name }) => (
+						<tr key={id}>
 							<td>
-								<a href={`/cat/${name}`}>{name}</a>
+								<a href={`/cat/${id}`}>{name}</a>
 							</td>
 						</tr>
 					))}
