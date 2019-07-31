@@ -152,6 +152,7 @@ const ShowCat = ({
 						lng: reported.gps.v.lng.value as number,
 					}}
 					accuracy={reported.gps.v.acc.value as number}
+					heading={reported.gps.v.hdg.value as number}
 					label={catId}
 				/>
 			)}

@@ -1,15 +1,25 @@
 import React, { createRef } from 'react'
-import { Map as LeafletMap, TileLayer, Marker, Popup, Circle } from 'react-leaflet'
+import {
+	Map as LeafletMap,
+	TileLayer,
+	Marker,
+	Popup,
+	Circle,
+	Polyline,
+	LeafletConsumer,
+} from 'react-leaflet'
 
 import './Map.scss'
 
 export const Map = ({
 	position: { lat, lng },
 	accuracy,
+	heading,
 	label,
 }: {
 	position: { lat: number; lng: number }
-	accuracy: number
+	accuracy?: number
+	heading?: number
 	label: string
 }) => {
 	let zoom = 13
@@ -43,7 +53,29 @@ export const Map = ({
 			<Marker position={[lat, lng]}>
 				<Popup>{label}</Popup>
 			</Marker>
-			<Circle center={[lat, lng]} radius={accuracy}/>
+			{accuracy && <Circle center={[lat, lng]} radius={accuracy} />}
+			{heading !== undefined && heading !== null && (
+				<LeafletConsumer>
+					{({ map }) => {
+						if (map) {
+							const { x, y } = map.project([lat, lng], zoom)
+							const endpoint = map.unproject(
+								[
+									x + 30 * Math.cos((((heading - 90) % 360) * Math.PI) / 180),
+									y + 30 * Math.sin((((heading - 90) % 360) * Math.PI) / 180),
+								],
+								zoom,
+							)
+							return (
+								<Polyline
+									positions={[[lat, lng], endpoint]}
+									color={'#000000'}
+								/>
+							)
+						}
+					}}
+				</LeafletConsumer>
+			)}
 		</LeafletMap>
 	)
 }
