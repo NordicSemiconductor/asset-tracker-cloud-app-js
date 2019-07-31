@@ -216,6 +216,19 @@ const ShowCat = ({
 								</dd>
 							</>
 						)}
+						{reported && reported.gps && reported.gps.v && reported.gps.v.spd  && (
+							<>
+								<dt>Speed</dt>
+								<dd>
+									{reported.gps.v.spd.value}m/s
+									<br />
+									<ReportedTime
+										reportedAt={reported.gps.ts.value}
+										receivedAt={reported.gps.v.spd.receivedAt}
+									/>
+								</dd>
+							</>
+						)}
 						{reported && reported.acc && reported.acc.v && (
 							<>
 								<dt>Motion</dt>
