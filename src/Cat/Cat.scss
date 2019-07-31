@@ -17,4 +17,14 @@
   h2 {
     margin: 10px;
   }
+  div {
+    display: flex;
+    justify-content: space-between;
+    font-size: 85%;
+    opacity: 0.75;
+    span.time {
+      font-size: 85%;
+      opacity: 0.75;
+    }
+  }
 }

@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { IdentityIdContext, IotContext, CredentialsContext } from '../App'
-import { Card, CardHeader, CardBody, Alert } from 'reactstrap'
+import { Card, CardHeader, CardBody } from 'reactstrap'
 import { Iot, IotData, S3 } from 'aws-sdk'
 import { Loading } from '../Loading/Loading'
 import { Error } from '../Error/Error'
 import { device } from 'aws-iot-device-sdk'
 import { RelativeTime } from '../RelativeTime/RelativeTime'
 import { Map } from '../Map/Map'
-import { WarningRounded as WarningIcon } from '@material-ui/icons'
+import {
+	AccessTimeRounded as TimeIcon,
+	DirectionsRun as SpeedIcon,
+	Flight as AltitudeIcon,
+	BatteryStdRounded as BatteryIcon,
+	CloudDone as CloudIcon,
+} from '@material-ui/icons'
 
 import './Cat.scss'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
@@ -25,17 +31,17 @@ const ReportedTime = ({
 	receivedAt: Date
 }) => (
 	<>
-		<small>
-			reported <RelativeTime ts={reportedAt} key={reportedAt} />
-		</small>{' '}
-		<small>
-			(received{' '}
-			<RelativeTime
-				ts={receivedAt.toISOString()}
-				key={receivedAt.toISOString()}
-			/>
-			)
-		</small>
+		<TimeIcon /> <RelativeTime ts={reportedAt} key={reportedAt} />
+		{(receivedAt.getTime() - new Date(reportedAt).getTime()) / 1000 > 300 && (
+			<>
+				{' '}
+				<CloudIcon />{' '}
+				<RelativeTime
+					ts={receivedAt.toISOString()}
+					key={receivedAt.toISOString()}
+				/>
+			</>
+		)}
 	</>
 )
 
@@ -99,7 +105,9 @@ const ShowCat = ({
 					)
 				})
 				connection.on('message', (topic, payload) => {
-					const reported = mergeReportedAndMetadata({ shadow: JSON.parse(payload.toString()).current })
+					const reported = mergeReportedAndMetadata({
+						shadow: JSON.parse(payload.toString()).current,
+					})
 					setReported(reported)
 					console.log('Update reported state', catId, reported)
 				})
@@ -184,51 +192,45 @@ const ShowCat = ({
 							}}
 						/>
 					</h2>
+					{reported.gps && reported.gps.v && (
+						<div>
+							{reported.gps.v.spd && (
+								<span>
+									<SpeedIcon />
+									{Math.round(reported.gps.v.spd.value)}m/s
+								</span>
+							)}
+							{reported.gps.v.alt && (
+								<span>
+									<AltitudeIcon />
+									{Math.round(reported.gps.v.alt.value)}m
+								</span>
+							)}
+							<span className={'time'}>
+								<ReportedTime
+									receivedAt={reported.gps.v.lat.receivedAt}
+									reportedAt={reported.gps.ts.value}
+								/>
+							</span>
+						</div>
+					)}
+					{reported.bat && reported.bat.v && (
+						<div>
+							<span>
+								<BatteryIcon />
+								{reported.bat.v.value}
+							</span>
+							<span className={'time'}>
+								<ReportedTime
+									receivedAt={reported.bat.v.receivedAt}
+									reportedAt={reported.bat.ts.value}
+								/>
+							</span>
+						</div>
+					)}
 				</CardHeader>
 				<CardBody>
 					<dl>
-						<dt>Last position</dt>
-						{!reported.gps && (
-							<dd>
-								<Alert color={'danger'}>
-									<WarningIcon /> Unknown!
-								</Alert>
-							</dd>
-						)}
-						{reported.gps && (
-							<dd>
-								<ReportedTime
-									reportedAt={reported.gps.ts.value}
-									receivedAt={reported.gps.v.lat.receivedAt}
-								/>
-							</dd>
-						)}
-						{reported && reported.bat && reported.bat.v && (
-							<>
-								<dt>Battery</dt>
-								<dd>
-									{reported.bat.v.value}
-									<br />
-									<ReportedTime
-										reportedAt={reported.bat.ts.value}
-										receivedAt={reported.bat.v.receivedAt}
-									/>
-								</dd>
-							</>
-						)}
-						{reported && reported.gps && reported.gps.v && reported.gps.v.spd  && (
-							<>
-								<dt>Speed</dt>
-								<dd>
-									{reported.gps.v.spd.value}m/s
-									<br />
-									<ReportedTime
-										reportedAt={reported.gps.ts.value}
-										receivedAt={reported.gps.v.spd.receivedAt}
-									/>
-								</dd>
-							</>
-						)}
 						{reported && reported.acc && reported.acc.v && (
 							<>
 								<dt>Motion</dt>
