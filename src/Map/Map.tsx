@@ -1,13 +1,15 @@
 import React, { createRef } from 'react'
-import { Map as LeafletMap, TileLayer, Marker, Popup } from 'react-leaflet'
+import { Map as LeafletMap, TileLayer, Marker, Popup, Circle } from 'react-leaflet'
 
 import './Map.scss'
 
 export const Map = ({
 	position: { lat, lng },
+	accuracy,
 	label,
 }: {
 	position: { lat: number; lng: number }
+	accuracy: number
 	label: string
 }) => {
 	let zoom = 13
@@ -41,6 +43,7 @@ export const Map = ({
 			<Marker position={[lat, lng]}>
 				<Popup>{label}</Popup>
 			</Marker>
+			<Circle center={[lat, lng]} radius={accuracy}/>
 		</LeafletMap>
 	)
 }
