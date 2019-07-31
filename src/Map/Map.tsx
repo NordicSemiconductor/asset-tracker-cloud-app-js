@@ -1,4 +1,4 @@
-import React, { createRef } from 'react'
+import React, { createRef, useState } from 'react'
 import {
 	Map as LeafletMap,
 	TileLayer,
@@ -27,6 +27,7 @@ export const Map = ({
 	if (userZoom) {
 		zoom = parseInt(userZoom, 10)
 	}
+	const [mapZoom, setMapZoom] = useState(zoom)
 	const mapRef = createRef<LeafletMap>()
 	return (
 		<LeafletMap
@@ -43,6 +44,7 @@ export const Map = ({
 						'bifravst:zoom',
 						`${mapRef.current.viewport.zoom}`,
 					)
+					setMapZoom(mapRef.current.viewport.zoom)
 				}
 			}}
 		>
@@ -55,20 +57,23 @@ export const Map = ({
 			</Marker>
 			{accuracy && <Circle center={[lat, lng]} radius={accuracy} />}
 			{heading && (
-				<LeafletConsumer>
+				<LeafletConsumer key={mapZoom}>
 					{({ map }) => {
 						if (map) {
-							const { x, y } = map.project([lat, lng], zoom)
+							const { x, y } = map.project([lat, lng], mapZoom)
 							const endpoint = map.unproject(
 								[
-									x + 30 * Math.cos((((heading - 90) % 360) * Math.PI) / 180),
-									y + 30 * Math.sin((((heading - 90) % 360) * Math.PI) / 180),
+									x + (mapZoom * 3) * Math.cos((((heading - 90) % 360) * Math.PI) / 180),
+									y + (mapZoom * 3) * Math.sin((((heading - 90) % 360) * Math.PI) / 180),
 								],
-								zoom,
+								mapZoom,
 							)
+							console.log(mapZoom)
 							return (
 								<Polyline
 									positions={[[lat, lng], endpoint]}
+									weight={mapZoom > 16 ? 1 : 2}
+									linecap={'round'}
 									color={'#000000'}
 								/>
 							)
