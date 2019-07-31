@@ -15,6 +15,29 @@ import { uploadAvatar } from './uploadAvatar'
 import { Editable } from '../Editable/Editable'
 import { updateThingAttributes } from './updateThingAttributes'
 import { AccelerometerDiagram } from '../AccelerometerDiagram/AccelerometerDiagram'
+import { mergeReportedAndMetadata } from '../mergeReportedAndMetadata'
+
+const ReportedTime = ({
+	reportedAt,
+	receivedAt,
+}: {
+	reportedAt: string
+	receivedAt: Date
+}) => (
+	<>
+		<small>
+			reported <RelativeTime ts={reportedAt} key={reportedAt} />
+		</small>{' '}
+		<small>
+			(received{' '}
+			<RelativeTime
+				ts={receivedAt.toISOString()}
+				key={receivedAt.toISOString()}
+			/>
+			)
+		</small>
+	</>
+)
 
 const ShowCat = ({
 	catId,
@@ -43,9 +66,7 @@ const ShowCat = ({
 		avatar: 'https://placekitten.com/75/75',
 		version: 0,
 	})
-	const [reported, setReported] = useState({} as {
-		[key: string]: { v: any; ts: string }
-	})
+	const [reported, setReported] = useState({} as { [key: string]: any })
 	const [error, setError] = useState()
 
 	useEffect(() => {
@@ -78,7 +99,7 @@ const ShowCat = ({
 					)
 				})
 				connection.on('message', (topic, payload) => {
-					const reported = JSON.parse(payload.toString()).current.state.reported
+					const reported = mergeReportedAndMetadata({ shadow: JSON.parse(payload.toString()).current })
 					setReported(reported)
 					console.log('Update reported state', catId, reported)
 				})
@@ -88,16 +109,15 @@ const ShowCat = ({
 					thingName: catId,
 				})
 				.promise()
-				.then(({ payload }) =>
-					payload ? JSON.parse(payload.toString()).state.reported : {},
-				)
+				.then(({ payload }) => (payload ? JSON.parse(payload.toString()) : {}))
 				.catch(err => {
 					console.error(err)
 					return {}
 				}),
 		])
 
-			.then(([{ thingName, attributes, version }, _, reported]) => {
+			.then(([{ thingName, attributes, version }, _, shadow]) => {
+				const reported = mergeReportedAndMetadata({ shadow })
 				setLoading(false)
 				console.log('Inital reported state', catId, reported)
 				setReported(reported)
@@ -128,8 +148,8 @@ const ShowCat = ({
 			{reported.gps && (
 				<Map
 					position={{
-						lat: reported.gps.v.lat as number,
-						lng: reported.gps.v.lng as number,
+						lat: reported.gps.v.lat.value as number,
+						lng: reported.gps.v.lng.value as number,
 					}}
 					label={catId}
 				/>
@@ -175,22 +195,22 @@ const ShowCat = ({
 						)}
 						{reported.gps && (
 							<dd>
-								<small>
-									updated{' '}
-									<RelativeTime ts={reported.gps.ts} key={reported.gps.ts} />
-								</small>
+								<ReportedTime
+									reportedAt={reported.gps.ts.value}
+									receivedAt={reported.gps.v.lat.receivedAt}
+								/>
 							</dd>
 						)}
 						{reported && reported.bat && reported.bat.v && (
 							<>
 								<dt>Battery</dt>
 								<dd>
-									{reported.bat.v}
+									{reported.bat.v.value}
 									<br />
-									<small>
-										updated{' '}
-										<RelativeTime ts={reported.bat.ts} key={reported.bat.ts} />
-									</small>
+									<ReportedTime
+										reportedAt={reported.bat.ts.value}
+										receivedAt={reported.bat.v.receivedAt}
+									/>
 								</dd>
 							</>
 						)}
@@ -198,11 +218,15 @@ const ShowCat = ({
 							<>
 								<dt>Motion</dt>
 								<dd>
-									<AccelerometerDiagram values={reported.acc.v} />
-									<small>
-										updated{' '}
-										<RelativeTime ts={reported.bat.ts} key={reported.bat.ts} />
-									</small>
+									<AccelerometerDiagram
+										values={reported.acc.v.map(
+											({ value }: { value: number }) => value,
+										)}
+									/>
+									<ReportedTime
+										reportedAt={reported.acc.ts.value}
+										receivedAt={reported.acc.v[0].receivedAt}
+									/>
 								</dd>
 							</>
 						)}

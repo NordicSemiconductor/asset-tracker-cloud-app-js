@@ -5,7 +5,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject"
   },
   "repository": {
@@ -49,7 +49,7 @@
     "@commitlint/config-angular": "^8.1.0",
     "@types/aws-iot-device-sdk": "^2.2.0",
     "@types/classnames": "^2.2.9",
-    "@types/jest": "^24.0.15",
+    "@types/jest": "^24.0.16",
     "@types/node": "^12.6.8",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5",
@@ -74,6 +74,7 @@
     "node-sass": "^4.12.0",
     "prettier": "^1.18.2",
     "react-scripts": "^3.0.1",
+    "ts-jest": "^24.0.2",
     "typescript": "^3.5.2"
   },
   "husky": {
@@ -112,5 +113,22 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "jest": {
+    "testURL": "http://localhost",
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": ".+\\.spec\\.ts$",
+    "globals": {
+      "ts-jest": {
+        "diagnostics": true
+      }
+    }
+  }
 }
