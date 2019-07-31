@@ -54,7 +54,7 @@ export const Map = ({
 				<Popup>{label}</Popup>
 			</Marker>
 			{accuracy && <Circle center={[lat, lng]} radius={accuracy} />}
-			{heading !== undefined && heading !== null && (
+			{heading && (
 				<LeafletConsumer>
 					{({ map }) => {
 						if (map) {

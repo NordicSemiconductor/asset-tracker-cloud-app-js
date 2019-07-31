@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import moment from 'moment'
 
-const getDiffInSeconds = (ts: string) =>
-	(Date.now() - new Date(ts).getTime()) / 1000
+const getDiffInSeconds = (ts: Date) =>
+	(Date.now() - ts.getTime()) / 1000
 
-export const RelativeTime = ({ ts }: { ts: string }) => {
+export const RelativeTime = ({ ts }: { ts: Date }) => {
 	const [label, setLabel] = useState(moment(ts).fromNow())
 	const [diffInSeconds, setDiffInSeconds] = useState(getDiffInSeconds(ts))
 
@@ -28,5 +28,5 @@ export const RelativeTime = ({ ts }: { ts: string }) => {
 		}
 	}, [diffInSeconds, ts])
 
-	return <time dateTime={ts}>{label}</time>
+	return <time dateTime={ts.toISOString()}>{label}</time>
 }

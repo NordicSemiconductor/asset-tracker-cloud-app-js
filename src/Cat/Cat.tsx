@@ -29,21 +29,31 @@ const ReportedTime = ({
 }: {
 	reportedAt: string
 	receivedAt: Date
-}) => (
-	<>
-		<TimeIcon /> <RelativeTime ts={reportedAt} key={reportedAt} />
-		{(receivedAt.getTime() - new Date(reportedAt).getTime()) / 1000 > 300 && (
+}) => {
+	try {
+		const r = new Date(reportedAt)
+		return (
 			<>
-				{' '}
-				<CloudIcon />{' '}
-				<RelativeTime
-					ts={receivedAt.toISOString()}
-					key={receivedAt.toISOString()}
-				/>
+				<TimeIcon /> <RelativeTime ts={r} key={r.toISOString()} />
+				{(receivedAt.getTime() - new Date(reportedAt).getTime()) / 1000 >
+					300 && (
+					<>
+						{' '}
+						<CloudIcon />{' '}
+						<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
+					</>
+				)}
 			</>
-		)}
-	</>
-)
+		)
+	} catch {
+		return (
+			<>
+				<CloudIcon />{' '}
+				<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
+			</>
+		)
+	}
+}
 
 const ShowCat = ({
 	catId,
@@ -153,17 +163,22 @@ const ShowCat = ({
 	if (error) return <Error error={error} />
 	return (
 		<>
-			{reported.gps && (
-				<Map
-					position={{
-						lat: reported.gps.v.lat.value as number,
-						lng: reported.gps.v.lng.value as number,
-					}}
-					accuracy={reported.gps.v.acc.value as number}
-					heading={reported.gps.v.hdg.value as number}
-					label={catId}
-				/>
-			)}
+			{reported.gps &&
+				reported.gps.v &&
+				reported.gps.v.lat &&
+				reported.gps.v.lng && (
+					<Map
+						position={{
+							lat: reported.gps.v.lat.value as number,
+							lng: reported.gps.v.lng.value as number,
+						}}
+						accuracy={
+							reported.gps.v.acc && (reported.gps.v.acc.value as number)
+						}
+						heading={reported.gps.v.hdg && (reported.gps.v.hdg.value as number)}
+						label={catId}
+					/>
+				)}
 			<Card>
 				<CardHeader className={'cat'}>
 					<AvatarPicker
@@ -240,10 +255,12 @@ const ShowCat = ({
 											({ value }: { value: number }) => value,
 										)}
 									/>
-									<ReportedTime
-										reportedAt={reported.acc.ts.value}
-										receivedAt={reported.acc.v[0].receivedAt}
-									/>
+									<small>
+										<ReportedTime
+											reportedAt={reported.acc.ts.value}
+											receivedAt={reported.acc.v[0].receivedAt}
+										/>
+									</small>
 								</dd>
 							</>
 						)}
