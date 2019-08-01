@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { IdentityIdContext, IotContext, CredentialsContext } from '../App'
+import { IdentityIdConsumer, IotConsumer, CredentialsConsumer } from '../App'
 import { Card, CardHeader, CardBody } from 'reactstrap'
 import { Iot, IotData, S3 } from 'aws-sdk'
 import { Loading } from '../Loading/Loading'
@@ -358,9 +358,9 @@ export const Cat = ({ catId }: { catId: string }) => (
 								/>
 							)
 						}}
-					</IotContext.Consumer>
+					</IotConsumer>
 				)}
-			</IdentityIdContext.Consumer>
+			</IdentityIdConsumer>
 		)}
-	</CredentialsContext.Consumer>
+	</CredentialsConsumer>
 )

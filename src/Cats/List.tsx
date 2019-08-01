@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { IotContext } from '../App'
+import { IotConsumer } from '../App'
 import { Table, Card, CardHeader, CardBody } from 'reactstrap'
 import { Iot } from 'aws-sdk'
 import { Loading } from '../Loading/Loading'
@@ -64,7 +64,7 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 }
 
 export const List = () => (
-	<IotContext.Consumer>
+	<IotConsumer>
 		{({ iot }) => <ListCats iot={iot} />}
-	</IotContext.Consumer>
+	</IotConsumer>
 )

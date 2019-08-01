@@ -46,8 +46,9 @@ Amplify.configure({
 	},
 })
 
-export const IdentityIdContext = React.createContext<string>('unauthorized')
-export const CredentialsContext = React.createContext<{
+const IdentityIdContext = React.createContext<string>('unauthorized')
+export const IdentityIdConsumer = IdentityIdContext.Consumer
+const CredentialsContext = React.createContext<{
 	accessKeyId: string
 	sessionToken: string
 	secretAccessKey: string
@@ -56,12 +57,14 @@ export const CredentialsContext = React.createContext<{
 	sessionToken: '',
 	secretAccessKey: '',
 })
-export const IotContext = React.createContext<{ iot: Iot; iotData: IotData }>({
+export const CredentialsConsumer = CredentialsContext.Consumer
+const IotContext = React.createContext<{ iot: Iot; iotData: IotData }>({
 	iot: new Iot(),
 	iotData: new IotData({
 		endpoint: process.env.REACT_APP_MQTT_ENDPOINT,
 	}),
 })
+export const IotConsumer = IotContext.Consumer
 
 const Navigation = (props: {
 	navbar?: boolean
