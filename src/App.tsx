@@ -77,12 +77,12 @@ const Navigation = (props: {
 		<Nav navbar={navbar} className={props.className}>
 			<NavItem>
 				<Link className="nav-link" to="/cats" onClick={onClick}>
-					<ListIcon/> Cats
+					<ListIcon /> Cats
 				</Link>
 			</NavItem>
 			<NavItem>
 				<Link className="nav-link" to="/about" onClick={onClick}>
-					<InfoIcon/> About
+					<InfoIcon /> About
 				</Link>
 			</NavItem>
 			<NavItem>

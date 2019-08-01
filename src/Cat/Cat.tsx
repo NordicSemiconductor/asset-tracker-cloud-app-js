@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { IdentityIdConsumer, IotConsumer, CredentialsConsumer } from '../App'
 import { Card, CardHeader, CardBody } from 'reactstrap'
 import { Iot, IotData, S3 } from 'aws-sdk'
+import Athena from 'aws-sdk/clients/athena'
 import { Loading } from '../Loading/Loading'
 import { Error } from '../Error/Error'
 import { device } from 'aws-iot-device-sdk'
@@ -25,6 +26,7 @@ import { mergeReportedAndMetadata } from '../mergeReportedAndMetadata'
 import * as introJs from 'intro.js'
 
 import './Cat.scss'
+import { HistoricalDataChart } from '../HistoricalData/HistoricalDataChart'
 
 const intro = introJs()
 
@@ -68,6 +70,7 @@ const ShowCat = ({
 	onNameChange,
 	identityId,
 	credentials,
+	historicalDataChart,
 }: {
 	iot: Iot
 	iotData: IotData
@@ -80,6 +83,7 @@ const ShowCat = ({
 		sessionToken: string
 		secretAccessKey: string
 	}
+	historicalDataChart: () => React.ReactNode
 }) => {
 	const [loading, setLoading] = useState(true)
 	const [cat, setCat] = useState({
@@ -290,8 +294,8 @@ const ShowCat = ({
 						</>
 					)}
 				</CardHeader>
-				{reported && reported.acc && reported.acc.v && (
-					<CardBody>
+				<CardBody>
+					{reported && reported.acc && reported.acc.v && (
 						<div>
 							<p>
 								<strong>Motion</strong>
@@ -308,21 +312,31 @@ const ShowCat = ({
 								/>
 							</small>
 						</div>
-					</CardBody>
-				)}
+					)}
+					<div>
+						<p>
+							<strong>Battery</strong>
+						</p>
+						{historicalDataChart()}
+					</div>
+				</CardBody>
 			</Card>
 		</>
 	)
 }
 
 export const Cat = ({ catId }: { catId: string }) => (
-	<CredentialsContext.Consumer>
+	<CredentialsConsumer>
 		{credentials => (
-			<IdentityIdContext.Consumer>
+			<IdentityIdConsumer>
 				{identityId => (
-					<IotContext.Consumer>
+					<IotConsumer>
 						{({ iot, iotData }) => {
 							const s3 = new S3({
+								credentials,
+								region: process.env.REACT_APP_REGION,
+							})
+							const athena = new Athena({
 								credentials,
 								region: process.env.REACT_APP_REGION,
 							})
@@ -355,6 +369,9 @@ export const Cat = ({ catId }: { catId: string }) => (
 											console.error(err)
 										})
 									}}
+									historicalDataChart={() => (
+										<HistoricalDataChart deviceId={catId} athena={athena} />
+									)}
 								/>
 							)
 						}}
