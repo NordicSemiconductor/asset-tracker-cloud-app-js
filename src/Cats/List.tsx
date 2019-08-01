@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { IotContext } from '../App'
-import { Table, Card, CardHeader } from 'reactstrap'
+import { Table, Card, CardHeader, CardBody } from 'reactstrap'
 import { Iot } from 'aws-sdk'
 import { Loading } from '../Loading/Loading'
 import { Error } from '../Error/Error'
 
 const ListCats = ({ iot }: { iot: Iot }) => {
 	const [loading, setLoading] = useState(true)
-	const [cats, setCats] = useState([] as { id: string, name: string }[])
+	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState()
 	useEffect(() => {
 		iot
@@ -27,22 +27,38 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 				setLoading(false)
 			})
 	}, [iot])
-	if (loading) return <Loading text={'Herding cats...'} />
-	if (error) return <Error error={error} />
+	if (loading || error)
+		return (
+			<Card>
+				<CardBody>
+					{loading && <Loading text={'Herding cats...'} />}
+					{error && <Error error={error} />}
+				</CardBody>
+			</Card>
+		)
 	return (
-		<Card>
+		<Card data-intro="This lists your cats. Click on one to see its details.">
 			<CardHeader>Cats</CardHeader>
-			<Table>
-				<tbody>
-					{cats.map(({ id, name }) => (
-						<tr key={id}>
-							<td>
-								<a href={`/cat/${id}`}>{name}</a>
-							</td>
-						</tr>
-					))}
-				</tbody>
-			</Table>
+			{cats.length && (
+				<Table>
+					<tbody>
+						{cats.map(({ id, name }) => (
+							<tr key={id}>
+								<td>
+									<a href={`/cat/${id}`}>{name}</a>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</Table>
+			)}
+			{!cats.length && (
+				<div>
+					No cats, yet. Read more about how to create{' '}
+					<em>Device Credentials</em> for your cat trackers{' '}
+					<a href={'https://bifravst.github.io/'}>in the handbook</a>.
+				</div>
+			)}
 		</Card>
 	)
 }

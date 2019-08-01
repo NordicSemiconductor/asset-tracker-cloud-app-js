@@ -1,29 +1,40 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { withAuthenticator } from 'aws-amplify-react'
 import Amplify, { Auth } from 'aws-amplify'
 import { CognitoUser } from 'amazon-cognito-identity-js'
 import {
+	Button,
+	Collapse,
+	Nav,
 	Navbar,
 	NavbarBrand,
-	Nav,
-	NavItem,
-	Button,
 	NavbarToggler,
-	Collapse,
+	NavItem,
 } from 'reactstrap'
 import {
 	BrowserRouter as Router,
-	Route,
 	Link,
 	Redirect,
+	Route,
 } from 'react-router-dom'
 import { AboutPage } from './About/Page'
 import { CatsPage } from './Cats/Page'
 import { CatPage } from './Cat/Page'
 import logo from './logo.svg'
-import './App.scss'
 import { Iot, IotData } from 'aws-sdk'
 import { getPolicyNameFromArn } from './getPolicyNameFromArn'
+import {
+	List as ListIcon,
+	Info as InfoIcon,
+	PowerSettingsNew as LogoutIcon,
+	HelpRounded as HelpIcon,
+} from '@material-ui/icons'
+import * as introJs from 'intro.js'
+
+import './App.scss'
+import '../node_modules/intro.js/introjs.css'
+
+const intro = introJs()
 
 Amplify.configure({
 	Auth: {
@@ -63,17 +74,33 @@ const Navigation = (props: {
 		<Nav navbar={navbar} className={props.className}>
 			<NavItem>
 				<Link className="nav-link" to="/cats" onClick={onClick}>
-					Cats
+					<ListIcon/> Cats
 				</Link>
 			</NavItem>
 			<NavItem>
 				<Link className="nav-link" to="/about" onClick={onClick}>
-					About
+					<InfoIcon/> About
 				</Link>
 			</NavItem>
 			<NavItem>
+				<Button
+					className="nav-link"
+					color={'link'}
+					onClick={() => {
+						onClick && onClick()
+						window.setTimeout(() => {
+							window.requestAnimationFrame(() => {
+								intro.start()
+							})
+						}, 1000)
+					}}
+				>
+					<HelpIcon /> Help
+				</Button>
+			</NavItem>
+			<NavItem>
 				<Button onClick={logout} outline color="danger">
-					Log out
+					<LogoutIcon /> Log out
 				</Button>
 			</NavItem>
 		</Nav>

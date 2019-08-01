@@ -8,6 +8,7 @@ import { device } from 'aws-iot-device-sdk'
 import { RelativeTime } from '../RelativeTime/RelativeTime'
 import { Map } from '../Map/Map'
 import {
+	SignalCellularConnectedNoInternet0Bar as NoSignalIcon,
 	AccessTimeRounded as TimeIcon,
 	DirectionsRun as SpeedIcon,
 	Flight as AltitudeIcon,
@@ -15,13 +16,17 @@ import {
 	CloudDone as CloudIcon,
 } from '@material-ui/icons'
 
-import './Cat.scss'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
 import { uploadAvatar } from './uploadAvatar'
 import { Editable } from '../Editable/Editable'
 import { updateThingAttributes } from './updateThingAttributes'
 import { AccelerometerDiagram } from '../AccelerometerDiagram/AccelerometerDiagram'
 import { mergeReportedAndMetadata } from '../mergeReportedAndMetadata'
+import * as introJs from 'intro.js'
+
+import './Cat.scss'
+
+const intro = introJs()
 
 const ReportedTime = ({
 	reportedAt,
@@ -82,7 +87,7 @@ const ShowCat = ({
 		avatar: 'https://placekitten.com/75/75',
 		version: 0,
 	})
-	const [reported, setReported] = useState({} as { [key: string]: any })
+	const [reported, setReported] = useState()
 	const [error, setError] = useState()
 
 	useEffect(() => {
@@ -133,12 +138,13 @@ const ShowCat = ({
 					return {}
 				}),
 		])
-
 			.then(([{ thingName, attributes, version }, _, shadow]) => {
-				const reported = mergeReportedAndMetadata({ shadow })
 				setLoading(false)
-				console.log('Inital reported state', catId, reported)
-				setReported(reported)
+				if (shadow.state) {
+					const reported = mergeReportedAndMetadata({ shadow })
+					console.log('Inital reported state', catId, reported)
+					setReported(reported)
+				}
 				if (thingName) {
 					setCat({
 						name: (attributes && attributes.name) || thingName,
@@ -159,26 +165,57 @@ const ShowCat = ({
 		}
 	}, [iot, iotData, catId, identityId, credentials])
 
-	if (loading) return <Loading text={`Opening can for ${catId}...`} />
-	if (error) return <Error error={error} />
+	useEffect(() => {
+		if (!loading && !error) {
+			setTimeout(() => {
+				window.requestAnimationFrame(() => {
+					if (!window.localStorage.getItem('bifravst:cat:intro')) {
+						intro.start()
+						intro.onexit(() => {
+							window.localStorage.setItem('bifravst:cat:intro', 'done')
+						})
+						console.log('Starting Intro.js')
+					}
+				})
+			}, 1000)
+		}
+	}, [loading, error])
+
+	if (loading || error)
+		return (
+			<Card>
+				<CardBody>
+					{loading && <Loading text={`Opening can for ${catId}...`} />}
+					{error && <Error error={error} />}
+				</CardBody>
+			</Card>
+		)
+	const hasMap =
+		reported &&
+		reported.gps &&
+		reported.gps.v &&
+		reported.gps.v.lat &&
+		reported.gps.v.lng
 	return (
 		<>
-			{reported.gps &&
-				reported.gps.v &&
-				reported.gps.v.lat &&
-				reported.gps.v.lng && (
-					<Map
-						position={{
-							lat: reported.gps.v.lat.value as number,
-							lng: reported.gps.v.lng.value as number,
-						}}
-						accuracy={
-							reported.gps.v.acc && (reported.gps.v.acc.value as number)
-						}
-						heading={reported.gps.v.hdg && (reported.gps.v.hdg.value as number)}
-						label={catId}
-					/>
-				)}
+			{hasMap && (
+				<Map
+					position={{
+						lat: reported.gps.v.lat.value as number,
+						lng: reported.gps.v.lng.value as number,
+					}}
+					accuracy={reported.gps.v.acc && (reported.gps.v.acc.value as number)}
+					heading={reported.gps.v.hdg && (reported.gps.v.hdg.value as number)}
+					label={catId}
+				/>
+			)}
+			{!hasMap && (
+				<div className={'noMap'}>
+					<span>
+						<NoSignalIcon /> No position known.
+					</span>
+				</div>
+			)}
 			<Card>
 				<CardHeader className={'cat'}>
 					<AvatarPicker
@@ -196,9 +233,14 @@ const ShowCat = ({
 							onAvatarChange({ avatar: blob })
 						}}
 					>
-						<img src={cat.avatar} alt={cat.name} className={'avatar'} />
+						<img
+							src={cat.avatar}
+							alt={cat.name}
+							className={'avatar'}
+							data-intro="Click here to upload a new image for your cat."
+						/>
 					</AvatarPicker>
-					<h2>
+					<h2 data-intro="Click here to edit the name of your cat.">
 						<Editable
 							key={`${cat.version}`}
 							text={cat.name}
@@ -207,65 +249,67 @@ const ShowCat = ({
 							}}
 						/>
 					</h2>
-					{reported.gps && reported.gps.v && (
-						<div>
-							{reported.gps.v.spd && (
-								<span>
-									<SpeedIcon />
-									{Math.round(reported.gps.v.spd.value)}m/s
-								</span>
+					{reported && (
+						<>
+							{reported.gps && reported.gps.v && (
+								<div>
+									{reported.gps.v.spd && (
+										<span>
+											<SpeedIcon />
+											{Math.round(reported.gps.v.spd.value)}m/s
+										</span>
+									)}
+									{reported.gps.v.alt && (
+										<span>
+											<AltitudeIcon />
+											{Math.round(reported.gps.v.alt.value)}m
+										</span>
+									)}
+									<span className={'time'}>
+										<ReportedTime
+											receivedAt={reported.gps.v.lat.receivedAt}
+											reportedAt={reported.gps.ts.value}
+										/>
+									</span>
+								</div>
 							)}
-							{reported.gps.v.alt && (
-								<span>
-									<AltitudeIcon />
-									{Math.round(reported.gps.v.alt.value)}m
-								</span>
+							{reported.bat && reported.bat.v && (
+								<div>
+									<span>
+										<BatteryIcon />
+										{reported.bat.v.value}
+									</span>
+									<span className={'time'}>
+										<ReportedTime
+											receivedAt={reported.bat.v.receivedAt}
+											reportedAt={reported.bat.ts.value}
+										/>
+									</span>
+								</div>
 							)}
-							<span className={'time'}>
-								<ReportedTime
-									receivedAt={reported.gps.v.lat.receivedAt}
-									reportedAt={reported.gps.ts.value}
-								/>
-							</span>
-						</div>
-					)}
-					{reported.bat && reported.bat.v && (
-						<div>
-							<span>
-								<BatteryIcon />
-								{reported.bat.v.value}
-							</span>
-							<span className={'time'}>
-								<ReportedTime
-									receivedAt={reported.bat.v.receivedAt}
-									reportedAt={reported.bat.ts.value}
-								/>
-							</span>
-						</div>
+						</>
 					)}
 				</CardHeader>
-				<CardBody>
-					<dl>
-						{reported && reported.acc && reported.acc.v && (
-							<>
-								<dt>Motion</dt>
-								<dd>
-									<AccelerometerDiagram
-										values={reported.acc.v.map(
-											({ value }: { value: number }) => value,
-										)}
-									/>
-									<small>
-										<ReportedTime
-											reportedAt={reported.acc.ts.value}
-											receivedAt={reported.acc.v[0].receivedAt}
-										/>
-									</small>
-								</dd>
-							</>
-						)}
-					</dl>
-				</CardBody>
+				{reported && reported.acc && reported.acc.v && (
+					<CardBody>
+						<div>
+							<p>
+								<strong>Motion</strong>
+							</p>
+							<AccelerometerDiagram
+								values={reported.acc.v.map(
+									({ value }: { value: number }) => value,
+								)}
+							/>
+							<small>
+								<ReportedTime
+									reportedAt={reported.acc.ts.value}
+									receivedAt={reported.acc.v[0].receivedAt}
+								/>
+							</small>
+						</div>
+					</CardBody>
+				)}
 			</Card>
 		</>
 	)
