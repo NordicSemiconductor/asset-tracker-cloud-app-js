@@ -68,7 +68,6 @@ export const Map = ({
 								],
 								mapZoom,
 							)
-							console.log(mapZoom)
 							return (
 								<Polyline
 									positions={[[lat, lng], endpoint]}
