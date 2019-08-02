@@ -7,6 +7,7 @@ import { exponential } from 'backoff'
 import { parseAthenaResult } from '../parseAthenaResult'
 import { Loading } from '../Loading/Loading'
 import { Error as ShowError } from '../Error/Error'
+import { subDays } from 'date-fns'
 
 import './HistoricalDataChart.scss'
 
@@ -33,22 +34,33 @@ export const HistoricalDataChart = ({
 			new am4charts.DateAxis<am4charts.AxisRendererX>(),
 		)
 		dateAxis.fontSize = 10
-		dateAxis.renderer.minGridDistance = 60
+		dateAxis.baseInterval = { timeUnit: 'minute', count: 1 }
+		chart.dateFormatter.inputDateFormat = "yyyy-MM-ddTHH:mm:ss.SSSZ";
 
 		const valueAxes = chart.yAxes.push(
 			new am4charts.ValueAxis<am4charts.AxisRendererY>(),
 		)
 		valueAxes.fontSize = 10
 
-		const series = chart.series.push(new am4charts.LineSeries())
+		const series = chart.series.push(new am4charts.ColumnSeries())
 		series.dataFields.valueY = 'value'
 		series.dataFields.dateX = 'date'
 		series.tooltipText = '{value}'
+		series.tooltipPosition = 'pointer'
 
+		chart.cursor = new am4charts.XYCursor()
+		chart.cursor.snapToSeries = series
+		chart.cursor.xAxis = dateAxis
+
+		//chart.scrollbarY = new am4core.Scrollbar();
+		chart.scrollbarX = new am4core.Scrollbar()
+
+		const QueryString = `SELECT reported.bat.ts as date, reported.bat.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${deviceId}' AND reported.bat IS NOT NULL AND reported.bat.ts > '${subDays(new Date(), 2).toISOString()}' ORDER BY reported.bat.ts DESC LIMIT 100`
+		console.log(QueryString)
 		athena
 			.startQueryExecution({
 				WorkGroup: athenaWorkGroup,
-				QueryString: `SELECT reported.bat.ts as date, reported.bat.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${deviceId}' AND reported.bat IS NOT NULL ORDER BY reported.bat.v DESC LIMIT 100`,
+				QueryString,
 			})
 			.promise()
 			.then(({ QueryExecutionId }) => {
@@ -110,6 +122,7 @@ export const HistoricalDataChart = ({
 			})
 			.then(data => {
 				setLoading(false)
+				console.log('Chart data', data)
 				chart.data = data
 			})
 			.catch(setError)
