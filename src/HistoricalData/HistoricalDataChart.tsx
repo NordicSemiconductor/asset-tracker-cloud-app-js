@@ -1,9 +1,12 @@
 import * as am4core from '@amcharts/amcharts4/core'
 import * as am4charts from '@amcharts/amcharts4/charts'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { v4 } from 'uuid'
 import Athena from 'aws-sdk/clients/athena'
 import { exponential } from 'backoff'
+import { parseAthenaResult } from '../parseAthenaResult'
+import { Loading } from '../Loading/Loading'
+import { Error as ShowError } from '../Error/Error'
 
 import './HistoricalDataChart.scss'
 
@@ -20,11 +23,32 @@ export const HistoricalDataChart = ({
 }) => {
 	const chartRef = useRef<am4charts.XYChart>()
 	const uuid = useRef<string>(v4())
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState<Error>()
 	useEffect(() => {
+		const chart = am4core.create(uuid.current, am4charts.XYChart)
+		chartRef.current = chart
+
+		const dateAxis = chart.xAxes.push(
+			new am4charts.DateAxis<am4charts.AxisRendererX>(),
+		)
+		dateAxis.fontSize = 10
+		dateAxis.renderer.minGridDistance = 60
+
+		const valueAxes = chart.yAxes.push(
+			new am4charts.ValueAxis<am4charts.AxisRendererY>(),
+		)
+		valueAxes.fontSize = 10
+
+		const series = chart.series.push(new am4charts.LineSeries())
+		series.dataFields.valueY = 'value'
+		series.dataFields.dateX = 'date'
+		series.tooltipText = '{value}'
+
 		athena
 			.startQueryExecution({
 				WorkGroup: athenaWorkGroup,
-				QueryString: `SELECT * FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${deviceId}' AND reported.bat IS NOT NULL`,
+				QueryString: `SELECT reported.bat.ts as date, reported.bat.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${deviceId}' AND reported.bat IS NOT NULL ORDER BY reported.bat.v DESC LIMIT 100`,
 			})
 			.promise()
 			.then(({ QueryExecutionId }) => {
@@ -76,46 +100,30 @@ export const HistoricalDataChart = ({
 						reject(new Error(`Timed out waiting for query ${QueryExecutionId}`))
 					})
 					b.backoff()
-				})
-					.then(() => athena.getQueryResults({ QueryExecutionId }).promise())
+				}).then(() => athena.getQueryResults({ QueryExecutionId }).promise())
 			})
-			.then(console.log)
-			.catch(console.error)
+			.then(({ ResultSet }) => {
+				if (!ResultSet || !ResultSet.Rows) {
+					throw new Error(`No resultset returned.`)
+				}
+				return parseAthenaResult(ResultSet)
+			})
+			.then(data => {
+				setLoading(false)
+				chart.data = data
+			})
+			.catch(setError)
 
-		const chart = am4core.create(uuid.current, am4charts.XYChart)
-		chartRef.current = chart
-
-		const data = []
-		let value = 50
-		for (let i = 0; i < 300; i++) {
-			const date = new Date()
-			date.setHours(0, 0, 0, 0)
-			date.setDate(i)
-			value -= Math.round((Math.random() < 0.5 ? 1 : -1) * Math.random() * 10)
-			data.push({ date: date, value: value })
-		}
-
-		chart.data = data
-
-		const dateAxis = chart.xAxes.push(
-			new am4charts.DateAxis<am4charts.AxisRendererX>(),
-		)
-		dateAxis.fontSize = 10
-		dateAxis.renderer.minGridDistance = 60
-
-		const valueAxes = chart.yAxes.push(
-			new am4charts.ValueAxis<am4charts.AxisRendererY>(),
-		)
-		valueAxes.fontSize = 10
-
-		const series = chart.series.push(new am4charts.LineSeries())
-		series.dataFields.valueY = 'value'
-		series.dataFields.dateX = 'date'
-		series.tooltipText = '{value}'
 		return () => {
 			chartRef.current && chartRef.current.dispose()
 		}
-	}, [athena, deviceId])
+	}, [athena, deviceId, setLoading, setError])
 
-	return <div id={uuid.current} className={'historicalDataChart'} />
+	return (
+		<>
+			{loading && <Loading text={`Fetching historical data...`} />}
+			{error && <ShowError error={error} />}
+			<div id={uuid.current} className={'historicalDataChart'} />
+		</>
+	)
 }

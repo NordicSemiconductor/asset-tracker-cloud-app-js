@@ -313,6 +313,7 @@ const ShowCat = ({
 							</small>
 						</div>
 					)}
+					<hr/>
 					<div>
 						<p>
 							<strong>Battery</strong>
