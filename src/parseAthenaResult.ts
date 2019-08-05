@@ -1,23 +1,21 @@
 import Athena from 'aws-sdk/clients/athena'
 
-const parseValue = ({ value, type }: { value?: string; type: string }) => {
-	if (value === undefined) {
-		return value
-	}
-	switch (type) {
-		case 'integer':
-			return parseInt(value, 10)
-		default:
-			return value
-	}
-}
-
 export type ParsedResult = { [key: string]: string | number }[]
 
+const defaultFormatters = {
+	integer: (v: string) => parseInt(v, 10),
+	default: (v: string) => v,
+} as { [key: string]: (v: string) => any }
+
 export const parseAthenaResult = ({
-	Rows,
-	ResultSetMetadata,
-}: Athena.ResultSet): ParsedResult => {
+	ResultSet: { Rows, ResultSetMetadata },
+	formatters,
+}: {
+	ResultSet: Athena.ResultSet
+	formatters?: {
+		integer: (v: string) => number
+	}
+}): ParsedResult => {
 	if (!Rows || !ResultSetMetadata || !ResultSetMetadata.ColumnInfo) {
 		return []
 	}
@@ -26,15 +24,17 @@ export const parseAthenaResult = ({
 		if (!Data) {
 			return {}
 		}
-		return ColumnInfo.reduce(
-			(result, { Name, Type }, key) => ({
+		return ColumnInfo.reduce((result, { Name, Type }, key) => {
+			let v = Data[key].VarCharValue
+			if (v !== undefined) {
+				const formatter =
+					(formatters || defaultFormatters)[Type] || defaultFormatters.default
+				v = formatter(v)
+			}
+			return {
 				...result,
-				[Name]: parseValue({
-					value: Data[key].VarCharValue,
-					type: Type,
-				}),
-			}),
-			{},
-		)
+				[Name]: v,
+			}
+		}, {})
 	})
 }

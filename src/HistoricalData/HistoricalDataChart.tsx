@@ -7,7 +7,6 @@ import { exponential } from 'backoff'
 import { parseAthenaResult } from '../parseAthenaResult'
 import { Loading } from '../Loading/Loading'
 import { Error as ShowError } from '../Error/Error'
-import { subDays } from 'date-fns'
 
 import './HistoricalDataChart.scss'
 
@@ -34,15 +33,15 @@ export const HistoricalDataChart = ({
 			new am4charts.DateAxis<am4charts.AxisRendererX>(),
 		)
 		dateAxis.fontSize = 10
-		dateAxis.baseInterval = { timeUnit: 'minute', count: 1 }
-		chart.dateFormatter.inputDateFormat = "yyyy-MM-ddTHH:mm:ss.SSSZ";
+		dateAxis.baseInterval = { timeUnit: 'second', count: 1 }
+		chart.dateFormatter.inputDateFormat = 'yyyy-MM-ddTHH:mm:ss.SSSZ'
 
 		const valueAxes = chart.yAxes.push(
 			new am4charts.ValueAxis<am4charts.AxisRendererY>(),
 		)
 		valueAxes.fontSize = 10
 
-		const series = chart.series.push(new am4charts.ColumnSeries())
+		const series = chart.series.push(new am4charts.LineSeries())
 		series.dataFields.valueY = 'value'
 		series.dataFields.dateX = 'date'
 		series.tooltipText = '{value}'
@@ -52,10 +51,16 @@ export const HistoricalDataChart = ({
 		chart.cursor.snapToSeries = series
 		chart.cursor.xAxis = dateAxis
 
-		//chart.scrollbarY = new am4core.Scrollbar();
-		chart.scrollbarX = new am4core.Scrollbar()
+		// Add scrollbar
+		chart.scrollbarX = new am4charts.XYChartScrollbar()
+		;(chart.scrollbarX as am4charts.XYChartScrollbar).series.push(series)
 
-		const QueryString = `SELECT reported.bat.ts as date, reported.bat.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${deviceId}' AND reported.bat IS NOT NULL AND reported.bat.ts > '${subDays(new Date(), 2).toISOString()}' ORDER BY reported.bat.ts DESC LIMIT 100`
+		// Create vertical scrollbar and place it before the value axis
+		chart.scrollbarY = new am4core.Scrollbar()
+		chart.scrollbarY.parent = chart.leftAxesContainer
+		chart.scrollbarY.toBack()
+
+		const QueryString = `SELECT reported.bat.ts as date, reported.bat.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${deviceId}' AND reported.bat IS NOT NULL ORDER BY reported.bat.ts DESC LIMIT 100`
 		console.log(QueryString)
 		athena
 			.startQueryExecution({
@@ -118,7 +123,12 @@ export const HistoricalDataChart = ({
 				if (!ResultSet || !ResultSet.Rows) {
 					throw new Error(`No resultset returned.`)
 				}
-				return parseAthenaResult(ResultSet)
+				return parseAthenaResult({
+					ResultSet,
+					formatters: {
+						integer: v => parseInt(v, 10) / 1000,
+					},
+				})
 			})
 			.then(data => {
 				setLoading(false)

@@ -281,7 +281,7 @@ const ShowCat = ({
 								<div>
 									<span>
 										<BatteryIcon />
-										{reported.bat.v.value}
+										{reported.bat.v.value / 1000}V
 									</span>
 									<span className={'time'}>
 										<ReportedTime
