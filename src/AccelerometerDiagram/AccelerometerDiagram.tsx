@@ -5,26 +5,36 @@ import { v4 } from 'uuid'
 
 import './AccelerometerDiagram.scss'
 
+const axes = {
+	Z: 2,
+	Y: 1,
+	X: 0,
+}
+
 export const AccelerometerDiagram = ({ values }: { values: number[] }) => {
 	const chartRef = useRef<am4charts.RadarChart>()
 	const uuid = useRef<string>(v4())
 	useEffect(() => {
 		const chart = am4core.create(uuid.current, am4charts.RadarChart)
 		chartRef.current = chart
-		chart.data = [
-			{
-				direction: 'Z',
-				value: values[2],
-			},
-			{
-				direction: 'Y',
-				value: values[1],
-			},
-			{
-				direction: 'X',
-				value: values[0],
-			},
-		]
+
+		const data = [] as { direction: string; value: number }[]
+
+		Object.entries(axes).forEach(([dir, k]) => {
+			if (values[k] < 0) {
+				data.push({
+					direction: `-${dir}`,
+					value: Math.abs(values[k]),
+				})
+			} else {
+				data.push({
+					direction: `+${dir}`,
+					value: values[k],
+				})
+			}
+		})
+
+		chart.data = data
 
 		const xAxes = new am4charts.CategoryAxis<am4charts.AxisRendererCircular>()
 		xAxes.fontSize = 10
