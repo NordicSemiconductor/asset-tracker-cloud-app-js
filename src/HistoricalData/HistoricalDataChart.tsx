@@ -10,9 +10,9 @@ import { Error as ShowError } from '../Error/Error'
 
 import './HistoricalDataChart.scss'
 
-const athenaWorkGroup = process.env.REACT_APP_ATHENA_WORK_GROUP_NAME
-const athenaDataBase = process.env.REACT_APP_ATHENA_DATA_BASE_NAME
-const athenaRawDataTable = process.env.REACT_APP_ATHENA_RAW_DATA_TABLE_NAME
+const athenaWorkGroup = process.env.REACT_APP_HISTORICALDATA_WORKGROUP_NAME
+const athenaDataBase = process.env.REACT_APP_HISTORICALDATA_DATABASE_NAME
+const athenaRawDataTable = process.env.REACT_APP_HISTORICALDATA_TABLE_NAME
 
 export const HistoricalDataChart = ({
 	athena,
