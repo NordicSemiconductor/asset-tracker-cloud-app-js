@@ -1,0 +1,13 @@
+div.collapsable {
+  div.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    cursor: pointer;
+    > button.toggle {
+      border: 0;
+      padding: 0;
+      background-color: transparent;
+    }
+  }
+}

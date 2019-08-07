@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { IdentityIdConsumer, IotConsumer, CredentialsConsumer } from '../App'
-import { Card, CardHeader, CardBody } from 'reactstrap'
+import { CredentialsConsumer, IdentityIdConsumer, IotConsumer } from '../App'
+import { Card, CardBody, CardHeader } from 'reactstrap'
 import { Iot, IotData, S3 } from 'aws-sdk'
 import Athena from 'aws-sdk/clients/athena'
 import { Loading } from '../Loading/Loading'
@@ -9,12 +9,12 @@ import { device } from 'aws-iot-device-sdk'
 import { RelativeTime } from '../RelativeTime/RelativeTime'
 import { Map } from '../Map/Map'
 import {
-	SignalCellularConnectedNoInternet0Bar as NoSignalIcon,
 	AccessTimeRounded as TimeIcon,
-	DirectionsRun as SpeedIcon,
-	Flight as AltitudeIcon,
 	BatteryStdRounded as BatteryIcon,
 	CloudDone as CloudIcon,
+	DirectionsRun as SpeedIcon,
+	Flight as AltitudeIcon,
+	SignalCellularConnectedNoInternet0Bar as NoSignalIcon,
 } from '@material-ui/icons'
 
 import { AvatarPicker } from '../Avatar/AvatarPicker'
@@ -27,6 +27,7 @@ import * as introJs from 'intro.js'
 
 import './Cat.scss'
 import { HistoricalDataChart } from '../HistoricalData/HistoricalDataChart'
+import { Collapsable } from '../Collapsable/Collapsable'
 
 const intro = introJs()
 
@@ -83,7 +84,7 @@ const ShowCat = ({
 		sessionToken: string
 		secretAccessKey: string
 	}
-	historicalDataChart: () => React.ReactNode
+	historicalDataChart: () => React.ReactElement<any>
 }) => {
 	const [loading, setLoading] = useState(true)
 	const [cat, setCat] = useState({
@@ -296,10 +297,15 @@ const ShowCat = ({
 				</CardHeader>
 				<CardBody>
 					{reported && reported.acc && reported.acc.v && (
-						<div>
-							<p>
-								<strong>Motion</strong>
-							</p>
+						<Collapsable
+							id={'cat:motion'}
+							title={
+								<>
+									<SpeedIcon />
+									<strong>Motion</strong>
+								</>
+							}
+						>
 							<AccelerometerDiagram
 								values={reported.acc.v.map(
 									({ value }: { value: number }) => value,
@@ -311,15 +317,20 @@ const ShowCat = ({
 									receivedAt={reported.acc.v[0].receivedAt}
 								/>
 							</small>
-						</div>
+						</Collapsable>
 					)}
-					<hr/>
-					<div>
-						<p>
-							<strong>Battery</strong>
-						</p>
+					<hr />
+					<Collapsable
+						id={'cat:bat'}
+						title={
+							<>
+								<BatteryIcon />
+								<strong>Battery</strong>
+							</>
+						}
+					>
 						{historicalDataChart()}
-					</div>
+					</Collapsable>
 				</CardBody>
 			</Card>
 		</>
