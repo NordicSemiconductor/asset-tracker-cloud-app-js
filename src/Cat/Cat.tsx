@@ -15,6 +15,7 @@ import {
 	DirectionsRun as SpeedIcon,
 	Flight as AltitudeIcon,
 	SignalCellularConnectedNoInternet0Bar as NoSignalIcon,
+	FitnessCenter as ActivityIcon,
 } from '@material-ui/icons'
 
 import { AvatarPicker } from '../Avatar/AvatarPicker'
@@ -72,7 +73,7 @@ const ShowCat = ({
 	onNameChange,
 	identityId,
 	credentials,
-	historicalDataChart,
+	children,
 }: {
 	iot: Iot
 	iotData: IotData
@@ -85,7 +86,7 @@ const ShowCat = ({
 		sessionToken: string
 		secretAccessKey: string
 	}
-	historicalDataChart: () => React.ReactElement<any>
+	children: React.ReactElement<any> | React.ReactElement<any>[]
 }) => {
 	const [loading, setLoading] = useState(true)
 	const [cat, setCat] = useState({
@@ -321,17 +322,7 @@ const ShowCat = ({
 						</Collapsable>
 					)}
 					<hr />
-					<Collapsable
-						id={'cat:bat'}
-						title={
-							<>
-								<BatteryIcon />
-								<strong>Battery</strong>
-							</>
-						}
-					>
-						{historicalDataChart()}
-					</Collapsable>
+					{children}
 				</CardBody>
 			</Card>
 		</>
@@ -387,17 +378,55 @@ export const Cat = ({ catId }: { catId: string }) => (
 											console.error(err)
 										})
 									}}
-									historicalDataChart={() => (
+								>
+									<Collapsable
+										id={'cat:bat'}
+										title={
+											<>
+												<BatteryIcon />
+												<strong>Battery</strong>
+											</>
+										}
+									>
 										<HistoricalDataLoader
 											athena={athena}
 											deviceId={catId}
 											QueryString={`SELECT reported.bat.ts as date, reported.bat.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.bat IS NOT NULL ORDER BY reported.bat.ts DESC LIMIT 100`}
+											formatters={{
+												integer: v => parseInt(v, 10) / 1000,
+											}}
 											workGroup={athenaWorkGroup}
 										>
 											{({ data }) => <HistoricalDataChart data={data} />}
 										</HistoricalDataLoader>
-									)}
-								/>
+									</Collapsable>
+									<hr />
+									<Collapsable
+										id={'cat:act'}
+										title={
+											<>
+												<ActivityIcon />
+												<strong>Activity</strong>
+											</>
+										}
+									>
+										<HistoricalDataLoader
+											athena={athena}
+											deviceId={catId}
+											formatters={{
+												array: v =>
+													(JSON.parse(v) as number[]).reduce(
+														(sum, v) => sum + Math.abs(v),
+														0,
+													),
+											}}
+											QueryString={`SELECT reported.acc.ts as date, reported.acc.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.acc IS NOT NULL ORDER BY reported.acc.ts DESC LIMIT 100`}
+											workGroup={athenaWorkGroup}
+										>
+											{({ data }) => <HistoricalDataChart data={data} />}
+										</HistoricalDataLoader>
+									</Collapsable>
+								</ShowCat>
 							)
 						}}
 					</IotConsumer>

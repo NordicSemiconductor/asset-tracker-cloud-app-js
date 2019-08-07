@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Athena from 'aws-sdk/clients/athena'
-import { athenaQuery, parseAthenaResult } from '@bifravst/athena-helpers'
+import {
+	athenaQuery,
+	parseAthenaResult,
+	Formatters,
+} from '@bifravst/athena-helpers'
 import { Loading } from '../Loading/Loading'
 import { Error as ShowError } from '../Error/Error'
 
@@ -12,11 +16,13 @@ export const HistoricalDataLoader = ({
 	children,
 	QueryString,
 	workGroup,
+	formatters,
 }: {
 	athena: Athena
 	deviceId: string
 	QueryString: string
 	workGroup: string
+	formatters?: Formatters | undefined
 	children: (args: {
 		data: {
 			[key: string]: string | number
@@ -48,9 +54,7 @@ export const HistoricalDataLoader = ({
 				}
 				const data = parseAthenaResult({
 					ResultSet,
-					formatters: {
-						integer: v => parseInt(v, 10) / 1000,
-					},
+					formatters,
 					skip: 1,
 				})
 				console.debug('[Historical Data]', data)
@@ -60,7 +64,7 @@ export const HistoricalDataLoader = ({
 		return () => {
 			removed = true
 		}
-	}, [athena, deviceId, workGroup, QueryString])
+	}, [athena, deviceId, workGroup, QueryString, formatters])
 
 	return (
 		<>
