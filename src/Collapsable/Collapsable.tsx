@@ -16,7 +16,7 @@ export const Collapsable = ({
 	id: string
 	title: React.ReactElement<any>
 	initial?: boolean
-	children: React.ReactElement<any> | React.ReactElement<any>[]
+	children: React.ReactElement<any> | (React.ReactElement<any> | null)[]
 	onToggle?: (collapsed: boolean) => void
 }) => {
 	let initialState = !!initial

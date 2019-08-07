@@ -13,11 +13,11 @@ import {
 	BatteryStdRounded as BatteryIcon,
 	CloudDone as CloudIcon,
 	DirectionsRun as SpeedIcon,
-	Flight as AltitudeIcon,
-	SignalCellularConnectedNoInternet0Bar as NoSignalIcon,
 	FitnessCenter as ActivityIcon,
+	Flight as AltitudeIcon,
+	Settings as SettingsIcon,
+	SignalCellularConnectedNoInternet0Bar as NoSignalIcon,
 } from '@material-ui/icons'
-
 import { AvatarPicker } from '../Avatar/AvatarPicker'
 import { uploadAvatar } from './uploadAvatar'
 import { Editable } from '../Editable/Editable'
@@ -25,11 +25,13 @@ import { updateThingAttributes } from './updateThingAttributes'
 import { AccelerometerDiagram } from '../AccelerometerDiagram/AccelerometerDiagram'
 import { mergeReportedAndMetadata } from '../mergeReportedAndMetadata'
 import * as introJs from 'intro.js'
-
-import './Cat.scss'
 import { HistoricalDataChart } from '../HistoricalData/HistoricalDataChart'
 import { Collapsable } from '../Collapsable/Collapsable'
 import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
+import { Settings } from './Settings'
+import { Success } from '../Success/Success'
+
+import './Cat.scss'
 
 const intro = introJs()
 
@@ -94,8 +96,13 @@ const ShowCat = ({
 		avatar: 'https://placekitten.com/75/75',
 		version: 0,
 	})
-	const [reported, setReported] = useState()
+	const [state, setState] = useState({} as {
+		desired?: any
+		reported?: any
+	})
+	const { reported, desired } = state
 	const [error, setError] = useState()
+	const [configSaved, setConfigSaved] = useState(false)
 
 	useEffect(() => {
 		let connection: device
@@ -127,11 +134,15 @@ const ShowCat = ({
 					)
 				})
 				connection.on('message', (topic, payload) => {
-					const reported = mergeReportedAndMetadata({
-						shadow: JSON.parse(payload.toString()).current,
-					})
-					setReported(reported)
-					console.log('Update reported state', catId, reported)
+					const shadow = JSON.parse(payload.toString()).current
+					const newState = {
+						reported: mergeReportedAndMetadata({
+							shadow,
+						}),
+						desired: shadow.state.desired,
+					}
+					setState(newState)
+					console.log('Updated state', catId, newState)
 				})
 			}),
 			iotData
@@ -149,8 +160,13 @@ const ShowCat = ({
 				setLoading(false)
 				if (shadow.state) {
 					const reported = mergeReportedAndMetadata({ shadow })
-					console.log('Inital reported state', catId, reported)
-					setReported(reported)
+					console.log('[reported]', reported)
+					const desired = shadow.state.desired
+					console.log('[desired]', desired)
+					setState({
+						reported,
+						desired,
+					})
 				}
 				if (thingName) {
 					setCat({
@@ -223,8 +239,8 @@ const ShowCat = ({
 					</span>
 				</div>
 			)}
-			<Card>
-				<CardHeader className={'cat'}>
+			<Card className={'cat'}>
+				<CardHeader>
 					<AvatarPicker
 						key={`${cat.version}`}
 						onChange={blob => {
@@ -298,28 +314,66 @@ const ShowCat = ({
 					)}
 				</CardHeader>
 				<CardBody>
+					<Collapsable
+						id={'cat:settings'}
+						title={
+							<h3>
+								<SettingsIcon />
+								<span>Settings</span>
+							</h3>
+						}
+					>
+						<Settings
+							key={`${cat.version}`}
+							desired={desired && desired.cfg}
+							reported={reported && reported.cfg}
+							onSave={config => {
+								setConfigSaved(false)
+								iotData
+									.updateThingShadow({
+										thingName: catId,
+										payload: JSON.stringify({
+											state: {
+												desired: {
+													cfg: config,
+												},
+											},
+										}),
+									})
+									.promise()
+									.then(() => {
+										setConfigSaved(true)
+									})
+									.catch(setError)
+							}}
+						/>
+						<>{configSaved && <Success title={'Configuration saved'} onClose={() => {setConfigSaved(false)}} />}</>
+					</Collapsable>
 					{reported && reported.acc && reported.acc.v && (
-						<Collapsable
-							id={'cat:motion'}
-							title={
-								<>
-									<SpeedIcon />
-									<strong>Motion</strong>
-								</>
-							}
-						>
-							<AccelerometerDiagram
-								values={reported.acc.v.map(
-									({ value }: { value: number }) => value,
-								)}
-							/>
-							<small>
-								<ReportedTime
-									reportedAt={reported.acc.ts.value}
-									receivedAt={reported.acc.v[0].receivedAt}
+						<>
+							<hr />
+							<Collapsable
+								id={'cat:motion'}
+								title={
+									<h3>
+										<SpeedIcon />
+										<span>Motion</span>
+									</h3>
+								}
+							>
+								<AccelerometerDiagram
+									values={reported.acc.v.map(
+										({ value }: { value: number }) => value,
+									)}
 								/>
-							</small>
-						</Collapsable>
+								<small>
+									<ReportedTime
+										reportedAt={reported.acc.ts.value}
+										receivedAt={reported.acc.v[0].receivedAt}
+									/>
+								</small>
+							</Collapsable>
+						</>
 					)}
 					<hr />
 					{children}
@@ -382,10 +436,10 @@ export const Cat = ({ catId }: { catId: string }) => (
 									<Collapsable
 										id={'cat:bat'}
 										title={
-											<>
+											<h3>
 												<BatteryIcon />
-												<strong>Battery</strong>
-											</>
+												<span>Battery</span>
+											</h3>
 										}
 									>
 										<HistoricalDataLoader
@@ -404,10 +458,10 @@ export const Cat = ({ catId }: { catId: string }) => (
 									<Collapsable
 										id={'cat:act'}
 										title={
-											<>
+											<h3>
 												<ActivityIcon />
-												<strong>Activity</strong>
-											</>
+												<span>Activity</span>
+											</h3>
 										}
 									>
 										<HistoricalDataLoader
