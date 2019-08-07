@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {
-	ExpandLess as CollapseIcon,
-	ExpandMore as ExpandIcon,
+	ExpandLess as ExpandIcon,
+	ExpandMore as CollapseIcon,
 } from '@material-ui/icons'
 
 import './Collapsable.scss'
