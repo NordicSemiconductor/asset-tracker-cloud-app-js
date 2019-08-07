@@ -28,6 +28,7 @@ import * as introJs from 'intro.js'
 import './Cat.scss'
 import { HistoricalDataChart } from '../HistoricalData/HistoricalDataChart'
 import { Collapsable } from '../Collapsable/Collapsable'
+import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
 
 const intro = introJs()
 
@@ -337,6 +338,11 @@ const ShowCat = ({
 	)
 }
 
+const athenaWorkGroup =
+	process.env.REACT_APP_HISTORICALDATA_WORKGROUP_NAME || ''
+const athenaDataBase = process.env.REACT_APP_HISTORICALDATA_DATABASE_NAME || ''
+const athenaRawDataTable = process.env.REACT_APP_HISTORICALDATA_TABLE_NAME || ''
+
 export const Cat = ({ catId }: { catId: string }) => (
 	<CredentialsConsumer>
 		{credentials => (
@@ -382,7 +388,14 @@ export const Cat = ({ catId }: { catId: string }) => (
 										})
 									}}
 									historicalDataChart={() => (
-										<HistoricalDataChart deviceId={catId} athena={athena} />
+										<HistoricalDataLoader
+											athena={athena}
+											deviceId={catId}
+											QueryString={`SELECT reported.bat.ts as date, reported.bat.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.bat IS NOT NULL ORDER BY reported.bat.ts DESC LIMIT 100`}
+											workGroup={athenaWorkGroup}
+										>
+											{({ data }) => <HistoricalDataChart data={data} />}
+										</HistoricalDataLoader>
 									)}
 								/>
 							)
