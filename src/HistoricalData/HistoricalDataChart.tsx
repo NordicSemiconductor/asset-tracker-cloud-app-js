@@ -3,16 +3,16 @@ import * as am4charts from '@amcharts/amcharts4/charts'
 import React, { useEffect, useRef, useState } from 'react'
 import { v4 } from 'uuid'
 import Athena from 'aws-sdk/clients/athena'
-import { exponential } from 'backoff'
-import { parseAthenaResult } from '../parseAthenaResult'
+import { parseAthenaResult, athenaQuery } from '@bifravst/athena-helpers'
 import { Loading } from '../Loading/Loading'
 import { Error as ShowError } from '../Error/Error'
 
 import './HistoricalDataChart.scss'
 
-const athenaWorkGroup = process.env.REACT_APP_HISTORICALDATA_WORKGROUP_NAME
-const athenaDataBase = process.env.REACT_APP_HISTORICALDATA_DATABASE_NAME
-const athenaRawDataTable = process.env.REACT_APP_HISTORICALDATA_TABLE_NAME
+const athenaWorkGroup =
+	process.env.REACT_APP_HISTORICALDATA_WORKGROUP_NAME || ''
+const athenaDataBase = process.env.REACT_APP_HISTORICALDATA_DATABASE_NAME || ''
+const athenaRawDataTable = process.env.REACT_APP_HISTORICALDATA_TABLE_NAME || ''
 
 export const HistoricalDataChart = ({
 	athena,
@@ -21,6 +21,16 @@ export const HistoricalDataChart = ({
 	athena: Athena
 	deviceId: string
 }) => {
+	const q = athenaQuery({
+		WorkGroup: athenaWorkGroup,
+		athena,
+		debugLog: (...args: any) => {
+			console.debug('[athena]', ...args)
+		},
+		errorLog: (...args: any) => {
+			console.error('[athena]', ...args)
+		}
+	})
 	const chartRef = useRef<am4charts.XYChart>()
 	const uuid = useRef<string>(v4())
 	const [loading, setLoading] = useState(true)
@@ -61,78 +71,17 @@ export const HistoricalDataChart = ({
 		chart.scrollbarY.toBack()
 
 		const QueryString = `SELECT reported.bat.ts as date, reported.bat.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${deviceId}' AND reported.bat IS NOT NULL ORDER BY reported.bat.ts DESC LIMIT 100`
-		console.log(QueryString)
-		athena
-			.startQueryExecution({
-				WorkGroup: athenaWorkGroup,
-				QueryString,
-			})
-			.promise()
-			.then(({ QueryExecutionId }) => {
-				if (!QueryExecutionId) {
-					throw new Error(`Query failed!`)
-				}
-				return new Promise(async (resolve, reject) => {
-					const b = exponential({
-						randomisationFactor: 0,
-						initialDelay: 1000,
-						maxDelay: 5000,
-					})
-					b.failAfter(9) // 27750
-					b.on('ready', async () => {
-						const res = await athena
-							.getQueryExecution({ QueryExecutionId })
-							.promise()
-						const State =
-							(res.QueryExecution &&
-								res.QueryExecution.Status &&
-								res.QueryExecution.Status.State) ||
-							'unknown'
-
-						switch (State) {
-							case 'RUNNING':
-								console.debug(res)
-								b.backoff()
-								break
-							case 'FAILED':
-								console.error(res.QueryExecution)
-								reject(new Error(`Query ${QueryExecutionId} failed!`))
-								break
-							case 'SUCCEEDED':
-								resolve(res)
-								break
-							case 'unknown':
-								reject(
-									new Error(`Query ${QueryExecutionId} has unknown status!`),
-								)
-								break
-							default:
-								console.error(res)
-								reject(
-									new Error(`Query ${QueryExecutionId} has unexpected status!`),
-								)
-						}
-					})
-					b.on('fail', () => {
-						reject(new Error(`Timed out waiting for query ${QueryExecutionId}`))
-					})
-					b.backoff()
-				}).then(() => athena.getQueryResults({ QueryExecutionId }).promise())
-			})
-			.then(({ ResultSet }) => {
-				if (!ResultSet || !ResultSet.Rows) {
-					throw new Error(`No resultset returned.`)
-				}
-				return parseAthenaResult({
+		q({ QueryString })
+			.then(async ResultSet => {
+				const data = parseAthenaResult({
 					ResultSet,
 					formatters: {
 						integer: v => parseInt(v, 10) / 1000,
 					},
+					skip: 1,
 				})
-			})
-			.then(data => {
 				setLoading(false)
-				console.log('Chart data', data)
+				console.debug('Chart data', data)
 				chart.data = data
 			})
 			.catch(setError)
@@ -140,7 +89,7 @@ export const HistoricalDataChart = ({
 		return () => {
 			chartRef.current && chartRef.current.dispose()
 		}
-	}, [athena, deviceId, setLoading, setError])
+	}, [athena, deviceId, setLoading, setError, q])
 
 	return (
 		<>
