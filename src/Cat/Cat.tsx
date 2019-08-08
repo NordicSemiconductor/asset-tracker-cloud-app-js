@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { CredentialsConsumer, IdentityIdConsumer, IotConsumer } from "../App";
-import { Card, CardBody, CardHeader } from "reactstrap";
-import { Iot, IotData, S3 } from "aws-sdk";
-import Athena from "aws-sdk/clients/athena";
-import { Loading } from "../Loading/Loading";
-import { Error } from "../Error/Error";
-import { device } from "aws-iot-device-sdk";
-import { RelativeTime } from "../RelativeTime/RelativeTime";
-import { Map } from "../Map/Map";
+import React, { useEffect, useState } from 'react'
+import { CredentialsConsumer, IdentityIdConsumer, IotConsumer } from '../App'
+import { Card, CardBody, CardHeader } from 'reactstrap'
+import { Iot, IotData, S3 } from 'aws-sdk'
+import Athena from 'aws-sdk/clients/athena'
+import { Loading } from '../Loading/Loading'
+import { Error } from '../Error/Error'
+import { device } from 'aws-iot-device-sdk'
+import { RelativeTime } from '../RelativeTime/RelativeTime'
+import { Map } from '../Map/Map'
 import {
 	AccessTimeRounded as TimeIcon,
 	BatteryStdRounded as BatteryIcon,
@@ -16,22 +16,21 @@ import {
 	FitnessCenter as ActivityIcon,
 	Flight as AltitudeIcon,
 	Settings as SettingsIcon,
-	SignalCellularConnectedNoInternet0Bar as NoSignalIcon
-} from "@material-ui/icons";
-import { AvatarPicker } from "../Avatar/AvatarPicker";
-import { uploadAvatar } from "./uploadAvatar";
-import { Editable } from "../Editable/Editable";
-import { updateThingAttributes } from "./updateThingAttributes";
-import { AccelerometerDiagram } from "../AccelerometerDiagram/AccelerometerDiagram";
-import { mergeReportedAndMetadata } from "../mergeReportedAndMetadata";
-import * as introJs from "intro.js";
-import { HistoricalDataChart } from "../HistoricalData/HistoricalDataChart";
-import { Collapsable } from "../Collapsable/Collapsable";
-import { HistoricalDataLoader } from "../HistoricalData/HistoricalDataLoader";
-import { Settings } from "./Settings";
-import { Success } from "../Success/Success";
+	SignalCellularConnectedNoInternet0Bar as NoSignalIcon,
+} from '@material-ui/icons'
+import { AvatarPicker } from '../Avatar/AvatarPicker'
+import { uploadAvatar } from './uploadAvatar'
+import { Editable } from '../Editable/Editable'
+import { updateThingAttributes } from './updateThingAttributes'
+import { AccelerometerDiagram } from '../AccelerometerDiagram/AccelerometerDiagram'
+import { mergeReportedAndMetadata } from '../mergeReportedAndMetadata'
+import * as introJs from 'intro.js'
+import { HistoricalDataChart } from '../HistoricalData/HistoricalDataChart'
+import { Collapsable } from '../Collapsable/Collapsable'
+import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
+import { Settings } from './Settings'
 
-import "./Cat.scss";
+import './Cat.scss'
 
 const intro = introJs()
 
@@ -101,7 +100,6 @@ const ShowCat = ({
 	})
 	const { reported, desired } = state
 	const [error, setError] = useState()
-	const [configSaved, setConfigSaved] = useState(false)
 
 	useEffect(() => {
 		let connection: device
@@ -327,7 +325,6 @@ const ShowCat = ({
 							desired={desired && desired.cfg}
 							reported={reported && reported.cfg}
 							onSave={config => {
-								setConfigSaved(false)
 								iotData
 									.updateThingShadow({
 										thingName: catId,
@@ -341,21 +338,21 @@ const ShowCat = ({
 									})
 									.promise()
 									.then(() => {
-										setConfigSaved(true)
+										setState({
+											desired: {
+												...desired,
+												cfg: config,
+											},
+											reported,
+										})
+										setCat({
+											...cat,
+											version: ++cat.version,
+										})
 									})
 									.catch(setError)
 							}}
 						/>
-						<>
-							{configSaved && (
-								<Success
-									title={'Configuration saved'}
-									onClose={() => {
-										setConfigSaved(false)
-									}}
-								/>
-							)}
-						</>
 					</Collapsable>
 					{reported && reported.acc && reported.acc.v && (
 						<>

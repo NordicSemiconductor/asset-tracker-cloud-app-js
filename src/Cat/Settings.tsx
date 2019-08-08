@@ -111,6 +111,7 @@ export const Settings = ({
 	}
 	const [config, setConfig] = useState(initial)
 	const [changed, setChanged] = useState(!hasCurrent)
+	const [saving, setSaving] = useState(false)
 
 	const updateConfig = (cfg: Partial<DesiredConfig>) => {
 		const updated = {
@@ -316,12 +317,14 @@ export const Settings = ({
 			<footer>
 				<Button
 					color={'primary'}
-					disabled={!changed}
+					disabled={!changed || saving}
 					onClick={() => {
+						setSaving(true)
 						onSave(config)
 					}}
 				>
-					Save
+					{saving && 'Saving ...'}
+					{!saving && 'Save'}
 				</Button>
 			</footer>
 		</Form>
