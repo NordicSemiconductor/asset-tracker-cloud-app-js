@@ -106,7 +106,10 @@ export const Settings = ({
 	let initial = defaultConfig
 	let hasCurrent = false
 	if (desired) {
-		initial = desired
+		initial = {
+			...defaultConfig,
+			...desired
+		}
 		hasCurrent = true
 	}
 	const [config, setConfig] = useState(initial)
