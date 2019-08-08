@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "@amcharts/amcharts4": "^4.5.12",
-    "@bifravst/athena-helpers": "^2.2.0",
+    "@bifravst/athena-helpers": "^3.0.0",
     "@material-ui/core": "^4.3.1",
     "@material-ui/icons": "^4.2.1",
     "aws-amplify": "^1.1.35",

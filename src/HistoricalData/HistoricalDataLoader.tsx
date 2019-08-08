@@ -3,7 +3,7 @@ import Athena from 'aws-sdk/clients/athena'
 import {
 	athenaQuery,
 	parseAthenaResult,
-	Formatters,
+	FieldFormatters,
 } from '@bifravst/athena-helpers'
 import { Loading } from '../Loading/Loading'
 import { Error as ShowError } from '../Error/Error'
@@ -16,17 +16,15 @@ export const HistoricalDataLoader = ({
 	children,
 	QueryString,
 	workGroup,
-	formatters,
+	formatFields,
 }: {
 	athena: Athena
 	deviceId: string
 	QueryString: string
 	workGroup: string
-	formatters?: Formatters | undefined
+	formatFields?: FieldFormatters
 	children: (args: {
-		data: {
-			[key: string]: string | number
-		}[]
+		data: { date: Date; value: number }[]
 	}) => React.ReactElement<any>
 }) => {
 	const [data, setData] = useState()
@@ -54,7 +52,7 @@ export const HistoricalDataLoader = ({
 				}
 				const data = parseAthenaResult({
 					ResultSet,
-					formatters,
+					formatFields,
 					skip: 1,
 				})
 				console.debug('[Historical Data]', data)
@@ -64,7 +62,7 @@ export const HistoricalDataLoader = ({
 		return () => {
 			removed = true
 		}
-	}, [athena, deviceId, workGroup, QueryString, formatters])
+	}, [athena, deviceId, workGroup, QueryString, formatFields])
 
 	return (
 		<>

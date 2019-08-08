@@ -21,11 +21,11 @@ describe('mergeReportedAndMetadata', () => {
 									spd: 0.579327,
 									hdg: 0,
 								},
-								ts: '2019-07-31T10:58:01.385Z',
+								ts: new Date('2019-07-31T10:58:01.385Z').getTime(),
 							},
 							acc: {
 								v: [4.6000000000000005, 4.699999999999999, 7.199999999999999],
-								ts: '2019-07-31T11:13:15.075Z',
+								ts: new Date('2019-07-31T11:13:15.075Z').getTime(),
 							},
 							cfg: {
 								act: false,
@@ -114,7 +114,7 @@ describe('mergeReportedAndMetadata', () => {
 					},
 				},
 				ts: {
-					value: '2019-07-31T10:58:01.385Z',
+					value: new Date('2019-07-31T10:58:01.385Z').getTime(),
 					receivedAt: new Date(1564568351 * 1000),
 				},
 			},
@@ -134,7 +134,7 @@ describe('mergeReportedAndMetadata', () => {
 					},
 				],
 				ts: {
-					value: '2019-07-31T11:13:15.075Z',
+					value: new Date('2019-07-31T11:13:15.075Z').getTime(),
 					receivedAt: new Date(1564571596 * 1000),
 				},
 			},

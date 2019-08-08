@@ -1,11 +1,15 @@
-import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
-import React, { useEffect, useRef } from "react";
-import { v4 } from "uuid";
+import * as am4core from '@amcharts/amcharts4/core'
+import * as am4charts from '@amcharts/amcharts4/charts'
+import React, { useEffect, useRef } from 'react'
+import { v4 } from 'uuid'
 
-import "./HistoricalDataChart.scss";
+import './HistoricalDataChart.scss'
 
-export const HistoricalDataChart = ({ data }: { data: any }) => {
+export const HistoricalDataChart = ({
+	data,
+}: {
+	data: { date: Date; value: number }[]
+}) => {
 	const chartRef = useRef<am4charts.XYChart>()
 	const uuid = useRef<string>(v4())
 
@@ -18,7 +22,6 @@ export const HistoricalDataChart = ({ data }: { data: any }) => {
 		)
 		dateAxis.fontSize = 10
 		dateAxis.baseInterval = { timeUnit: 'second', count: 1 }
-		chart.dateFormatter.inputDateFormat = 'yyyy-MM-ddTHH:mm:ss.SSSZ'
 
 		const valueAxes = chart.yAxes.push(
 			new am4charts.ValueAxis<am4charts.AxisRendererY>(),

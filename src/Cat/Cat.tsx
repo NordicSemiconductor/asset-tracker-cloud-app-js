@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { CredentialsConsumer, IdentityIdConsumer, IotConsumer } from '../App'
-import { Card, CardBody, CardHeader } from 'reactstrap'
-import { Iot, IotData, S3 } from 'aws-sdk'
-import Athena from 'aws-sdk/clients/athena'
-import { Loading } from '../Loading/Loading'
-import { Error } from '../Error/Error'
-import { device } from 'aws-iot-device-sdk'
-import { RelativeTime } from '../RelativeTime/RelativeTime'
-import { Map } from '../Map/Map'
+import React, { useEffect, useState } from "react";
+import { CredentialsConsumer, IdentityIdConsumer, IotConsumer } from "../App";
+import { Card, CardBody, CardHeader } from "reactstrap";
+import { Iot, IotData, S3 } from "aws-sdk";
+import Athena from "aws-sdk/clients/athena";
+import { Loading } from "../Loading/Loading";
+import { Error } from "../Error/Error";
+import { device } from "aws-iot-device-sdk";
+import { RelativeTime } from "../RelativeTime/RelativeTime";
+import { Map } from "../Map/Map";
 import {
 	AccessTimeRounded as TimeIcon,
 	BatteryStdRounded as BatteryIcon,
@@ -16,22 +16,22 @@ import {
 	FitnessCenter as ActivityIcon,
 	Flight as AltitudeIcon,
 	Settings as SettingsIcon,
-	SignalCellularConnectedNoInternet0Bar as NoSignalIcon,
-} from '@material-ui/icons'
-import { AvatarPicker } from '../Avatar/AvatarPicker'
-import { uploadAvatar } from './uploadAvatar'
-import { Editable } from '../Editable/Editable'
-import { updateThingAttributes } from './updateThingAttributes'
-import { AccelerometerDiagram } from '../AccelerometerDiagram/AccelerometerDiagram'
-import { mergeReportedAndMetadata } from '../mergeReportedAndMetadata'
-import * as introJs from 'intro.js'
-import { HistoricalDataChart } from '../HistoricalData/HistoricalDataChart'
-import { Collapsable } from '../Collapsable/Collapsable'
-import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
-import { Settings } from './Settings'
-import { Success } from '../Success/Success'
+	SignalCellularConnectedNoInternet0Bar as NoSignalIcon
+} from "@material-ui/icons";
+import { AvatarPicker } from "../Avatar/AvatarPicker";
+import { uploadAvatar } from "./uploadAvatar";
+import { Editable } from "../Editable/Editable";
+import { updateThingAttributes } from "./updateThingAttributes";
+import { AccelerometerDiagram } from "../AccelerometerDiagram/AccelerometerDiagram";
+import { mergeReportedAndMetadata } from "../mergeReportedAndMetadata";
+import * as introJs from "intro.js";
+import { HistoricalDataChart } from "../HistoricalData/HistoricalDataChart";
+import { Collapsable } from "../Collapsable/Collapsable";
+import { HistoricalDataLoader } from "../HistoricalData/HistoricalDataLoader";
+import { Settings } from "./Settings";
+import { Success } from "../Success/Success";
 
-import './Cat.scss'
+import "./Cat.scss";
 
 const intro = introJs()
 
@@ -39,16 +39,15 @@ const ReportedTime = ({
 	reportedAt,
 	receivedAt,
 }: {
-	reportedAt: string
+	reportedAt: Date
 	receivedAt: Date
 }) => {
 	try {
-		const r = new Date(reportedAt)
 		return (
 			<>
-				<TimeIcon /> <RelativeTime ts={r} key={r.toISOString()} />
-				{(receivedAt.getTime() - new Date(reportedAt).getTime()) / 1000 >
-					300 && (
+				<TimeIcon />{' '}
+				<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
+				{(receivedAt.getTime() - reportedAt.getTime()) / 1000 > 300 && (
 					<>
 						{' '}
 						<CloudIcon />{' '}
@@ -291,7 +290,7 @@ const ShowCat = ({
 									<span className={'time'}>
 										<ReportedTime
 											receivedAt={reported.gps.v.lat.receivedAt}
-											reportedAt={reported.gps.ts.value}
+											reportedAt={new Date(reported.gps.ts.value)}
 										/>
 									</span>
 								</div>
@@ -305,7 +304,7 @@ const ShowCat = ({
 									<span className={'time'}>
 										<ReportedTime
 											receivedAt={reported.bat.v.receivedAt}
-											reportedAt={reported.bat.ts.value}
+											reportedAt={new Date(reported.bat.ts.value)}
 										/>
 									</span>
 								</div>
@@ -347,7 +346,16 @@ const ShowCat = ({
 									.catch(setError)
 							}}
 						/>
-						<>{configSaved && <Success title={'Configuration saved'} onClose={() => {setConfigSaved(false)}} />}</>
+						<>
+							{configSaved && (
+								<Success
+									title={'Configuration saved'}
+									onClose={() => {
+										setConfigSaved(false)
+									}}
+								/>
+							)}
+						</>
 					</Collapsable>
 					{reported && reported.acc && reported.acc.v && (
 						<>
@@ -368,7 +376,7 @@ const ShowCat = ({
 								/>
 								<small>
 									<ReportedTime
-										reportedAt={reported.acc.ts.value}
+										reportedAt={new Date(reported.acc.ts.value)}
 										receivedAt={reported.acc.v[0].receivedAt}
 									/>
 								</small>
@@ -446,8 +454,9 @@ export const Cat = ({ catId }: { catId: string }) => (
 											athena={athena}
 											deviceId={catId}
 											QueryString={`SELECT reported.bat.ts as date, reported.bat.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.bat IS NOT NULL ORDER BY reported.bat.ts DESC LIMIT 100`}
-											formatters={{
-												integer: v => parseInt(v, 10) / 1000,
+											formatFields={{
+												value: v => parseInt(v, 10) / 1000,
+												date: v => new Date(v),
 											}}
 											workGroup={athenaWorkGroup}
 										>
@@ -467,12 +476,10 @@ export const Cat = ({ catId }: { catId: string }) => (
 										<HistoricalDataLoader
 											athena={athena}
 											deviceId={catId}
-											formatters={{
-												array: v =>
-													(JSON.parse(v) as number[]).reduce(
-														(sum, v) => sum + Math.abs(v),
-														0,
-													),
+											formatFields={{
+												value: (v: number[]) =>
+													v.reduce((sum, v) => sum + Math.abs(v), 0),
+												date: v => new Date(v),
 											}}
 											QueryString={`SELECT reported.acc.ts as date, reported.acc.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.acc IS NOT NULL ORDER BY reported.acc.ts DESC LIMIT 100`}
 											workGroup={athenaWorkGroup}
