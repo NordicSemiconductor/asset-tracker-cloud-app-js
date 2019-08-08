@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { IotConsumer } from '../App'
-import { Table, Card, CardHeader, CardBody } from 'reactstrap'
+import { Card, CardBody, CardHeader, Table } from 'reactstrap'
 import { Iot } from 'aws-sdk'
 import { Loading } from '../Loading/Loading'
 import { Error } from '../Error/Error'
+import { Link } from 'react-router-dom'
 
 const ListCats = ({ iot }: { iot: Iot }) => {
 	const [loading, setLoading] = useState(true)
@@ -45,7 +46,7 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 						{cats.map(({ id, name }) => (
 							<tr key={id}>
 								<td>
-									<a href={`/cat/${id}`}>{name}</a>
+									<Link to={`/cat/${id}`}>{name}</Link>
 								</td>
 							</tr>
 						))}
@@ -64,7 +65,5 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 }
 
 export const List = () => (
-	<IotConsumer>
-		{({ iot }) => <ListCats iot={iot} />}
-	</IotConsumer>
+	<IotConsumer>{({ iot }) => <ListCats iot={iot} />}</IotConsumer>
 )
