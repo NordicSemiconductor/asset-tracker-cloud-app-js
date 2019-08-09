@@ -108,13 +108,30 @@ export const Settings = ({
 	if (desired) {
 		initial = {
 			...defaultConfig,
-			...desired
+			...desired,
 		}
 		hasCurrent = true
 	}
 	const [config, setConfig] = useState(initial)
 	const [changed, setChanged] = useState(!hasCurrent)
 	const [saving, setSaving] = useState(false)
+	const [input, updateInput] = useState({
+		actwt: `${initial.actwt}`,
+		mvres: `${initial.mvres}`,
+		mvt: `${initial.mvt}`,
+		gpst: `${initial.gpst}`,
+		acct: `${initial.acct}`,
+	})
+
+	const updateAllInputs = () => {
+		updateInput({
+			actwt: `${config.actwt}`,
+			mvres: `${config.mvres}`,
+			mvt: `${config.mvt}`,
+			gpst: `${config.gpst}`,
+			acct: `${config.acct}`,
+		})
+	}
 
 	const updateConfig = (cfg: Partial<DesiredConfig>) => {
 		const updated = {
@@ -173,15 +190,17 @@ export const Settings = ({
 							name="gpst"
 							id="gpst"
 							placeholder='e.g. "60"'
-							step={60}
-							min={1}
-							value={config.gpst}
+							step={1}
+							min={0}
+							value={input.gpst}
 							onChange={({ target: { value } }) => {
-								if (value) {
-									const s = parseInt(value, 10)
-									updateConfig({ gpst: s })
-								}
+								updateInput({
+									...input,
+									gpst: value,
+								})
+								updateConfig({ gpst: value ? parseInt(value, 10) : 0 })
 							}}
+							onBlur={updateAllInputs}
 						/>
 						<InputGroupAddon addonType="append">
 							<InputGroupText>seconds</InputGroupText>
@@ -204,18 +223,19 @@ export const Settings = ({
 							name="mvres"
 							id="mvres"
 							placeholder='e.g. "60"'
-							step={60}
-							min={1}
-							value={config.mvres}
+							step={1}
+							min={0}
+							value={input.mvres}
 							onChange={({ target: { value } }) => {
-								if (value) {
-									const s = parseInt(value, 10)
-									updateConfig({
-										mvres: s,
-									})
-								}
-
+								updateInput({
+									...input,
+									mvres: value,
+								})
+								updateConfig({
+									mvres: value ? parseInt(value, 10) : 0,
+								})
 							}}
+							onBlur={updateAllInputs}
 						/>
 						<InputGroupAddon addonType="append">
 							<InputGroupText>seconds</InputGroupText>
@@ -235,17 +255,19 @@ export const Settings = ({
 							name="mvt"
 							id="mvt"
 							placeholder='e.g. "3600"'
-							step={60}
-							min={1}
-							value={config.mvt}
+							step={1}
+							min={0}
+							value={input.mvt}
 							onChange={({ target: { value } }) => {
-								if (value) {
-									const s = parseInt(value, 10)
-									updateConfig({
-										mvt: s,
-									})
-								}
+								updateInput({
+									...input,
+									mvt: value,
+								})
+								updateConfig({
+									mvt: value ? parseInt(value, 10) : 0,
+								})
 							}}
+							onBlur={updateAllInputs}
 						/>
 						<InputGroupAddon addonType="append">
 							<InputGroupText>seconds</InputGroupText>
@@ -267,15 +289,17 @@ export const Settings = ({
 							placeholder='e.g. "1"'
 							step={0.1}
 							min={0}
-							value={config.acct / 10}
+							value={input.acct}
 							onChange={({ target: { value } }) => {
-								if (value) {
-									const s = parseFloat(value)
-									updateConfig({
-										acct: Math.round(s * 10),
-									})
-								}
+								updateInput({
+									...input,
+									acct: value,
+								})
+								updateConfig({
+									acct: value ? Math.round(parseInt(value, 10) * 10) : 0,
+								})
 							}}
+							onBlur={updateAllInputs}
 						/>
 						<InputGroupAddon addonType="append">
 							<InputGroupText>absolute value</InputGroupText>
@@ -298,17 +322,19 @@ export const Settings = ({
 							name="actwt"
 							id="actwt"
 							placeholder='e.g. "60"'
-							step={60}
-							min={1}
-							value={config.actwt}
+							step={1}
+							min={0}
+							value={input.actwt}
 							onChange={({ target: { value } }) => {
-								if (value) {
-									const s = parseInt(value, 10)
-									updateConfig({
-										actwt: s,
-									})
-								}
+								updateInput({
+									...input,
+									actwt: value,
+								})
+								updateConfig({
+									actwt: value ? parseInt(value, 10) : 0,
+								})
 							}}
+							onBlur={updateAllInputs}
 						/>
 						<InputGroupAddon addonType="append">
 							<InputGroupText>seconds</InputGroupText>
