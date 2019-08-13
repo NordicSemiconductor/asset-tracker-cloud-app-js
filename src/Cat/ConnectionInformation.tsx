@@ -11,7 +11,7 @@ import {
 } from '@material-ui/icons'
 import { filter as filterOperator, Operator as Op } from 'mcc-mnc-list'
 import { ReportedTime } from './ReportedTime'
-import { DeviceInformation, RoamingInformation } from './DeviceInformation'
+import { DeviceInformation, RoamingInformation } from '../DeviceShadow'
 
 /**
  * Renders the Reference Signal Received Power (RSRP).

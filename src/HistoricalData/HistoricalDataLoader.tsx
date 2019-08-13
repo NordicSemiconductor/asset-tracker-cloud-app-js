@@ -17,14 +17,16 @@ export const HistoricalDataLoader = ({
 	QueryString,
 	workGroup,
 	formatFields,
+	loading,
 }: {
 	athena: Athena
 	deviceId: string
 	QueryString: string
 	workGroup: string
 	formatFields?: FieldFormatters
+	loading?: React.ReactElement<any>
 	children: (args: {
-		data: { date: Date; value: number }[]
+		data: { date: Date; value: number }[] // FIXME: should be generic
 	}) => React.ReactElement<any>
 }) => {
 	const [data, setData] = useState()
@@ -66,7 +68,7 @@ export const HistoricalDataLoader = ({
 
 	return (
 		<>
-			{!data && <Loading text={`Fetching historical data...`} />}
+			{!data && (loading || <Loading text={`Fetching historical data...`} />)}
 			{error && <ShowError error={error} />}
 			{data && children({ data })}
 		</>

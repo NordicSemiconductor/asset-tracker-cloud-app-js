@@ -11,16 +11,20 @@ import {
 
 import './Map.scss'
 
+type Point = { lat: number; lng: number }
+
 export const Map = ({
 	position: { lat, lng },
 	accuracy,
 	heading,
 	label,
+	history,
 }: {
-	position: { lat: number; lng: number }
+	position: Point
 	accuracy?: number
 	heading?: number
 	label: string
+	history?: Point[]
 }) => {
 	let zoom = 13
 	const userZoom = window.localStorage.getItem('bifravst:zoom')
@@ -63,8 +67,14 @@ export const Map = ({
 							const { x, y } = map.project([lat, lng], mapZoom)
 							const endpoint = map.unproject(
 								[
-									x + (mapZoom * 3) * Math.cos((((heading - 90) % 360) * Math.PI) / 180),
-									y + (mapZoom * 3) * Math.sin((((heading - 90) % 360) * Math.PI) / 180),
+									x +
+										mapZoom *
+											3 *
+											Math.cos((((heading - 90) % 360) * Math.PI) / 180),
+									y +
+										mapZoom *
+											3 *
+											Math.sin((((heading - 90) % 360) * Math.PI) / 180),
 								],
 								mapZoom,
 							)
@@ -80,6 +90,28 @@ export const Map = ({
 					}}
 				</LeafletConsumer>
 			)}
+			{history &&
+				history.map(({ lat, lng }, k) => {
+					const alpha = Math.round((1 - k / 10) * 255).toString(16)
+					const color = `#1f56d2${alpha}`
+					return (
+						<React.Fragment key={`history-${k}`}>
+							<Circle center={[lat, lng]} radius={1} color={color} />
+							{k > 0 && (
+								<Polyline
+									positions={[
+										[history[k - 1].lat, history[k - 1].lng],
+										[lat, lng],
+									]}
+									weight={mapZoom > 16 ? 1 : 2}
+									linecap={'round'}
+									color={color}
+									dashArray={'10'}
+								/>
+							)}
+						</React.Fragment>
+					)
+				})}
 		</LeafletMap>
 	)
 }

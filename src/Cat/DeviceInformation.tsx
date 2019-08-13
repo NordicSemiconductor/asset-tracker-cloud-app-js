@@ -2,68 +2,7 @@ import React from 'react'
 import { ReportedTime } from './ReportedTime'
 
 import './DeviceInformation.scss'
-
-export type DeviceInformation = {
-	v: {
-		band: {
-			value: number
-			receivedAt: Date
-		}
-		nw: {
-			value: string
-			receivedAt: Date
-		}
-		iccid: {
-			value: string
-			receivedAt: Date
-		}
-		modV: {
-			value: string
-			receivedAt: Date
-		}
-		brdV: {
-			value: string
-			receivedAt: Date
-		}
-		appV: {
-			value: string
-			receivedAt: Date
-		}
-	}
-	ts: {
-		value: number
-		receivedAt: Date
-	}
-}
-
-export type RoamingInformation = {
-	v: {
-		area: {
-			value: number
-			receivedAt: Date
-		}
-		mccmnc: {
-			value: number
-			receivedAt: Date
-		}
-		cell: {
-			value: number
-			receivedAt: Date
-		}
-		ip: {
-			value: string
-			receivedAt: Date
-		}
-		rsrp: {
-			value: number
-			receivedAt: Date
-		}
-	}
-	ts: {
-		value: number
-		receivedAt: Date
-	}
-}
+import { DeviceInformation, RoamingInformation } from '../DeviceShadow'
 
 export const DeviceInfo = ({
 	device,

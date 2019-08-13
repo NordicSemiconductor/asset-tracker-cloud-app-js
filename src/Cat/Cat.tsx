@@ -32,6 +32,7 @@ import { Settings } from './Settings'
 import { ReportedTime } from './ReportedTime'
 
 import './Cat.scss'
+import { Gps } from '../DeviceShadow'
 
 const intro = introJs()
 
@@ -44,6 +45,7 @@ const ShowCat = ({
 	identityId,
 	credentials,
 	children,
+	map,
 }: {
 	iot: Iot
 	iotData: IotData
@@ -56,6 +58,7 @@ const ShowCat = ({
 		sessionToken: string
 		secretAccessKey: string
 	}
+	map: (args: { gps: Gps }) => React.ReactElement<any>
 	children: React.ReactElement<any> | React.ReactElement<any>[]
 }) => {
 	const [loading, setLoading] = useState(true)
@@ -190,17 +193,7 @@ const ShowCat = ({
 		reported.gps.v.lng
 	return (
 		<>
-			{hasMap && (
-				<Map
-					position={{
-						lat: reported.gps.v.lat.value as number,
-						lng: reported.gps.v.lng.value as number,
-					}}
-					accuracy={reported.gps.v.acc && (reported.gps.v.acc.value as number)}
-					heading={reported.gps.v.hdg && (reported.gps.v.hdg.value as number)}
-					label={catId}
-				/>
-			)}
+			{hasMap && map({ gps: reported.gps })}
 			{!hasMap && (
 				<div className={'noMap'}>
 					<span>
@@ -431,6 +424,48 @@ export const Cat = ({ catId }: { catId: string }) => (
 											console.error(err)
 										})
 									}}
+									map={({ gps }: { gps: Gps }) => (
+										<HistoricalDataLoader
+											athena={athena}
+											deviceId={catId}
+											formatFields={{
+												lat: parseFloat,
+												lng: parseFloat,
+												date: v => new Date(v),
+											}}
+											QueryString={`SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.gps IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT 10`}
+											workGroup={athenaWorkGroup}
+											loading={
+												<Map
+													position={{
+														lat: gps.v.lat.value,
+														lng: gps.v.lng.value,
+													}}
+													accuracy={gps.v.acc.value}
+													heading={gps.v.hdg.value}
+													label={catId}
+												/>
+											}
+										>
+											{({ data }) => (
+												<Map
+													position={{
+														lat: gps.v.lat.value,
+														lng: gps.v.lng.value,
+													}}
+													accuracy={gps.v.acc.value}
+													heading={gps.v.hdg.value}
+													label={catId}
+													history={
+														(data as unknown) as ({
+															lat: number
+															lng: number
+														}[])
+													}
+												/>
+											)}
+										</HistoricalDataLoader>
+									)}
 								>
 									<Collapsable
 										id={'cat:bat'}
