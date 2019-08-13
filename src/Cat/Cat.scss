@@ -23,9 +23,12 @@
       justify-content: space-between;
       font-size: 85%;
       opacity: 0.75;
-      span.time {
+      span.reportedTime {
         font-size: 85%;
         opacity: 0.75;
+      }
+      & + div {
+        margin-top: 0.5rem;
       }
     }
   }
@@ -33,6 +36,12 @@
     h3 {
       font-size: 115%;
       margin: 0;
+    }
+    h4 {
+      font-size: 105%;
+    }
+    .device-information {
+      margin-top: 1rem;
     }
   }
 }

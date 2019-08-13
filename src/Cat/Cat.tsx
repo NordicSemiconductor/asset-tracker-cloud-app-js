@@ -6,17 +6,15 @@ import Athena from 'aws-sdk/clients/athena'
 import { Loading } from '../Loading/Loading'
 import { Error } from '../Error/Error'
 import { device } from 'aws-iot-device-sdk'
-import { RelativeTime } from '../RelativeTime/RelativeTime'
 import { Map } from '../Map/Map'
 import {
-	AccessTimeRounded as TimeIcon,
 	BatteryStdRounded as BatteryIcon,
-	CloudDone as CloudIcon,
 	DirectionsRun as SpeedIcon,
 	FitnessCenter as ActivityIcon,
 	Flight as AltitudeIcon,
-	Settings as SettingsIcon,
 	GpsOff as NoPositionIcon,
+	Settings as SettingsIcon,
+	Info as InfoIcon,
 } from '@material-ui/icons'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
 import { uploadAvatar } from './uploadAvatar'
@@ -28,42 +26,14 @@ import * as introJs from 'intro.js'
 import { HistoricalDataChart } from '../HistoricalData/HistoricalDataChart'
 import { Collapsable } from '../Collapsable/Collapsable'
 import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
+import { ConnectionInformation } from './ConnectionInformation'
+import { DeviceInfo } from './DeviceInformation'
 import { Settings } from './Settings'
+import { ReportedTime } from './ReportedTime'
 
 import './Cat.scss'
 
 const intro = introJs()
-
-const ReportedTime = ({
-	reportedAt,
-	receivedAt,
-}: {
-	reportedAt: Date
-	receivedAt: Date
-}) => {
-	try {
-		return (
-			<>
-				<TimeIcon />{' '}
-				<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
-				{(receivedAt.getTime() - reportedAt.getTime()) / 1000 > 300 && (
-					<>
-						{' '}
-						<CloudIcon />{' '}
-						<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
-					</>
-				)}
-			</>
-		)
-	} catch {
-		return (
-			<>
-				<CloudIcon />{' '}
-				<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
-			</>
-		)
-	}
-}
 
 const ShowCat = ({
 	catId,
@@ -273,6 +243,12 @@ const ShowCat = ({
 					</h2>
 					{reported && (
 						<>
+							{reported.dev && reported.roam && (
+								<ConnectionInformation
+									device={reported.dev}
+									roaming={reported.roam}
+								/>
+							)}
 							{reported.gps && reported.gps.v && (
 								<div>
 									{reported.gps.v.spd && (
@@ -287,12 +263,10 @@ const ShowCat = ({
 											{Math.round(reported.gps.v.alt.value)}m
 										</span>
 									)}
-									<span className={'time'}>
-										<ReportedTime
-											receivedAt={reported.gps.v.lat.receivedAt}
-											reportedAt={new Date(reported.gps.ts.value)}
-										/>
-									</span>
+									<ReportedTime
+										receivedAt={reported.gps.v.lat.receivedAt}
+										reportedAt={new Date(reported.gps.ts.value)}
+									/>
 								</div>
 							)}
 							{reported.bat && reported.bat.v && (
@@ -301,12 +275,10 @@ const ShowCat = ({
 										<BatteryIcon />
 										{reported.bat.v.value / 1000}V
 									</span>
-									<span className={'time'}>
-										<ReportedTime
-											receivedAt={reported.bat.v.receivedAt}
-											reportedAt={new Date(reported.bat.ts.value)}
-										/>
-									</span>
+									<ReportedTime
+										receivedAt={reported.bat.v.receivedAt}
+										reportedAt={new Date(reported.bat.ts.value)}
+									/>
 								</div>
 							)}
 						</>
@@ -356,6 +328,26 @@ const ShowCat = ({
 							}}
 						/>
 					</Collapsable>
+					{reported && reported.dev && (
+						<>
+							<hr />
+							<Collapsable
+								id={'cat:information'}
+								title={
+									<h3>
+										<InfoIcon />
+										<span>Device Information</span>
+									</h3>
+								}
+							>
+								<DeviceInfo
+									key={`${cat.version}`}
+									device={reported.dev}
+									roaming={reported.roam}
+								/>
+							</Collapsable>
+						</>
+					)}
 					{reported && reported.acc && reported.acc.v && (
 						<>
 							<hr />
@@ -373,12 +365,10 @@ const ShowCat = ({
 										({ value }: { value: number }) => value,
 									)}
 								/>
-								<small>
-									<ReportedTime
-										reportedAt={new Date(reported.acc.ts.value)}
-										receivedAt={reported.acc.v[0].receivedAt}
-									/>
-								</small>
+								<ReportedTime
+									reportedAt={new Date(reported.acc.ts.value)}
+									receivedAt={reported.acc.v[0].receivedAt}
+								/>
 							</Collapsable>
 						</>
 					)}

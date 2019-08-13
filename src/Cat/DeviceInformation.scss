@@ -1,0 +1,16 @@
+.device-information {
+  dl {
+    display: grid;
+    grid-template: auto / 1fr 3fr;
+    dt, dd {
+      font-weight: normal;
+      padding: 0;
+      margin: 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+  }
+  .reportedTime {
+    font-size: 85%;
+    opacity: 0.75;
+  }
+}

@@ -40,6 +40,7 @@
     "fast-deep-equal": "^2.0.1",
     "intro.js": "^2.9.3",
     "leaflet": "^1.5.1",
+    "mcc-mnc-list": "git+https://github.com/bifravst/mcc-mnc-list.git#add-typescript-declarations",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-leaflet": "^2.4.0",
