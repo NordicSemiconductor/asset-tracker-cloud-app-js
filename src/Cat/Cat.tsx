@@ -147,7 +147,9 @@ const ShowCat = ({
 					thingName: catId,
 				})
 				.promise()
-				.then(({ payload }) => (payload ? JSON.parse(payload.toString()) : {}))
+				.then(async ({ payload }) =>
+					payload ? JSON.parse(payload.toString()) : {},
+				)
 				.catch(err => {
 					console.error(err)
 					return {}
@@ -427,7 +429,9 @@ export const Cat = ({ catId }: { catId: string }) => (
 										avatarUploader({
 											avatar,
 										})
-											.then(({ url }) => attributeUpdater({ avatar: url }))
+											.then(async ({ url }) =>
+												attributeUpdater({ avatar: url }),
+											)
 											.catch(err => {
 												console.error(err)
 											})

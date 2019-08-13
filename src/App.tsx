@@ -139,7 +139,7 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 						principal: c.identityId,
 					})
 					.promise()
-					.then(({ policies }) => {
+					.then(async ({ policies }) => {
 						if (policies && policies.length) {
 							return
 						}
