@@ -16,7 +16,7 @@ import {
 	FitnessCenter as ActivityIcon,
 	Flight as AltitudeIcon,
 	Settings as SettingsIcon,
-	SignalCellularConnectedNoInternet0Bar as NoSignalIcon,
+	GpsOff as NoPositionIcon,
 } from '@material-ui/icons'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
 import { uploadAvatar } from './uploadAvatar'
@@ -234,7 +234,7 @@ const ShowCat = ({
 			{!hasMap && (
 				<div className={'noMap'}>
 					<span>
-						<NoSignalIcon /> No position known.
+						<NoPositionIcon /> No position known.
 					</span>
 				</div>
 			)}
