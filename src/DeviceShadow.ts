@@ -93,8 +93,36 @@ export type RoamingInformation = {
 	}
 }
 
+export type Config = {
+	act: {
+		value: boolean
+		receivedAt: string
+	}
+	actwt: {
+		value: number
+		receivedAt: string
+	}
+	mvres: {
+		value: number
+		receivedAt: string
+	}
+	mvt: {
+		value: number
+		receivedAt: string
+	}
+	gpst: {
+		value: number
+		receivedAt: string
+	}
+	acct: {
+		value: number
+		receivedAt: string
+	}
+}
+
 export type DeviceShadow = {
 	gps: Gps
 	dev: DeviceInformation
 	roam: RoamingInformation
+	cfg: Config
 }

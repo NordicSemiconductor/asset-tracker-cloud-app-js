@@ -16,6 +16,7 @@ import { distanceInWords } from 'date-fns'
 import { SignalCellularConnectedNoInternet0BarRounded as OutdatedIcon } from '@material-ui/icons'
 
 import './Settings.scss'
+import { Config } from '../DeviceShadow'
 
 export type DesiredConfig = {
 	act: boolean
@@ -26,53 +27,34 @@ export type DesiredConfig = {
 	acct: number
 }
 
-export type ReportedConfig = {
-	act: {
-		value: boolean
-		receivedAt: string
-	}
-	actwt: {
-		value: number
-		receivedAt: string
-	}
-	mvres: {
-		value: number
-		receivedAt: string
-	}
-	mvt: {
-		value: number
-		receivedAt: string
-	}
-	gpst: {
-		value: number
-		receivedAt: string
-	}
-	acct: {
-		value: number
-		receivedAt: string
-	}
-}
-
 const defaultConfig: DesiredConfig = {
 	act: false, // Whether to enable the active mode
 	actwt: 60, //In active mode: wait this amount of seconds until sending the next update. The actual interval will be this time plus the time it takes to get a GPS fix.
 	mvres: 300, // (movement resolution) In passive mode: Time in seconds to wait after detecting movement before sending the next update
 	mvt: 3600, // (movement timeout) In passive mode: Send update at least this often (in seconds)
-	gpst: 60, // GPS timeout (in seconds): timeout for GPS fix
-	acct: 1, // Accelerometer threshold: minimal absolute value for and accelerometer reading to be considered movement.
+	gpst: 180, // GPS timeout (in seconds): timeout for GPS fix
+	acct: 10, // Accelerometer threshold: minimal absolute value for and accelerometer reading to be considered movement.
 } as const
 
 const OutDatedWarning = ({
 	desired,
 	reported,
+	current,
 }: {
+	current?: boolean | number
 	desired?: boolean | number
 	reported?: {
 		value: boolean | number
 		receivedAt: string
 	}
 }) => {
-	if (reported && desired === reported.value) {
+	const reportedDoesNotMatchDesired = reported && desired === reported.value
+	const noDesiredValueButCurrentValueDoesNotMatchReported =
+		!desired && reported && reported.value === current
+	if (
+		noDesiredValueButCurrentValueDoesNotMatchReported ||
+		reportedDoesNotMatchDesired
+	) {
 		return null
 	}
 	if (reported) {
@@ -100,7 +82,7 @@ export const Settings = ({
 	reported,
 }: {
 	desired?: DesiredConfig
-	reported?: ReportedConfig
+	reported?: Config
 	onSave: (config: DesiredConfig) => void
 }) => {
 	let initial = defaultConfig
@@ -108,7 +90,12 @@ export const Settings = ({
 	if (desired) {
 		initial = {
 			...defaultConfig,
-			...desired,
+			...{
+				...desired,
+				...(desired.acct && {
+					acct: desired.acct / 10,
+				}),
+			},
 		}
 		hasCurrent = true
 	}
@@ -129,7 +116,7 @@ export const Settings = ({
 			mvres: `${config.mvres}`,
 			mvt: `${config.mvt}`,
 			gpst: `${config.gpst}`,
-			acct: `${config.acct}`,
+			acct: `${config.acct / 10}`,
 		})
 	}
 
@@ -145,7 +132,7 @@ export const Settings = ({
 	}
 
 	const d: Partial<DesiredConfig> = desired || {}
-	const r: Partial<ReportedConfig> = reported || {}
+	const r: Partial<Config> = reported || {}
 
 	return (
 		<Form className={'settings'}>
@@ -178,7 +165,11 @@ export const Settings = ({
 							Active
 						</Button>
 					</ButtonGroup>
-					<OutDatedWarning desired={d.act} reported={r.act} />
+					<OutDatedWarning
+						current={config.act}
+						desired={d.act}
+						reported={r.act}
+					/>
 				</FormGroup>
 			</fieldset>
 			<fieldset data-intro={'Timeout for GPS fix'}>
@@ -206,7 +197,11 @@ export const Settings = ({
 							<InputGroupText>seconds</InputGroupText>
 						</InputGroupAddon>
 					</InputGroup>
-					<OutDatedWarning desired={d.gpst} reported={r.gpst} />
+					<OutDatedWarning
+						current={config.gpst}
+						desired={d.gpst}
+						reported={r.gpst}
+					/>
 				</FormGroup>
 			</fieldset>
 			<fieldset>
@@ -241,7 +236,11 @@ export const Settings = ({
 							<InputGroupText>seconds</InputGroupText>
 						</InputGroupAddon>
 					</InputGroup>
-					<OutDatedWarning desired={d.mvres} reported={r.mvres} />
+					<OutDatedWarning
+						current={config.mvres}
+						desired={d.mvres}
+						reported={r.mvres}
+					/>
 				</FormGroup>
 				<FormGroup
 					data-intro={
@@ -273,7 +272,11 @@ export const Settings = ({
 							<InputGroupText>seconds</InputGroupText>
 						</InputGroupAddon>
 					</InputGroup>
-					<OutDatedWarning desired={d.mvt} reported={r.mvt} />
+					<OutDatedWarning
+						current={config.mvt}
+						desired={d.mvt}
+						reported={r.mvt}
+					/>
 				</FormGroup>
 				<FormGroup
 					data-intro={
@@ -305,7 +308,16 @@ export const Settings = ({
 							<InputGroupText>absolute value</InputGroupText>
 						</InputGroupAddon>
 					</InputGroup>
-					<OutDatedWarning desired={d.acct} reported={r.acct} />
+					<OutDatedWarning
+						current={config.acct}
+						desired={d.acct && d.acct / 10}
+						reported={
+							r.acct && {
+								...r.acct,
+								value: r.acct.value / 10,
+							}
+						}
+					/>
 				</FormGroup>
 			</fieldset>
 			<fieldset>
@@ -340,7 +352,11 @@ export const Settings = ({
 							<InputGroupText>seconds</InputGroupText>
 						</InputGroupAddon>
 					</InputGroup>
-					<OutDatedWarning desired={d.actwt} reported={r.actwt} />
+					<OutDatedWarning
+						current={config.actwt}
+						desired={d.actwt}
+						reported={r.actwt}
+					/>
 				</FormGroup>
 			</fieldset>
 			<footer>
