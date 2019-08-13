@@ -268,6 +268,7 @@ const ShowCat = ({
 										<BatteryIcon />
 										{reported.bat.v.value / 1000}V
 									</span>
+									<span />
 									<ReportedTime
 										receivedAt={reported.bat.v.receivedAt}
 										reportedAt={new Date(reported.bat.ts.value)}
