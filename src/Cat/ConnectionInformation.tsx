@@ -73,7 +73,6 @@ export const ConnectionInformation = ({
 	device: DeviceInformation
 	roaming: RoamingInformation
 }) => {
-	console.log(roaming)
 	const {
 		v: {
 			rsrp,
