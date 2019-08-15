@@ -15,6 +15,7 @@ import {
 	GpsOff as NoPositionIcon,
 	Info as InfoIcon,
 	Settings as SettingsIcon,
+	Star as PersonalizationIcon,
 } from '@material-ui/icons'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
 import { uploadAvatar } from './uploadAvatar'
@@ -216,6 +217,25 @@ const ShowCat = ({
 			</Card>
 		)
 
+	const onNameChanged = (v: string) => {
+		onNameChange({ name: v })
+		setNavbar(<CatNavbar name={v} avatar={cat.avatar} />)
+	}
+
+	const onAvatarUploaded = (blob: Blob) => {
+		// Display image directly
+		const reader = new FileReader()
+		reader.onload = (e: any) => {
+			setCat({
+				...cat,
+				avatar: e.target.result,
+			})
+			setNavbar(<CatNavbar name={cat.name} avatar={e.target.result} />)
+		}
+		reader.readAsDataURL(blob)
+		onAvatarChange({ avatar: blob })
+	}
+
 	return (
 		<>
 			{hasMap && renderedMap}
@@ -230,40 +250,16 @@ const ShowCat = ({
 				<CardHeader>
 					<AvatarPicker
 						key={`${cat.version}`}
-						onChange={blob => {
-							// Display image directly
-							const reader = new FileReader()
-							reader.onload = (e: any) => {
-								setCat({
-									...cat,
-									avatar: e.target.result,
-								})
-								setNavbar(
-									<CatNavbar name={cat.name} avatar={e.target.result} />,
-								)
-							}
-							reader.readAsDataURL(blob)
-							onAvatarChange({ avatar: blob })
-						}}
-					>
-						<img
-							src={cat.avatar}
-							alt={cat.name}
-							className={'avatar showOnDesktop'}
-							data-intro="Click here to upload a new image for your cat."
-						/>
-					</AvatarPicker>
-					<h2
-						data-intro="Click here to edit the name of your cat."
 						className={'showOnDesktop'}
+						onChange={onAvatarUploaded}
 					>
+						<img src={cat.avatar} alt={cat.name} className={'avatar'} />
+					</AvatarPicker>
+					<h2 className={'showOnDesktop'}>
 						<Editable
 							key={`${cat.version}`}
 							text={cat.name}
-							onChange={v => {
-								onNameChange({ name: v })
-								setNavbar(<CatNavbar name={v} avatar={cat.avatar} />)
-							}}
+							onChange={onNameChanged}
 						/>
 					</h2>
 					{reported && (
@@ -275,7 +271,7 @@ const ShowCat = ({
 								/>
 							)}
 							{reported.gps && reported.gps.v && (
-								<div>
+								<div className={'info'}>
 									{reported.gps.v.spd && (
 										<span>
 											<SpeedIcon />
@@ -295,7 +291,7 @@ const ShowCat = ({
 								</div>
 							)}
 							{reported.bat && reported.bat.v && (
-								<div>
+								<div className={'info'}>
 									<span>
 										<BatteryIcon />
 										{reported.bat.v.value / 1000}V
@@ -311,6 +307,40 @@ const ShowCat = ({
 					)}
 				</CardHeader>
 				<CardBody>
+					<Collapsable
+						id={'cat:personalization'}
+						className={'personalization'}
+						title={
+							<h3>
+								<PersonalizationIcon />
+								<span>Personalization</span>
+							</h3>
+						}
+					>
+						<dl>
+							<dt>Name</dt>
+							<dd data-intro="Click here to edit the name of your cat.">
+								<Editable
+									key={`${cat.version}`}
+									text={cat.name}
+									onChange={onNameChanged}
+								/>
+							</dd>
+						</dl>
+						<AvatarPicker
+							key={`${cat.version}`}
+							className={'hideOnDesktop'}
+							onChange={onAvatarUploaded}
+						>
+							<img
+								src={cat.avatar}
+								alt={cat.name}
+								className={'avatar'}
+								data-intro="Click here to upload a new image for your cat."
+							/>
+						</AvatarPicker>
+					</Collapsable>
+					<hr className={'hideOnDesktop'} />
 					<Collapsable
 						id={'cat:settings'}
 						title={

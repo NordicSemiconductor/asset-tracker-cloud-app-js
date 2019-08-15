@@ -5,14 +5,16 @@ const avatarSize = 75
 export const AvatarPicker = ({
 	onChange,
 	children,
+	className,
 }: {
 	onChange: (data: Blob) => void
+	className?: string
 	children: React.ReactElement<any>
 }) => {
 	const canvasRef = createRef<HTMLCanvasElement>()
 	const inputRef = createRef<HTMLInputElement>()
 	return (
-		<>
+		<div className={`avatar-picker ${className}`}>
 			{React.cloneElement(children, {
 				onClick: () => {
 					inputRef && inputRef.current && inputRef.current.click()
@@ -66,6 +68,6 @@ export const AvatarPicker = ({
 				}}
 			/>
 			<canvas ref={canvasRef} style={{ display: 'none' }} />
-		</>
+		</div>
 	)
 }

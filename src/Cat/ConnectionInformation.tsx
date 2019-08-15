@@ -85,7 +85,7 @@ export const ConnectionInformation = ({
 		},
 	} = device
 	return (
-		<div className={'connection-information'}>
+		<div className={'info connection-information'}>
 			<span>
 				<RSRP rsrp={rsrp} />
 				<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />

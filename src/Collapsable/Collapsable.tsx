@@ -12,10 +12,12 @@ export const Collapsable = ({
 	initial,
 	children,
 	onToggle,
+	className,
 }: {
 	id: string
 	title: React.ReactElement<any>
 	initial?: boolean
+	className?: string
 	children: React.ReactElement<any> | (React.ReactElement<any> | null)[]
 	onToggle?: (collapsed: boolean) => void
 }) => {
@@ -35,7 +37,7 @@ export const Collapsable = ({
 	return (
 		<>
 			{collapsed && (
-				<div className={'collapsable'}>
+				<div className={`collapsable ${className}`}>
 					<div className={'header'} onClick={toggle}>
 						<div className={'title'}>{title}</div>
 						<button className={'toggle'} title={'Expand'} onClick={toggle}>
@@ -45,7 +47,7 @@ export const Collapsable = ({
 				</div>
 			)}
 			{!collapsed && (
-				<div className={'collapsable'}>
+				<div className={`collapsable ${className}`}>
 					<div className={'header'} onClick={toggle}>
 						<div className={'title'}>{title}</div>
 						<button

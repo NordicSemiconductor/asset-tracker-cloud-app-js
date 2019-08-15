@@ -1,15 +1,18 @@
 @import "../variables";
 
 .cat {
+  img.avatar {
+    width: 75px;
+    border-radius: 100%;
+    border: 2px solid #000000b5;
+    box-shadow: 0 2px 4px #00000057;
+    background-color: #fff;
+  }
+
   .card-header {
     position: relative;
     text-align: center;
-    img {
-      width: 75px;
-      border-radius: 100%;
-      border: 2px solid #000000b5;
-      box-shadow: 0 2px 4px #00000057;
-      background-color: #fff;
+    img.avatar {
       position: absolute;
       top: 0;
       left: 50%;
@@ -20,7 +23,7 @@
     h2 {
       margin: 10px;
     }
-    div {
+    div.info {
       text-align: left;
       display: flex;
       flex-direction: column;
@@ -52,6 +55,14 @@
     }
     .device-information {
       margin-top: 1rem;
+    }
+    .collapsable {
+      &.personalization {
+        .content {
+          display: flex;
+          justify-content: space-between;
+        }
+      }
     }
   }
 }

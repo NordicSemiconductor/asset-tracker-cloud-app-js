@@ -13,7 +13,7 @@ export const DeviceInfo = ({
 }) => {
 	return (
 		<div className={'device-information'}>
-			<h4>Hard and Software</h4>
+			<h4>Hard- and Software</h4>
 			<dl>
 				<dt>Board</dt>
 				<dd>
