@@ -12,6 +12,7 @@ import {
 import { filter as filterOperator, Operator as Op } from 'mcc-mnc-list'
 import { ReportedTime } from './ReportedTime'
 import { DeviceInformation, RoamingInformation } from '../DeviceShadow'
+import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
 
 /**
  * Renders the Reference Signal Received Power (RSRP).
@@ -86,14 +87,10 @@ export const ConnectionInformation = ({
 	} = device
 	return (
 		<div className={'info connection-information'}>
-			<span>
-				<RSRP rsrp={rsrp} />
+			<TextWithIcon icon={<RSRP rsrp={rsrp} />}>
 				<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
-			</span>
-			<span>
-				<NetworkTypeIcon />
-				{nw}
-			</span>
+			</TextWithIcon>
+			<TextWithIcon icon={<NetworkTypeIcon />}>{nw}</TextWithIcon>
 			<ReportedTime
 				receivedAt={roaming.v.rsrp.receivedAt}
 				reportedAt={new Date(roaming.ts.value)}

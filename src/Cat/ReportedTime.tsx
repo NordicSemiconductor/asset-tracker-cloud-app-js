@@ -5,6 +5,7 @@ import {
 	CloudDone as CloudIcon,
 } from '@material-ui/icons'
 import { distanceInWords } from 'date-fns'
+import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
 
 export const ReportedTime = ({
 	reportedAt,
@@ -23,22 +24,22 @@ export const ReportedTime = ({
 	try {
 		return (
 			<span className={'reportedTime'}>
-				<TimeIcon />{' '}
-				<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
+				<TextWithIcon icon={<TimeIcon />}>
+					<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
+				</TextWithIcon>
 				{reportedTimeIsOutDated && relativeTimesHaveDiff && (
-					<>
-						{' '}
-						<CloudIcon />{' '}
+					<TextWithIcon icon={<CloudIcon />}>
 						<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
-					</>
+					</TextWithIcon>
 				)}
 			</span>
 		)
 	} catch {
 		return (
 			<span className={'reportedTime'}>
-				<CloudIcon />{' '}
-				<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
+				<TextWithIcon icon={<CloudIcon />}>
+					<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
+				</TextWithIcon>
 			</span>
 		)
 	}

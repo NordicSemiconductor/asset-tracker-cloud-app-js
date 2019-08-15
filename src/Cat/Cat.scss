@@ -37,6 +37,10 @@
         font-size: 85%;
         opacity: 0.75;
         text-align: right;
+        span.textWithIcon {
+          width: auto;
+          display: inline-block;
+        }
       }
       padding-top: 0.5rem;
       & + div {

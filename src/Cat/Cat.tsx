@@ -36,6 +36,7 @@ import { NavbarBrandContext } from '../Navigation/NavbarBrand'
 import { CatNavbar } from './CatNavbar'
 
 import './Cat.scss'
+import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
 
 const intro = introJs()
 
@@ -241,9 +242,9 @@ const ShowCat = ({
 			{hasMap && renderedMap}
 			{!hasMap && (
 				<div className={'noMap'}>
-					<span>
-						<NoPositionIcon /> No position known.
-					</span>
+					<TextWithIcon icon={<NoPositionIcon />}>
+						No position known.
+					</TextWithIcon>
 				</div>
 			)}
 			<Card className={'cat'}>
@@ -273,10 +274,9 @@ const ShowCat = ({
 							{reported.gps && reported.gps.v && (
 								<div className={'info'}>
 									{reported.gps.v.spd && (
-										<span>
-											<SpeedIcon />
-											{Math.round(reported.gps.v.spd.value)}m/s
-										</span>
+										<TextWithIcon icon={<SpeedIcon />}>
+											{`${Math.round(reported.gps.v.spd.value)}m/s`}
+										</TextWithIcon>
 									)}
 									{reported.gps.v.alt && (
 										<span>
@@ -292,10 +292,8 @@ const ShowCat = ({
 							)}
 							{reported.bat && reported.bat.v && (
 								<div className={'info'}>
-									<span>
-										<BatteryIcon />
-										{reported.bat.v.value / 1000}V
-									</span>
+									<TextWithIcon icon={<BatteryIcon />}>{`${reported.bat.v
+										.value / 1000}V`}</TextWithIcon>
 									<span />
 									<ReportedTime
 										receivedAt={reported.bat.v.receivedAt}
@@ -312,8 +310,9 @@ const ShowCat = ({
 						className={'personalization'}
 						title={
 							<h3>
-								<PersonalizationIcon />
-								<span>Personalization</span>
+								<TextWithIcon icon={<PersonalizationIcon />}>
+									Personalization
+								</TextWithIcon>
 							</h3>
 						}
 					>
@@ -345,8 +344,7 @@ const ShowCat = ({
 						id={'cat:settings'}
 						title={
 							<h3>
-								<SettingsIcon />
-								<span>Settings</span>
+								<TextWithIcon icon={<SettingsIcon />}>Settings</TextWithIcon>
 							</h3>
 						}
 					>
@@ -391,8 +389,9 @@ const ShowCat = ({
 								id={'cat:information'}
 								title={
 									<h3>
-										<InfoIcon />
-										<span>Device Information</span>
+										<TextWithIcon icon={<InfoIcon />}>
+											Device Information
+										</TextWithIcon>
 									</h3>
 								}
 							>
@@ -411,8 +410,7 @@ const ShowCat = ({
 								id={'cat:motion'}
 								title={
 									<h3>
-										<SpeedIcon />
-										<span>Motion</span>
+										<TextWithIcon icon={<SpeedIcon />}>Motion</TextWithIcon>
 									</h3>
 								}
 							>
@@ -535,8 +533,9 @@ export const Cat = ({ catId }: { catId: string }) => (
 										id={'cat:bat'}
 										title={
 											<h3>
-												<BatteryIcon />
-												<span>Battery</span>
+												<TextWithIcon icon={<BatteryIcon />}>
+													Battery
+												</TextWithIcon>
 											</h3>
 										}
 									>
@@ -558,8 +557,9 @@ export const Cat = ({ catId }: { catId: string }) => (
 										id={'cat:act'}
 										title={
 											<h3>
-												<ActivityIcon />
-												<span>Activity</span>
+												<TextWithIcon icon={<ActivityIcon />}>
+													Activity
+												</TextWithIcon>
 											</h3>
 										}
 									>
