@@ -31,6 +31,28 @@ export type Gps = {
 	}
 }
 
+export type Battery = {
+	v: {
+		value: number
+		receivedAt: Date
+	}
+	ts: {
+		value: number
+		receivedAt: Date
+	}
+}
+
+export type Accelerometor = {
+	v: {
+		value: number
+		receivedAt: Date
+	}[]
+	ts: {
+		value: number
+		receivedAt: Date
+	}
+}
+
 export type DeviceInformation = {
 	v: {
 		band: {
@@ -121,6 +143,8 @@ export type Config = {
 }
 
 export type DeviceShadow = {
+	bat: Battery
+	acc: Accelerometor
 	gps: Gps
 	dev: DeviceInformation
 	roam: RoamingInformation

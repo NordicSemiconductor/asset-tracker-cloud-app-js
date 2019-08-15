@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { CredentialsConsumer, IdentityIdConsumer, IotConsumer } from '../App'
 import { Card, CardBody, CardHeader } from 'reactstrap'
 import { Iot, IotData, S3 } from 'aws-sdk'
@@ -29,8 +29,10 @@ import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
 import { ConnectionInformation } from './ConnectionInformation'
 import { DeviceInfo } from './DeviceInformation'
 import { Settings } from '../Settings/Settings'
-import { Gps } from '../DeviceShadow'
+import { DeviceShadow, Gps } from '../DeviceShadow'
 import { ReportedTime } from './ReportedTime'
+import { NavbarBrandContext } from '../Navigation/NavbarBrand'
+import { CatNavbar } from './CatNavbar'
 
 import './Cat.scss'
 
@@ -69,10 +71,14 @@ const ShowCat = ({
 	})
 	const [state, setState] = useState({} as {
 		desired?: any
-		reported?: any
+		reported?: Partial<DeviceShadow>
 	})
 	const { reported, desired } = state
 	const [error, setError] = useState()
+
+	const navbarBrandState = useContext(NavbarBrandContext)
+	const resetNavbar = navbarBrandState.reset
+	const setNavbar = navbarBrandState.set
 
 	useEffect(() => {
 		let connection: device
@@ -141,13 +147,17 @@ const ShowCat = ({
 					})
 				}
 				if (thingName) {
+					const name = (attributes && attributes.name) || thingName
 					setCat({
-						name: (attributes && attributes.name) || thingName,
+						name,
 						avatar:
 							(attributes && attributes.avatar) ||
 							'https://placekitten.com/75/75',
 						version: version || 0,
 					})
+					setNavbar(
+						<CatNavbar name={name} avatar={attributes && attributes.avatar} />,
+					)
 				}
 			})
 			.catch(err => {
@@ -157,8 +167,9 @@ const ShowCat = ({
 
 		return () => {
 			connection && connection.end()
+			resetNavbar()
 		}
-	}, [iot, iotData, catId, identityId, credentials])
+	}, [iot, iotData, catId, identityId, credentials, setNavbar, resetNavbar])
 
 	useEffect(() => {
 		if (!loading && !error) {
@@ -176,6 +187,25 @@ const ShowCat = ({
 		}
 	}, [loading, error])
 
+	const hasMap =
+		reported &&
+		reported.gps &&
+		reported.gps.v &&
+		reported.gps.v.lat &&
+		reported.gps.v.lng
+
+	const [renderedMap, setMap] = useState()
+	useEffect(() => {
+		if (!reported || !reported.gps) {
+			return
+		}
+		setMap(
+			map({
+				gps: reported.gps,
+			}),
+		)
+	}, [reported, map])
+
 	if (loading || error)
 		return (
 			<Card>
@@ -185,15 +215,10 @@ const ShowCat = ({
 				</CardBody>
 			</Card>
 		)
-	const hasMap =
-		reported &&
-		reported.gps &&
-		reported.gps.v &&
-		reported.gps.v.lat &&
-		reported.gps.v.lng
+
 	return (
 		<>
-			{hasMap && map({ gps: reported.gps })}
+			{hasMap && renderedMap}
 			{!hasMap && (
 				<div className={'noMap'}>
 					<span>
@@ -213,6 +238,9 @@ const ShowCat = ({
 									...cat,
 									avatar: e.target.result,
 								})
+								setNavbar(
+									<CatNavbar name={cat.name} avatar={e.target.result} />,
+								)
 							}
 							reader.readAsDataURL(blob)
 							onAvatarChange({ avatar: blob })
@@ -221,16 +249,20 @@ const ShowCat = ({
 						<img
 							src={cat.avatar}
 							alt={cat.name}
-							className={'avatar'}
+							className={'avatar showOnDesktop'}
 							data-intro="Click here to upload a new image for your cat."
 						/>
 					</AvatarPicker>
-					<h2 data-intro="Click here to edit the name of your cat.">
+					<h2
+						data-intro="Click here to edit the name of your cat."
+						className={'showOnDesktop'}
+					>
 						<Editable
 							key={`${cat.version}`}
 							text={cat.name}
 							onChange={v => {
 								onNameChange({ name: v })
+								setNavbar(<CatNavbar name={v} avatar={cat.avatar} />)
 							}}
 						/>
 					</h2>
@@ -402,6 +434,7 @@ export const Cat = ({ catId }: { catId: string }) => (
 								iot,
 								thingName: catId,
 							})
+
 							return (
 								<ShowCat
 									catId={catId}

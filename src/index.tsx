@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom'
 import './bootstrap.scss'
 import './typography.scss'
 import './desktop.scss'
+import '../node_modules/intro.js/introjs.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 

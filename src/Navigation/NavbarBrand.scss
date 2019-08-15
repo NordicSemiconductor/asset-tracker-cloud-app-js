@@ -1,0 +1,17 @@
+.navbar-brand {
+  width: 75%;
+  .avatar {
+    border-radius: 100%;
+  }
+
+  .catName {
+    white-space: nowrap;
+  }
+}
+
+.navbar-with-toggle {
+  .navbar-brand {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
