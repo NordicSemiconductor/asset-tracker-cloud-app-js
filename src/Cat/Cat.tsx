@@ -37,6 +37,7 @@ import { CatNavbar } from './CatNavbar'
 
 import './Cat.scss'
 import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
+import { Toggle } from '../Toggle/Toggle'
 
 const intro = introJs()
 
@@ -266,40 +267,46 @@ const ShowCat = ({
 					{reported && (
 						<>
 							{reported.dev && reported.roam && (
-								<ConnectionInformation
-									device={reported.dev}
-									roaming={reported.roam}
-								/>
+								<Toggle>
+									<ConnectionInformation
+										device={reported.dev}
+										roaming={reported.roam}
+									/>
+								</Toggle>
 							)}
 							{reported.gps && reported.gps.v && (
-								<div className={'info'}>
-									{reported.gps.v.spd && (
-										<TextWithIcon icon={<SpeedIcon />}>
-											{`${Math.round(reported.gps.v.spd.value)}m/s`}
-										</TextWithIcon>
-									)}
-									{reported.gps.v.alt && (
-										<span>
-											<AltitudeIcon />
-											{Math.round(reported.gps.v.alt.value)}m
-										</span>
-									)}
-									<ReportedTime
-										receivedAt={reported.gps.v.lat.receivedAt}
-										reportedAt={new Date(reported.gps.ts.value)}
-									/>
-								</div>
+								<Toggle>
+									<div className={'info'}>
+										{reported.gps.v.spd && (
+											<TextWithIcon icon={<SpeedIcon />}>
+												{`${Math.round(reported.gps.v.spd.value)}m/s`}
+											</TextWithIcon>
+										)}
+										{reported.gps.v.alt && (
+											<span>
+												<AltitudeIcon />
+												{Math.round(reported.gps.v.alt.value)}m
+											</span>
+										)}
+										<ReportedTime
+											receivedAt={reported.gps.v.lat.receivedAt}
+											reportedAt={new Date(reported.gps.ts.value)}
+										/>
+									</div>
+								</Toggle>
 							)}
 							{reported.bat && reported.bat.v && (
-								<div className={'info'}>
-									<TextWithIcon icon={<BatteryIcon />}>{`${reported.bat.v
-										.value / 1000}V`}</TextWithIcon>
-									<span />
-									<ReportedTime
-										receivedAt={reported.bat.v.receivedAt}
-										reportedAt={new Date(reported.bat.ts.value)}
-									/>
-								</div>
+								<Toggle>
+									<div className={'info'}>
+										<TextWithIcon icon={<BatteryIcon />}>{`${reported.bat.v
+											.value / 1000}V`}</TextWithIcon>
+										<span />
+										<ReportedTime
+											receivedAt={reported.bat.v.receivedAt}
+											reportedAt={new Date(reported.bat.ts.value)}
+										/>
+									</div>
+								</Toggle>
 							)}
 						</>
 					)}

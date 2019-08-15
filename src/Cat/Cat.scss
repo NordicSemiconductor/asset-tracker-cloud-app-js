@@ -26,7 +26,8 @@
     div.info {
       text-align: left;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      justify-content: space-between;
       @media (min-width: $mobile-breakpoint) {
         display: grid;
         grid-template: auto / 1fr 1fr 2fr;
@@ -43,15 +44,37 @@
         }
       }
       padding-top: 0.5rem;
-      & + div {
-        margin-top: 0.5rem;
-        border-top: 1px solid #dcdcdc;
+    }
+    div.toggle + div.toggle {
+      margin-top: 0.5rem;
+      border-top: 1px solid #dcdcdc;
+    }
+    @media (max-width: $mobile-breakpoint) {
+      div.info {
+        .reportedTime {
+          time {
+            display: none;
+          }
+        }
+      }
+      .toggle.toggle-on {
+        div.info {
+          .reportedTime {
+            time {
+              display: inline;
+            }
+          }
+        }
       }
     }
+
   }
   .card-body {
     h3 {
-      font-size: 115%;
+      font-size: 100%;
+      @media (min-width: $mobile-breakpoint) {
+        font-size: 115%;
+      }
       margin: 0;
     }
     h4 {

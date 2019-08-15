@@ -1,0 +1,14 @@
+@import "variables";
+
+@media (max-width: $mobile-breakpoint) {
+  .card-body {
+    padding: 0.25rem;
+    hr {
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+  }
+  .card-header {
+    padding: 0.25rem;
+  }
+}
