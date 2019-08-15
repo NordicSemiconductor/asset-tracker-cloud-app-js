@@ -96,27 +96,27 @@ export type RoamingInformation = {
 export type Config = {
 	act: {
 		value: boolean
-		receivedAt: string
+		receivedAt: Date
 	}
 	actwt: {
 		value: number
-		receivedAt: string
+		receivedAt: Date
 	}
 	mvres: {
 		value: number
-		receivedAt: string
+		receivedAt: Date
 	}
 	mvt: {
 		value: number
-		receivedAt: string
+		receivedAt: Date
 	}
 	gpst: {
 		value: number
-		receivedAt: string
+		receivedAt: Date
 	}
 	acct: {
 		value: number
-		receivedAt: string
+		receivedAt: Date
 	}
 }
 

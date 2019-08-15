@@ -13,8 +13,8 @@ import {
 	FitnessCenter as ActivityIcon,
 	Flight as AltitudeIcon,
 	GpsOff as NoPositionIcon,
-	Settings as SettingsIcon,
 	Info as InfoIcon,
+	Settings as SettingsIcon,
 } from '@material-ui/icons'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
 import { uploadAvatar } from './uploadAvatar'
@@ -28,11 +28,11 @@ import { Collapsable } from '../Collapsable/Collapsable'
 import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
 import { ConnectionInformation } from './ConnectionInformation'
 import { DeviceInfo } from './DeviceInformation'
-import { Settings } from './Settings'
+import { Settings } from '../Settings/Settings'
+import { Gps } from '../DeviceShadow'
 import { ReportedTime } from './ReportedTime'
 
 import './Cat.scss'
-import { Gps } from '../DeviceShadow'
 
 const intro = introJs()
 

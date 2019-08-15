@@ -17,6 +17,7 @@
     legend {
       width: auto;
       margin: 0;
+      font-size: 100%;
     }
     margin-bottom: 1rem;
   }
@@ -30,19 +31,5 @@
     grid-column: auto / span 2;
     display: flex;
     flex-direction: column;
-  }
-
-  div.outDated {
-    color: red;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 0.5rem;
-    p {
-      margin-bottom: 0;
-      padding-left: 0.5rem;
-      font-size: 80%;
-      line-height: 100%;
-    }
   }
 }

@@ -1,0 +1,9 @@
+@import "~bootstrap/scss/bootstrap";
+
+.number-config-setting {
+  .is-outdated {
+    .input-group-text {
+      color: $danger;
+    }
+  }
+}
