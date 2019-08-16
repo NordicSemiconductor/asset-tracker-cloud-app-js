@@ -34,10 +34,11 @@ import { DeviceShadow, Gps } from '../DeviceShadow'
 import { ReportedTime } from './ReportedTime'
 import { NavbarBrandContext } from '../Navigation/NavbarBrand'
 import { CatNavbar } from './CatNavbar'
-
-import './Cat.scss'
 import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
 import { Toggle } from '../Toggle/Toggle'
+import { Emojify } from '../Emojify/Emojify'
+
+import './Cat.scss'
 
 const intro = introJs()
 
@@ -243,9 +244,7 @@ const ShowCat = ({
 			{hasMap && renderedMap}
 			{!hasMap && (
 				<div className={'noMap'}>
-					<TextWithIcon icon={<NoPositionIcon />}>
-						No position known.
-					</TextWithIcon>
+					<Emojify>📴 No position known.</Emojify>
 				</div>
 			)}
 			<Card className={'cat'}>
