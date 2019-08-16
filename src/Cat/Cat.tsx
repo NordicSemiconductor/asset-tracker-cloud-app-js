@@ -7,16 +7,6 @@ import { Loading } from '../Loading/Loading'
 import { Error } from '../Error/Error'
 import { device } from 'aws-iot-device-sdk'
 import { Map } from '../Map/Map'
-import {
-	BatteryStdRounded as BatteryIcon,
-	DirectionsRun as SpeedIcon,
-	FitnessCenter as ActivityIcon,
-	Flight as AltitudeIcon,
-	GpsOff as NoPositionIcon,
-	Info as InfoIcon,
-	Settings as SettingsIcon,
-	Star as PersonalizationIcon,
-} from '@material-ui/icons'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
 import { uploadAvatar } from './uploadAvatar'
 import { Editable } from '../Editable/Editable'
@@ -34,9 +24,8 @@ import { DeviceShadow, Gps } from '../DeviceShadow'
 import { ReportedTime } from './ReportedTime'
 import { NavbarBrandContext } from '../Navigation/NavbarBrand'
 import { CatNavbar } from './CatNavbar'
-import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
 import { Toggle } from '../Toggle/Toggle'
-import { Emojify } from '../Emojify/Emojify'
+import { emojify } from '../Emojify/Emojify'
 
 import './Cat.scss'
 
@@ -243,9 +232,7 @@ const ShowCat = ({
 		<>
 			{hasMap && renderedMap}
 			{!hasMap && (
-				<div className={'noMap'}>
-					<Emojify>📴 No position known.</Emojify>
-				</div>
+				<div className={'noMap'}>{emojify('❌ No position known.')}</div>
 			)}
 			<Card className={'cat'}>
 				<CardHeader>
@@ -276,17 +263,10 @@ const ShowCat = ({
 							{reported.gps && reported.gps.v && (
 								<Toggle>
 									<div className={'info'}>
-										{reported.gps.v.spd && (
-											<TextWithIcon icon={<SpeedIcon />}>
-												{`${Math.round(reported.gps.v.spd.value)}m/s`}
-											</TextWithIcon>
-										)}
-										{reported.gps.v.alt && (
-											<span>
-												<AltitudeIcon />
-												{Math.round(reported.gps.v.alt.value)}m
-											</span>
-										)}
+										{reported.gps.v.spd &&
+											emojify(` 🏃${Math.round(reported.gps.v.spd.value)}m/s`)}
+										{reported.gps.v.alt &&
+											emojify(`✈️ ${Math.round(reported.gps.v.alt.value)}m`)}
 										<ReportedTime
 											receivedAt={reported.gps.v.lat.receivedAt}
 											reportedAt={new Date(reported.gps.ts.value)}
@@ -297,8 +277,7 @@ const ShowCat = ({
 							{reported.bat && reported.bat.v && (
 								<Toggle>
 									<div className={'info'}>
-										<TextWithIcon icon={<BatteryIcon />}>{`${reported.bat.v
-											.value / 1000}V`}</TextWithIcon>
+										{emojify(`🔋 ${reported.bat.v.value / 1000}V`)}
 										<span />
 										<ReportedTime
 											receivedAt={reported.bat.v.receivedAt}
@@ -314,13 +293,7 @@ const ShowCat = ({
 					<Collapsable
 						id={'cat:personalization'}
 						className={'personalization'}
-						title={
-							<h3>
-								<TextWithIcon icon={<PersonalizationIcon />}>
-									Personalization
-								</TextWithIcon>
-							</h3>
-						}
+						title={<h3>{emojify('⭐ Personalization')}</h3>}
 					>
 						<dl>
 							<dt>Name</dt>
@@ -348,11 +321,7 @@ const ShowCat = ({
 					<hr className={'hideOnDesktop'} />
 					<Collapsable
 						id={'cat:settings'}
-						title={
-							<h3>
-								<TextWithIcon icon={<SettingsIcon />}>Settings</TextWithIcon>
-							</h3>
-						}
+						title={<h3>{emojify('⚙️ Settings')}</h3>}
 					>
 						<Settings
 							key={`${cat.version}`}
@@ -393,13 +362,7 @@ const ShowCat = ({
 							<hr />
 							<Collapsable
 								id={'cat:information'}
-								title={
-									<h3>
-										<TextWithIcon icon={<InfoIcon />}>
-											Device Information
-										</TextWithIcon>
-									</h3>
-								}
+								title={<h3>{emojify('ℹ️ Device Information')}</h3>}
 							>
 								<DeviceInfo
 									key={`${cat.version}`}
@@ -414,11 +377,7 @@ const ShowCat = ({
 							<hr />
 							<Collapsable
 								id={'cat:motion'}
-								title={
-									<h3>
-										<TextWithIcon icon={<SpeedIcon />}>Motion</TextWithIcon>
-									</h3>
-								}
+								title={<h3>{emojify('🏃 Motion')}</h3>}
 							>
 								<AccelerometerDiagram
 									values={reported.acc.v.map(
@@ -537,13 +496,7 @@ export const Cat = ({ catId }: { catId: string }) => (
 								>
 									<Collapsable
 										id={'cat:bat'}
-										title={
-											<h3>
-												<TextWithIcon icon={<BatteryIcon />}>
-													Battery
-												</TextWithIcon>
-											</h3>
-										}
+										title={<h3>{emojify('🔋 Battery')}</h3>}
 									>
 										<HistoricalDataLoader
 											athena={athena}
@@ -561,13 +514,7 @@ export const Cat = ({ catId }: { catId: string }) => (
 									<hr />
 									<Collapsable
 										id={'cat:act'}
-										title={
-											<h3>
-												<TextWithIcon icon={<ActivityIcon />}>
-													Activity
-												</TextWithIcon>
-											</h3>
-										}
+										title={<h3>{emojify('🏋️ Activity')}</h3>}
 									>
 										<HistoricalDataLoader
 											athena={athena}

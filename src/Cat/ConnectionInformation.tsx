@@ -7,12 +7,12 @@ import {
 	SignalCellular3Bar as ThreeBarIcon,
 	SignalCellular4Bar as FourBarIcon,
 	SignalCellularConnectedNoInternet0Bar as InvalidRSRPIcon,
-	ImportExport as NetworkTypeIcon,
 } from '@material-ui/icons'
 import { filter as filterOperator, Operator as Op } from 'mcc-mnc-list'
 import { ReportedTime } from './ReportedTime'
 import { DeviceInformation, RoamingInformation } from '../DeviceShadow'
 import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
+import { emojify } from '../Emojify/Emojify'
 
 /**
  * Renders the Reference Signal Received Power (RSRP).
@@ -90,7 +90,7 @@ export const ConnectionInformation = ({
 			<TextWithIcon icon={<RSRP rsrp={rsrp} />}>
 				<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
 			</TextWithIcon>
-			<TextWithIcon icon={<NetworkTypeIcon />}>{nw}</TextWithIcon>
+			{emojify(`📱 ${nw}`)}
 			<ReportedTime
 				receivedAt={roaming.v.rsrp.receivedAt}
 				reportedAt={new Date(roaming.ts.value)}

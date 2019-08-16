@@ -28,6 +28,7 @@
   "dependencies": {
     "@amcharts/amcharts4": "^4.5.14",
     "@bifravst/athena-helpers": "^3.0.0",
+    "@bifravst/twemoji": "^12.1.2-typescript",
     "@material-ui/core": "^4.3.2",
     "@material-ui/icons": "^4.2.1",
     "aws-amplify": "^1.1.36",
@@ -46,7 +47,6 @@
     "react-leaflet": "^2.4.0",
     "react-router-dom": "^5.0.1",
     "reactstrap": "^8.0.0",
-    "twemoji": "^12.1.2",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

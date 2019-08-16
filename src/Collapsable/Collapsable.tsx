@@ -1,8 +1,4 @@
 import React, { useState } from 'react'
-import {
-	ExpandLess as ExpandIcon,
-	ExpandMore as CollapseIcon,
-} from '@material-ui/icons'
 
 import './Collapsable.scss'
 
@@ -41,7 +37,7 @@ export const Collapsable = ({
 					<div className={'header'} onClick={toggle}>
 						<div className={'title'}>{title}</div>
 						<button className={'toggle'} title={'Expand'} onClick={toggle}>
-							<ExpandIcon />
+							⌃
 						</button>
 					</div>
 				</div>
@@ -56,7 +52,7 @@ export const Collapsable = ({
 							title={'Collapse'}
 							onClick={toggle}
 						>
-							<CollapseIcon />
+							⌄
 						</button>
 					</div>
 					<div className={'content'}>{children}</div>

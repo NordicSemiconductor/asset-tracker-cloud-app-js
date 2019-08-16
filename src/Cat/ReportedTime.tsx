@@ -1,11 +1,7 @@
 import React from 'react'
 import { RelativeTime } from '../RelativeTime/RelativeTime'
-import {
-	AccessTimeRounded as TimeIcon,
-	CloudDone as CloudIcon,
-} from '@material-ui/icons'
 import { distanceInWords } from 'date-fns'
-import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
+import { emojify } from '../Emojify/Emojify'
 
 export const ReportedTime = ({
 	reportedAt,
@@ -24,22 +20,21 @@ export const ReportedTime = ({
 	try {
 		return (
 			<span className={'reportedTime'}>
-				<TextWithIcon icon={<TimeIcon />}>
-					<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
-				</TextWithIcon>
+				{emojify('🕒 ')}
+				<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
 				{reportedTimeIsOutDated && relativeTimesHaveDiff && (
-					<TextWithIcon icon={<CloudIcon />}>
+					<>
+						{emojify('☁️ ')}
 						<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
-					</TextWithIcon>
+					</>
 				)}
 			</span>
 		)
 	} catch {
 		return (
 			<span className={'reportedTime'}>
-				<TextWithIcon icon={<CloudIcon />}>
-					<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
-				</TextWithIcon>
+				{emojify('☁️ ')}
+				<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
 			</span>
 		)
 	}
