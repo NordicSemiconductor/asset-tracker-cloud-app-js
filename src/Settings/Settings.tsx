@@ -4,13 +4,10 @@ import equal from 'fast-deep-equal'
 import { Config } from '../DeviceShadow'
 import { OutDatedWarning } from './OutDatedWarning'
 import { NumberConfigSetting } from './NumberConfigSetting'
-import {
-	CloudOff as NotReportedIcon,
-	SyncProblem as OutdatedIcon,
-} from '@material-ui/icons'
 import { distanceInWords } from 'date-fns'
 
 import './Settings.scss'
+import { emojify } from '../Emojify/Emojify'
 
 export type DesiredConfig = {
 	act: boolean
@@ -97,7 +94,7 @@ export const Settings = ({
 									disabled={true}
 									title={'Device has not reported this setting, yet.'}
 								>
-									<NotReportedIcon />
+									{emojify('❓')}
 								</Button>
 							}
 							onOutDated={r => (
@@ -110,7 +107,7 @@ export const Settings = ({
 										r.receivedAt,
 									)} ago. Current value: ${JSON.stringify(r.value)}.`}
 								>
-									<OutdatedIcon />
+									{emojify('⭕')}
 								</Button>
 							)}
 						/>

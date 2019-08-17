@@ -1,13 +1,4 @@
 import React from 'react'
-import {
-	SignalCellularNull as SignalNotDetectedIcon,
-	SignalCellular0Bar as NoSignalIcon,
-	SignalCellular1Bar as OneBarIcon,
-	SignalCellular2Bar as TwoBarIcon,
-	SignalCellular3Bar as ThreeBarIcon,
-	SignalCellular4Bar as FourBarIcon,
-	SignalCellularConnectedNoInternet0Bar as InvalidRSRPIcon,
-} from '@material-ui/icons'
 import { filter as filterOperator, Operator as Op } from 'mcc-mnc-list'
 import { ReportedTime } from './ReportedTime'
 import { DeviceInformation, RoamingInformation } from '../DeviceShadow'
@@ -33,30 +24,32 @@ export const RSRP = ({
 	rsrp: { value: number; receivedAt: Date }
 }) => {
 	if (value === 255) {
-		return (
-			<abbr title={'Not known or not detectable'}>
-				<SignalNotDetectedIcon />
-			</abbr>
-		)
+		return <abbr title={'Not known or not detectable'}>{emojify('❎')}</abbr>
 	}
 	if (value >= 0 && value <= 140) {
 		const dbm = -140 + value
-		let icon = <FourBarIcon />
-		if (dbm <= 80) {
-			icon = <ThreeBarIcon />
-		} else if (dbm <= 90) {
-			icon = <TwoBarIcon />
-		} else if (dbm <= 100) {
-			icon = <OneBarIcon />
-		} else if (dbm <= 110) {
-			icon = <NoSignalIcon />
+		let icon = emojify('👍')
+		let rotation = 0
+		if (dbm <= -80) {
+			rotation = -60
+			icon = emojify('👎')
+		} else if (dbm <= -90) {
+			rotation = -120
+			icon = emojify('👎')
+		} else if (dbm <= -100) {
+			icon = emojify('👎')
+		} else if (dbm <= -110) {
+			icon = emojify('📵')
 		}
-		return <abbr title={`${dbm}dBm`}>{icon}</abbr>
+		return (
+			<>
+				<span style={{ transform: `rotate(${rotation}deg)` }}>{icon}</span>
+				<small>{`(${dbm}dBm)`}</small>
+			</>
+		)
 	}
 	return (
-		<abbr title={`Unexpected value ${value} reported!`}>
-			<InvalidRSRPIcon />
-		</abbr>
+		<abbr title={`Unexpected value ${value} reported!`}>{emojify('❎')}</abbr>
 	)
 }
 

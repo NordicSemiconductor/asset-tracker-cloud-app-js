@@ -17,10 +17,11 @@ export const ReportedTime = ({
 		distanceInWords(new Date(), reportedAt, {
 			includeSeconds: true,
 		})
+	const reportIsOld = (Date.now() - reportedAt.getTime()) / 1000 > 3600
 	try {
 		return (
 			<span className={'reportedTime'}>
-				{emojify('🕒 ')}
+				{reportIsOld ? emojify('🤷 ') : emojify('🕒 ')}
 				<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
 				{reportedTimeIsOutDated && relativeTimesHaveDiff && (
 					<>

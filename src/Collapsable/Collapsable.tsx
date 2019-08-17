@@ -33,7 +33,7 @@ export const Collapsable = ({
 	return (
 		<>
 			{collapsed && (
-				<div className={`collapsable ${className}`}>
+				<div className={`collapsable ${className} collapsed`}>
 					<div className={'header'} onClick={toggle}>
 						<div className={'title'}>{title}</div>
 						<button className={'toggle'} title={'Expand'} onClick={toggle}>
@@ -43,7 +43,7 @@ export const Collapsable = ({
 				</div>
 			)}
 			{!collapsed && (
-				<div className={`collapsable ${className}`}>
+				<div className={`collapsable ${className} expanded`}>
 					<div className={'header'} onClick={toggle}>
 						<div className={'title'}>{title}</div>
 						<button
@@ -52,7 +52,7 @@ export const Collapsable = ({
 							title={'Collapse'}
 							onClick={toggle}
 						>
-							⌄
+							⌃
 						</button>
 					</div>
 					<div className={'content'}>{children}</div>

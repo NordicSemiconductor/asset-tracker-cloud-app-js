@@ -1,13 +1,8 @@
 import { Button, Nav, NavItem } from 'reactstrap'
 import { Link } from 'react-router-dom'
-import {
-	HelpRounded as HelpIcon,
-	Info as InfoIcon,
-	List as ListIcon,
-	PowerSettingsNew as LogoutIcon,
-} from '@material-ui/icons'
 import React from 'react'
 import * as introJs from 'intro.js'
+import { emojify } from '../Emojify/Emojify'
 const intro = introJs()
 
 export const Navigation = (props: {
@@ -21,12 +16,12 @@ export const Navigation = (props: {
 		<Nav navbar={navbar} className={props.className}>
 			<NavItem>
 				<Link className="nav-link" to="/cats" onClick={onClick}>
-					<ListIcon /> Cats
+					{emojify('🐱')} Cats
 				</Link>
 			</NavItem>
 			<NavItem>
 				<Link className="nav-link" to="/about" onClick={onClick}>
-					<InfoIcon /> About
+					{emojify('ℹ️')} About
 				</Link>
 			</NavItem>
 			<NavItem>
@@ -42,12 +37,12 @@ export const Navigation = (props: {
 						}, 1000)
 					}}
 				>
-					<HelpIcon /> Help
+					{emojify('💁')} Help
 				</Button>
 			</NavItem>
 			<NavItem>
 				<Button onClick={logout} outline color="danger">
-					<LogoutIcon /> Log out
+					{emojify('🚪')} Log out
 				</Button>
 			</NavItem>
 		</Nav>

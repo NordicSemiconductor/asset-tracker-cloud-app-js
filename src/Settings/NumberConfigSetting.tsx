@@ -8,13 +8,10 @@ import {
 	Label,
 } from 'reactstrap'
 import { OutDatedWarning } from './OutDatedWarning'
-import {
-	CloudOff as NotReportedIcon,
-	SyncProblem as OutdatedIcon,
-} from '@material-ui/icons'
 import { distanceInWords } from 'date-fns'
 
 import './NumberConfigSetting.scss'
+import { emojify } from '../Emojify/Emojify'
 
 export const NumberConfigSetting = ({
 	label,
@@ -70,7 +67,7 @@ export const NumberConfigSetting = ({
 						<InputGroupAddon addonType="append" className={'is-outdated'}>
 							<InputGroupText>
 								<abbr title={'Device has not reported this setting, yet.'}>
-									<NotReportedIcon />
+									{emojify('❓')}
 								</abbr>
 							</InputGroupText>
 						</InputGroupAddon>
@@ -84,7 +81,7 @@ export const NumberConfigSetting = ({
 										r.receivedAt,
 									)} ago. Current value: ${JSON.stringify(r.value)}.`}
 								>
-									<OutdatedIcon />
+									{emojify('⭕')}
 								</abbr>
 							</InputGroupText>
 						</InputGroupAddon>
