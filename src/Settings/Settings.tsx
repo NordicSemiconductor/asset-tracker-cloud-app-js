@@ -4,7 +4,7 @@ import equal from 'fast-deep-equal'
 import { Config } from '../DeviceShadow'
 import { OutDatedWarning } from './OutDatedWarning'
 import { NumberConfigSetting } from './NumberConfigSetting'
-import { distanceInWords } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
 
 import './Settings.scss'
 import { emojify } from '../Emojify/Emojify'
@@ -102,10 +102,9 @@ export const Settings = ({
 									color={'danger'}
 									outline={true}
 									disabled={true}
-									title={`Device has last synced this setting ${distanceInWords(
-										new Date(),
+									title={`Device has last synced this setting ${formatDistanceToNow(
 										r.receivedAt,
-									)} ago. Current value: ${JSON.stringify(r.value)}.`}
+									)}. Current value: ${JSON.stringify(r.value)}.`}
 								>
 									{emojify('⭕')}
 								</Button>

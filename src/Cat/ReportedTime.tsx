@@ -1,6 +1,6 @@
 import React from 'react'
 import { RelativeTime } from '../RelativeTime/RelativeTime'
-import { distanceInWords } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
 import { emojify } from '../Emojify/Emojify'
 
 export const ReportedTime = ({
@@ -13,9 +13,13 @@ export const ReportedTime = ({
 	const reportedTimeIsOutDated =
 		(receivedAt.getTime() - reportedAt.getTime()) / 1000 > 300
 	const relativeTimesHaveDiff =
-		distanceInWords(new Date(), receivedAt, { includeSeconds: true }) !==
-		distanceInWords(new Date(), reportedAt, {
+		formatDistanceToNow(receivedAt, {
 			includeSeconds: true,
+			addSuffix: true,
+		}) !==
+		formatDistanceToNow(reportedAt, {
+			includeSeconds: true,
+			addSuffix: true,
 		})
 	const reportIsOld = (Date.now() - reportedAt.getTime()) / 1000 > 3600
 	try {
