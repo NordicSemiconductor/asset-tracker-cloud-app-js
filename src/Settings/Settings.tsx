@@ -125,25 +125,27 @@ export const Settings = ({
 			</fieldset>
 			<fieldset>
 				<legend>Passive Mode Settings</legend>
-				<NumberConfigSetting
-					label={'Movement Resolution'}
-					intro={
-						'In <em>passive</em> mode: Time to wait after detecting movement before sending the next update'
-					}
-					id={'mvres'}
-					desired={newDesired.mvres}
-					reported={r.mvres}
-					onChange={updateConfigProperty('mvres')}
-				/>
-				<NumberConfigSetting
-					label={'Movement Timeout'}
-					intro={'In <em>passive</em> mode: Send update at least this often'}
-					id={'mvt'}
-					example={3600}
-					desired={newDesired.mvt}
-					reported={r.mvt}
-					onChange={updateConfigProperty('mvt')}
-				/>
+				<div className={'sidebyside'}>
+					<NumberConfigSetting
+						label={'Movement Resolution'}
+						intro={
+							'In <em>passive</em> mode: Time to wait after detecting movement before sending the next update'
+						}
+						id={'mvres'}
+						desired={newDesired.mvres}
+						reported={r.mvres}
+						onChange={updateConfigProperty('mvres')}
+					/>
+					<NumberConfigSetting
+						label={'Movement Timeout'}
+						intro={'In <em>passive</em> mode: Send update at least this often'}
+						id={'mvt'}
+						example={3600}
+						desired={newDesired.mvt}
+						reported={r.mvt}
+						onChange={updateConfigProperty('mvt')}
+					/>
+				</div>
 				<NumberConfigSetting
 					label={'Accelerometer threshold'}
 					intro={
