@@ -52,9 +52,7 @@ export const NumberConfigSetting = ({
 					value={input}
 					onChange={({ target: { value } }) => {
 						updateInput(value)
-					}}
-					onBlur={() => {
-						onChange(input)
+						onChange(value)
 					}}
 				/>
 				<InputGroupAddon addonType="append">
