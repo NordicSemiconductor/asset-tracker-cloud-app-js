@@ -40,6 +40,10 @@ export const DeviceInfo = ({
 				</dd>
 				{roaming && (
 					<>
+						<dt>MCC/MNC</dt>
+						<dd>
+							<code>{roaming.v.mccmnc.value}</code>
+						</dd>
 						<dt>Area Code</dt>
 						<dd>
 							<code>{roaming.v.area.value}</code>
