@@ -10,6 +10,17 @@
     grid-column-gap: 1rem;
   }
 
+  input,
+  span.input-group-text,
+  label,
+  legend,
+  button {
+    font-size: 80%;
+    @media (min-width: $mobile-breakpoint) {
+      font-size: 100%;
+    }
+  }
+
   fieldset {
     @media (min-width: $mobile-breakpoint) {
       border-radius: 5px;
@@ -20,13 +31,14 @@
     legend {
       width: auto;
       margin: 0;
-      font-size: 100%;
     }
     .sidebyside {
-      @media (max-width: $mobile-breakpoint) {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-column-gap: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 1rem;
+      align-items: baseline;
+      @media (min-width: $mobile-breakpoint) {
+        display: block;
       }
     }
   }
