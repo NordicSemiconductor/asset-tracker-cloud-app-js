@@ -92,7 +92,7 @@ export const Map = ({
 			)}
 			{history &&
 				history.map(({ lat, lng }, k) => {
-					const alpha = Math.round((1 - k / 10) * 255).toString(16)
+					const alpha = Math.round((1 - k / history.length) * 255).toString(16)
 					const color = `#1f56d2${alpha}`
 					return (
 						<React.Fragment key={`history-${k}`}>
