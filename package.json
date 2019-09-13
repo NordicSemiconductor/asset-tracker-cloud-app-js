@@ -26,16 +26,16 @@
   "author": "Nordic Semiconductor ASA | nordicsemi.no",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@amcharts/amcharts4": "^4.5.16",
-    "@bifravst/athena-helpers": "^4.0.0",
+    "@amcharts/amcharts4": "^4.6.0",
+    "@bifravst/athena-helpers": "^4.0.2",
     "@bifravst/twemoji": "^12.1.2-typescript",
-    "aws-amplify": "^1.1.38",
-    "aws-amplify-react": "^2.4.2",
+    "aws-amplify": "^1.1.40",
+    "aws-amplify-react": "^2.4.4",
     "aws-iot-device-sdk": "^2.2.1",
-    "aws-sdk": "^2.524.0",
+    "aws-sdk": "^2.528.0",
     "bootstrap": "^4.3.1",
     "classnames": "^2.2.6",
-    "date-fns": "^2.1.0",
+    "date-fns": "^2.2.1",
     "fast-deep-equal": "^2.0.1",
     "intro.js": "^2.9.3",
     "leaflet": "^1.5.1",
@@ -48,14 +48,14 @@
     "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "@bifravst/code-style": "^3.0.0",
+    "@bifravst/code-style": "^3.0.1",
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-angular": "^8.1.0",
     "@types/aws-iot-device-sdk": "^2.2.0",
     "@types/classnames": "^2.2.9",
     "@types/intro.js": "2.4.4",
     "@types/jest": "^24.0.18",
-    "@types/node": "^12.7.4",
+    "@types/node": "^12.7.5",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
     "@types/react-leaflet": "^2.4.0",
@@ -73,7 +73,7 @@
     "husky": "^3.0.5",
     "node-sass": "^4.12.0",
     "react-scripts": "^3.1.1",
-    "ts-jest": "^24.0.2"
+    "ts-jest": "^24.1.0"
   },
   "husky": {
     "hooks": {

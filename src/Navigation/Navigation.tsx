@@ -20,6 +20,11 @@ export const Navigation = (props: {
 				</Link>
 			</NavItem>
 			<NavItem>
+				<Link className="nav-link" to="/cats-on-map" onClick={onClick}>
+					{emojify('🗺️')} Map
+				</Link>
+			</NavItem>
+			<NavItem>
 				<Link className="nav-link" to="/about" onClick={onClick}>
 					{emojify('ℹ️')} About
 				</Link>

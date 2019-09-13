@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 import { AboutPage } from './About/Page'
 import { CatsPage } from './Cats/Page'
 import { CatPage } from './Cat/Page'
+import { CatsMapPage } from './CatsMap/Page'
 import { Iot, IotData } from 'aws-sdk'
 import { getPolicyNameFromArn } from './getPolicyNameFromArn'
 import { NavbarBrandContextProvider } from './Navigation/NavbarBrand'
@@ -106,6 +107,7 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 							<IotContext.Provider value={iot}>
 								<Route exact path="/about" component={AboutPage} />
 								<Route exact path="/cats" component={CatsPage} />
+								<Route exact path="/cats-on-map" component={CatsMapPage} />
 								<Route exact path="/cat/:catId" component={CatPage} />
 							</IotContext.Provider>
 						</IdentityIdContext.Provider>
