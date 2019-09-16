@@ -383,7 +383,6 @@ const ShowCat = ({
 				<CardBody>
 					<Collapsable
 						id={'cat:personalization'}
-						className={'personalization'}
 						title={<h3>{emojify('⭐ Personalization')}</h3>}
 					>
 						<dl>

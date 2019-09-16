@@ -15,30 +15,12 @@ const ToggleButton = styled.button`
 	transition-duration: 250ms;
 `
 
-const CollapsedCollapsableDiv = styled.div`
-	div.header {
-		> button.toggle {
-			transform: rotate(0);
-		}
-		&:hover {
-			> button.toggle {
-				transform: rotate(180deg);
-			}
-		}
-	}
+const CollapsedButton = styled(ToggleButton)`
+	transform: rotate(0);
 `
 
-const ExpandedCollapsableDiv = styled.div`
-	div.header {
-		> button.toggle {
-			transform: rotate(180deg);
-		}
-		&:hover {
-			> button.toggle {
-				transform: rotate(0);
-			}
-		}
-	}
+const ExpandedButton = styled(ToggleButton)`
+	transform: rotate(180deg);
 `
 
 const Content = styled.div`
@@ -51,12 +33,10 @@ export const Collapsable = ({
 	initial,
 	children,
 	onToggle,
-	className,
 }: {
 	id: string
 	title: React.ReactElement<any>
 	initial?: boolean
-	className?: string
 	children: React.ReactElement<any> | (React.ReactElement<any> | null)[]
 	onToggle?: (collapsed: boolean) => void
 }) => {
@@ -76,25 +56,25 @@ export const Collapsable = ({
 	return (
 		<>
 			{collapsed && (
-				<ExpandedCollapsableDiv className={`collapsable ${className}`}>
+				<div>
 					<CollapsableHeader onClick={toggle}>
 						<div>{title}</div>
-						<ToggleButton title={'Expand'} onClick={toggle}>
+						<CollapsedButton title={'Expand'} onClick={toggle}>
 							⌃
-						</ToggleButton>
+						</CollapsedButton>
 					</CollapsableHeader>
-				</ExpandedCollapsableDiv>
+				</div>
 			)}
 			{!collapsed && (
-				<CollapsedCollapsableDiv className={`collapsable ${className}`}>
+				<div>
 					<CollapsableHeader onClick={toggle}>
 						<div>{title}</div>
-						<ToggleButton color={'link'} title={'Collapse'} onClick={toggle}>
+						<ExpandedButton color={'link'} title={'Collapse'} onClick={toggle}>
 							⌃
-						</ToggleButton>
+						</ExpandedButton>
 					</CollapsableHeader>
 					<Content>{children}</Content>
-				</CollapsedCollapsableDiv>
+				</div>
 			)}
 		</>
 	)
