@@ -11,8 +11,7 @@ import { Iot, IotData } from 'aws-sdk'
 import { getPolicyNameFromArn } from './getPolicyNameFromArn'
 import { NavbarBrandContextProvider } from './Navigation/NavbarBrand'
 import { ToggleNavigation } from './Navigation/ToggleNavigation'
-
-import './App.scss'
+import { GlobalStyle } from './Styles'
 
 Amplify.configure({
 	Auth: {
@@ -98,6 +97,7 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 
 	return (
 		<Router>
+			<GlobalStyle />
 			<NavbarBrandContextProvider>
 				<ToggleNavigation />
 				<Route exact path="/" render={() => <Redirect to="/cats" />} />

@@ -1,6 +1,46 @@
 import React, { useState } from 'react'
+import styled from 'styled-components'
 
-import './Collapsable.scss'
+const CollapsableDiv = styled.div`
+	div.header {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		cursor: pointer;
+		> button.toggle {
+			border: 0;
+			padding: 0;
+			background-color: transparent;
+			transition-duration: 250ms;
+		}
+	}
+`
+
+const CollapsedCollapsableDiv = styled(CollapsableDiv)`
+	div.header {
+		> button.toggle {
+			transform: rotate(0);
+		}
+		&:hover {
+			> button.toggle {
+				transform: rotate(180deg);
+			}
+		}
+	}
+`
+
+const ExpandedCollapsableDiv = styled(CollapsableDiv)`
+	div.header {
+		> button.toggle {
+			transform: rotate(180deg);
+		}
+		&:hover {
+			> button.toggle {
+				transform: rotate(0);
+			}
+		}
+	}
+`
 
 export const Collapsable = ({
 	id,
@@ -33,17 +73,17 @@ export const Collapsable = ({
 	return (
 		<>
 			{collapsed && (
-				<div className={`collapsable ${className} collapsed`}>
+				<ExpandedCollapsableDiv className={`collapsable ${className}`}>
 					<div className={'header'} onClick={toggle}>
 						<div className={'title'}>{title}</div>
 						<button className={'toggle'} title={'Expand'} onClick={toggle}>
 							⌃
 						</button>
 					</div>
-				</div>
+				</ExpandedCollapsableDiv>
 			)}
 			{!collapsed && (
-				<div className={`collapsable ${className} expanded`}>
+				<CollapsedCollapsableDiv className={`collapsable ${className}`}>
 					<div className={'header'} onClick={toggle}>
 						<div className={'title'}>{title}</div>
 						<button
@@ -56,7 +96,7 @@ export const Collapsable = ({
 						</button>
 					</div>
 					<div className={'content'}>{children}</div>
-				</div>
+				</CollapsedCollapsableDiv>
 			)}
 		</>
 	)

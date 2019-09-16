@@ -1,10 +1,22 @@
 import React from 'react'
 import { CatsMap } from './CatsMap'
+import styled from 'styled-components'
 
-import './CatMap.scss'
+const CatMapMain = styled.main`
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	position: absolute;
+	margin: 0;
+	top: 55px;
+	z-index: 10;
+	.leaflet-container {
+		height: 100%;
+	}
+`
 
 export const CatsMapPage = () => (
-	<main className={'catMap'}>
+	<CatMapMain>
 		<CatsMap />
-	</main>
+	</CatMapMain>
 )

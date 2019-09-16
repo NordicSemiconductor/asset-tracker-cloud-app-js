@@ -2,8 +2,12 @@ import * as am4core from '@amcharts/amcharts4/core'
 import * as am4charts from '@amcharts/amcharts4/charts'
 import React, { useEffect, useRef } from 'react'
 import { v4 } from 'uuid'
+import styled from 'styled-components'
 
-import './HistoricalDataChart.scss'
+const HistoricalDataChartDiv = styled.div`
+	width: 100%;
+	height: 400px;
+`
 
 export const HistoricalDataChart = ({
 	data,
@@ -54,5 +58,5 @@ export const HistoricalDataChart = ({
 		}
 	}, [data])
 
-	return <div id={uuid.current} className={'historicalDataChart'} />
+	return <HistoricalDataChartDiv id={uuid.current} />
 }

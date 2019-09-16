@@ -6,9 +6,11 @@ import { emojify } from '../Emojify/Emojify'
 export const ReportedTime = ({
 	reportedAt,
 	receivedAt,
+	short,
 }: {
 	reportedAt: Date
 	receivedAt: Date
+	short?: boolean
 }) => {
 	const reportedTimeIsOutDated =
 		(receivedAt.getTime() - reportedAt.getTime()) / 1000 > 300
@@ -26,11 +28,15 @@ export const ReportedTime = ({
 		return (
 			<span className={'reportedTime'}>
 				{reportIsOld ? emojify('🤷 ') : emojify('🕒 ')}
-				<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
+				{!short && (
+					<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
+				)}
 				{reportedTimeIsOutDated && relativeTimesHaveDiff && (
 					<>
 						{emojify('☁️ ')}
-						<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
+						{!short && (
+							<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
+						)}
 					</>
 				)}
 			</span>
@@ -39,7 +45,9 @@ export const ReportedTime = ({
 		return (
 			<span className={'reportedTime'}>
 				{emojify('☁️ ')}
-				<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
+				{!short && (
+					<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
+				)}
 			</span>
 		)
 	}

@@ -33,8 +33,6 @@
     "aws-amplify-react": "^2.4.4",
     "aws-iot-device-sdk": "^2.2.1",
     "aws-sdk": "^2.528.0",
-    "bootstrap": "^4.3.1",
-    "classnames": "^2.2.6",
     "date-fns": "^2.2.1",
     "fast-deep-equal": "^2.0.1",
     "intro.js": "^2.9.3",
@@ -45,6 +43,7 @@
     "react-leaflet": "^2.4.0",
     "react-router-dom": "^5.0.1",
     "reactstrap": "^8.0.0",
+    "styled-components": "^4.3.2",
     "uuid": "^3.3.3"
   },
   "devDependencies": {
@@ -52,7 +51,6 @@
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-angular": "^8.1.0",
     "@types/aws-iot-device-sdk": "^2.2.0",
-    "@types/classnames": "^2.2.9",
     "@types/intro.js": "2.4.4",
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.5",
@@ -61,6 +59,7 @@
     "@types/react-leaflet": "^2.4.0",
     "@types/react-router-dom": "^4.3.5",
     "@types/reactstrap": "^8.0.4",
+    "@types/styled-components": "^4.1.19",
     "@types/uuid": "^3.4.5",
     "babel-eslint": "^10.0.3",
     "eslint-config-react-app": "^5.0.1",
@@ -71,7 +70,6 @@
     "eslint-plugin-react-app": "^6.0.2",
     "eslint-plugin-react-hooks": "^2.0.1",
     "husky": "^3.0.5",
-    "node-sass": "^4.12.0",
     "react-scripts": "^3.1.1",
     "ts-jest": "^24.1.0"
   },
@@ -127,6 +125,11 @@
       "ts-jest": {
         "diagnostics": true
       }
+    }
+  },
+  "babelMacros": {
+    "styledComponents": {
+      "pure": true
     }
   }
 }

@@ -1,4 +1,10 @@
 import React from 'react'
+import { LogoImg } from '../Navigation/NavbarBrand'
+import styled from 'styled-components'
+
+const CatName = styled.span`
+	white-space: nowrap;
+`
 
 export const CatNavbar = ({
 	name,
@@ -8,13 +14,13 @@ export const CatNavbar = ({
 	avatar?: string
 }) => (
 	<div className={'navbar-brand'}>
-		<img
+		<LogoImg
 			src={avatar || 'https://placekitten.com/30/30'}
 			width="30"
 			height="30"
 			className="d-inline-block align-top avatar"
 			alt={name}
 		/>
-		<span className={'catName'}>{name}</span>
+		<CatName>{name}</CatName>
 	</div>
 )

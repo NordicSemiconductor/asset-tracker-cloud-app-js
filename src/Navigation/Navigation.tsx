@@ -9,11 +9,10 @@ export const Navigation = (props: {
 	navbar?: boolean
 	logout: () => void
 	onClick?: () => void
-	className?: string
 }) => {
 	const { navbar, logout, onClick } = props
 	return (
-		<Nav navbar={navbar} className={props.className}>
+		<Nav navbar={navbar}>
 			<NavItem>
 				<Link className="nav-link" to="/cats" onClick={onClick}>
 					{emojify('🐱')} Cats

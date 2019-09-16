@@ -8,9 +8,11 @@ import {
 	Polyline,
 	LeafletConsumer,
 } from 'react-leaflet'
+import styled from 'styled-components'
 
-import './Map.scss'
-
+const StyledLeafletMap = styled(LeafletMap)`
+	height: 300px;
+`
 type Point = { lat: number; lng: number }
 
 export const Map = ({
@@ -34,7 +36,7 @@ export const Map = ({
 	const [mapZoom, setMapZoom] = useState(zoom)
 	const mapRef = createRef<LeafletMap>()
 	return (
-		<LeafletMap
+		<StyledLeafletMap
 			center={[lat, lng]}
 			zoom={zoom}
 			ref={mapRef}
@@ -112,6 +114,6 @@ export const Map = ({
 						</React.Fragment>
 					)
 				})}
-		</LeafletMap>
+		</StyledLeafletMap>
 	)
 }

@@ -1,15 +1,19 @@
 import React from 'react'
 import { Progress } from 'reactstrap'
+import styled from 'styled-components'
 
-import './Loading.scss'
+const LoadingP = styled.p`
+	margin-bottom: 0;
+	text-align: center;
+`
 
 export const Loading = ({ text }: { text?: string }) => (
-	<div className="loading">
-		<p>
+	<div>
+		<LoadingP>
 			<small>
 				<em>{text || 'Loading ...'}</em>
 			</small>
-		</p>
+		</LoadingP>
 		<Progress striped animated value={50} />
 	</div>
 )

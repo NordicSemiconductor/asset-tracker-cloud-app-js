@@ -63,9 +63,11 @@ export const Operator = ({ op }: { op?: Op }) => (
 export const ConnectionInformation = ({
 	device,
 	roaming,
+	short,
 }: {
 	device: DeviceInformation
 	roaming: RoamingInformation
+	short?: boolean
 }) => {
 	const {
 		v: {
@@ -85,6 +87,7 @@ export const ConnectionInformation = ({
 			</TextWithIcon>
 			{emojify(`📱 ${nw}`)}
 			<ReportedTime
+				short={short}
 				receivedAt={roaming.v.rsrp.receivedAt}
 				reportedAt={new Date(roaming.ts.value)}
 			/>

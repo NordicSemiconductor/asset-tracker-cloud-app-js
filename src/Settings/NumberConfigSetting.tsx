@@ -9,8 +9,6 @@ import {
 } from 'reactstrap'
 import { OutDatedWarning } from './OutDatedWarning'
 import { formatDistanceToNow } from 'date-fns'
-
-import './NumberConfigSetting.scss'
 import { emojify } from '../Emojify/Emojify'
 
 export const NumberConfigSetting = ({
@@ -63,7 +61,7 @@ export const NumberConfigSetting = ({
 					reported={reported}
 					onNotReported={
 						<InputGroupAddon addonType="append" className={'is-outdated'}>
-							<InputGroupText>
+							<InputGroupText className={'text-danger'}>
 								<abbr title={'Device has not reported this setting, yet.'}>
 									{emojify('❓')}
 								</abbr>
@@ -72,7 +70,7 @@ export const NumberConfigSetting = ({
 					}
 					onOutDated={r => (
 						<InputGroupAddon addonType="append" className={'is-outdated'}>
-							<InputGroupText>
+							<InputGroupText className={'text-danger'}>
 								<abbr
 									title={`Device has last synced this setting ${formatDistanceToNow(
 										r.receivedAt,

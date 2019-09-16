@@ -5,9 +5,64 @@ import { Config } from '../DeviceShadow'
 import { OutDatedWarning } from './OutDatedWarning'
 import { NumberConfigSetting } from './NumberConfigSetting'
 import { formatDistanceToNow } from 'date-fns'
-
-import './Settings.scss'
 import { emojify } from '../Emojify/Emojify'
+import styled from 'styled-components'
+import { mobileBreakpoint } from '../Styles'
+
+const SettingsForm = styled(Form)`
+	margin-top: 1rem;
+
+	@media (min-width: ${mobileBreakpoint}) {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: auto;
+		grid-column-gap: 1rem;
+	}
+
+	input,
+	span.input-group-text,
+	label,
+	legend,
+	button {
+		font-size: 80%;
+		@media (min-width: ${mobileBreakpoint}) {
+			font-size: 100%;
+		}
+	}
+
+	fieldset {
+		@media (min-width: ${mobileBreakpoint}) {
+			border-radius: 5px;
+			border: 1px solid #cccccc;
+			padding: 0.5rem 1rem 0 1rem;
+			margin-bottom: 1rem;
+		}
+		legend {
+			width: auto;
+			margin: 0;
+		}
+		.sidebyside {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			grid-column-gap: 1rem;
+			align-items: baseline;
+			@media (min-width: ${mobileBreakpoint}) {
+				display: block;
+			}
+		}
+	}
+	.btn-group {
+		width: 100%;
+	}
+	label {
+		font-weight: normal;
+	}
+	footer {
+		grid-column: auto / span 2;
+		display: flex;
+		flex-direction: column;
+	}
+`
 
 export type DesiredConfig = {
 	act: boolean
@@ -55,7 +110,7 @@ export const Settings = ({
 	const r: Partial<Config> = reported || {}
 
 	return (
-		<Form className={'settings'}>
+		<SettingsForm>
 			<fieldset>
 				<legend>Mode</legend>
 				<FormGroup data-intro={'This sets the operation mode of the Tracker.'}>
@@ -194,6 +249,6 @@ export const Settings = ({
 					{!saving && 'Save'}
 				</Button>
 			</footer>
-		</Form>
+		</SettingsForm>
 	)
 }

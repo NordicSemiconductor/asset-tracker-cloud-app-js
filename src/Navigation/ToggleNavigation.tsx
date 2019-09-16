@@ -3,8 +3,44 @@ import { Auth } from 'aws-amplify'
 import { Collapse, Navbar, NavbarToggler } from 'reactstrap'
 import { NavbarBrandConsumer } from './NavbarBrand'
 import { Navigation } from './Navigation'
+import styled from 'styled-components'
+import {
+	hideOnDesktop,
+	mobileBreakpoint,
+	showOnDesktop,
+	wideBreakpoint,
+} from '../Styles'
 
-import './ToggleNavigation.scss'
+const StyledNavbar = styled(Navbar)`
+	z-index: 100;
+	@media (min-width: ${wideBreakpoint}) {
+		max-width: ${wideBreakpoint};
+		margin: 0 auto;
+	}
+`
+
+const MobileNavbar = hideOnDesktop(styled.div`
+	width: 100%;
+	display: flex;
+	.navbar-brand {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		flex-grow: 1;
+	}
+`)
+
+const MobileOnlyCollapse = hideOnDesktop(Collapse)
+
+const DesktopOnly = showOnDesktop(styled.div``)
+const DesktopOnlyNavigation = styled.div`
+	.nav {
+		display: none;
+		@media (min-width: ${mobileBreakpoint}) {
+			display: flex;
+		}
+	}
+}
+`
 
 export const ToggleNavigation = () => {
 	const [navigationVisible, setNavigationVisible] = useState(false)
@@ -18,27 +54,25 @@ export const ToggleNavigation = () => {
 
 	return (
 		<header className="bg-light">
-			<Navbar color="light" light>
-				<div className={'navbar-with-toggle hideOnDesktop'}>
+			<StyledNavbar color="light" light>
+				<MobileNavbar>
 					<NavbarBrandConsumer>{({ navbar }) => navbar}</NavbarBrandConsumer>
 					<NavbarToggler onClick={toggleNavigation} />
-				</div>
-				<div className={'showOnDesktop'}>
+				</MobileNavbar>
+				<DesktopOnly>
 					<NavbarBrandConsumer>{({ navbar }) => navbar}</NavbarBrandConsumer>
-				</div>
-				<Collapse isOpen={navigationVisible} navbar className="hideOnDesktop">
+				</DesktopOnly>
+				<MobileOnlyCollapse isOpen={navigationVisible} navbar>
 					<Navigation
 						navbar={true}
 						onClick={toggleNavigation}
 						logout={logout}
 					/>
-				</Collapse>
-				<Navigation
-					className="showOnDesktop"
-					onClick={toggleNavigation}
-					logout={logout}
-				/>
-			</Navbar>
+				</MobileOnlyCollapse>
+				<DesktopOnlyNavigation>
+					<Navigation onClick={toggleNavigation} logout={logout} />
+				</DesktopOnlyNavigation>
+			</StyledNavbar>
 		</header>
 	)
 }

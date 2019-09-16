@@ -1,10 +1,5 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import './bootstrap.scss'
-import './typography.scss'
-import './mobile.scss'
-import './desktop.scss'
-import '../node_modules/intro.js/introjs.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 

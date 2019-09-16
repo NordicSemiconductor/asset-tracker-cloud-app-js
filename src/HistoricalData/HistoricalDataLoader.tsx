@@ -8,8 +8,6 @@ import {
 import { Loading } from '../Loading/Loading'
 import { Error as ShowError } from '../Error/Error'
 
-import './HistoricalDataChart.scss'
-
 export const HistoricalDataLoader = ({
 	athena,
 	deviceId,

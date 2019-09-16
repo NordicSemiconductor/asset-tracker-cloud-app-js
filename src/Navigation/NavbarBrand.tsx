@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
 import { NavbarBrand } from 'reactstrap'
 import logo from '../logo.svg'
+import styled from 'styled-components'
 
-import './NavbarBrand.scss'
+export const LogoImg = styled.img`
+	margin-right: 0.25rem;
+	border-radius: 100%;
+`
 
 const defaultNavbarBrand: React.ReactElement<any> = (
 	<NavbarBrand href="/">
-		<img
+		<LogoImg
 			src={logo}
 			width="30"
 			height="30"

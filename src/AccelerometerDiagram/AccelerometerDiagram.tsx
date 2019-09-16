@@ -2,14 +2,18 @@ import * as am4core from '@amcharts/amcharts4/core'
 import * as am4charts from '@amcharts/amcharts4/charts'
 import React, { useEffect, useRef } from 'react'
 import { v4 } from 'uuid'
-
-import './AccelerometerDiagram.scss'
+import styled from 'styled-components'
 
 const axes = {
 	Z: 2,
 	Y: 1,
 	X: 0,
 }
+
+const DiagramDiv = styled.div`
+	width: 100%;
+	height: 250px;
+`
 
 export const AccelerometerDiagram = ({ values }: { values: number[] }) => {
 	const chartRef = useRef<am4charts.RadarChart>()
@@ -57,5 +61,5 @@ export const AccelerometerDiagram = ({ values }: { values: number[] }) => {
 		}
 	}, [values])
 
-	return <div id={uuid.current} className={'accelerometerDiagram'} />
+	return <DiagramDiv id={uuid.current} />
 }

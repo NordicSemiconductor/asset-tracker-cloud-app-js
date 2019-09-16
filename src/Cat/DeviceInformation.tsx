@@ -1,8 +1,29 @@
 import React from 'react'
 import { ReportedTime } from './ReportedTime'
+import styled from 'styled-components'
 
-import './DeviceInformation.scss'
 import { DeviceInformation, RoamingInformation } from '../DeviceShadow'
+
+const DeviceInformationDiv = styled.div`
+	dl {
+		display: grid;
+		grid-template: auto / 1fr 3fr;
+		dt,
+		dd {
+			font-weight: normal;
+			padding: 0;
+			margin: 0;
+			border-bottom: 1px solid #f0f0f0;
+		}
+		dt {
+			padding-right: 1rem;
+		}
+	}
+	.reportedTime {
+		font-size: 85%;
+		opacity: 0.75;
+	}
+`
 
 export const DeviceInfo = ({
 	device,
@@ -12,7 +33,7 @@ export const DeviceInfo = ({
 	roaming?: RoamingInformation
 }) => {
 	return (
-		<div className={'device-information'}>
+		<DeviceInformationDiv>
 			<h4>Hard- and Software</h4>
 			<dl>
 				<dt>Board</dt>
@@ -65,6 +86,6 @@ export const DeviceInfo = ({
 				}
 				reportedAt={new Date(roaming ? roaming.ts.value : device.ts.value)}
 			/>
-		</div>
+		</DeviceInformationDiv>
 	)
 }
