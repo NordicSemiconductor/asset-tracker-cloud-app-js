@@ -4,24 +4,26 @@ import styled from 'styled-components'
 
 import { DeviceInformation, RoamingInformation } from '../DeviceShadow'
 
-const DeviceInformationDiv = styled.div`
-	dl {
-		display: grid;
-		grid-template: auto / 1fr 3fr;
-		dt,
-		dd {
-			font-weight: normal;
-			padding: 0;
-			margin: 0;
-			border-bottom: 1px solid #f0f0f0;
-		}
-		dt {
-			padding-right: 1rem;
-		}
+const StyledReportedTime = styled(ReportedTime)`
+	font-size: 85%;
+	opacity: 0.75;
+`
+
+export const DeviceInformationDl = styled.dl`
+	display: grid;
+	grid-template: auto / 1fr 2fr;
+	dt,
+	dd {
+		font-weight: normal;
+		padding: 0;
+		margin: 0;
+		border-bottom: 1px solid #f0f0f0;
 	}
-	.reportedTime {
-		font-size: 85%;
-		opacity: 0.75;
+	dt {
+		padding-right: 1rem;
+	}
+	dt {
+		flex-grow: 1;
 	}
 `
 
@@ -33,9 +35,9 @@ export const DeviceInfo = ({
 	roaming?: RoamingInformation
 }) => {
 	return (
-		<DeviceInformationDiv>
+		<div>
 			<h4>Hard- and Software</h4>
-			<dl>
+			<DeviceInformationDl>
 				<dt>Board</dt>
 				<dd>
 					<code>{device.v.brdV.value}</code>
@@ -48,9 +50,9 @@ export const DeviceInfo = ({
 				<dd>
 					<code>{device.v.appV.value}</code>
 				</dd>
-			</dl>
+			</DeviceInformationDl>
 			<h4>Connection</h4>
-			<dl>
+			<DeviceInformationDl>
 				<dt>Band</dt>
 				<dd>
 					<code>{device.v.band.value}</code>
@@ -79,13 +81,13 @@ export const DeviceInfo = ({
 						</dd>
 					</>
 				)}
-			</dl>
-			<ReportedTime
+			</DeviceInformationDl>
+			<StyledReportedTime
 				receivedAt={
 					roaming ? roaming.v.rsrp.receivedAt : device.v.brdV.receivedAt
 				}
 				reportedAt={new Date(roaming ? roaming.ts.value : device.ts.value)}
 			/>
-		</DeviceInformationDiv>
+		</div>
 	)
 }

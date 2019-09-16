@@ -29,6 +29,7 @@ import { emojify } from '../Emojify/Emojify'
 import { hideOnDesktop, mobileBreakpoint } from '../Styles'
 import styled from 'styled-components'
 import { NoMap } from './NoMap'
+import { DFU } from './DFU'
 
 const intro = introJs()
 
@@ -456,6 +457,7 @@ const ShowCat = ({
 									roaming={reported.roam}
 								/>
 							</Collapsable>
+							<DFU device={reported.dev} />
 						</>
 					)}
 					{reported && reported.acc && reported.acc.v && (

@@ -2,16 +2,14 @@ import React from 'react'
 import { RelativeTime } from '../RelativeTime/RelativeTime'
 import { formatDistanceToNow } from 'date-fns'
 import { emojify } from '../Emojify/Emojify'
+import styled from 'styled-components'
 
-export const ReportedTime = ({
-	reportedAt,
-	receivedAt,
-	short,
-}: {
-	reportedAt: Date
-	receivedAt: Date
-	short?: boolean
-}) => {
+const OutDatedSpan = styled.span`
+	margin-left: 0.5rem;
+`
+
+export const ReportedTime = (props: { reportedAt: Date; receivedAt: Date }) => {
+	const { reportedAt, receivedAt, ...restProps } = props
 	const reportedTimeIsOutDated =
 		(receivedAt.getTime() - reportedAt.getTime()) / 1000 > 300
 	const relativeTimesHaveDiff =
@@ -26,28 +24,22 @@ export const ReportedTime = ({
 	const reportIsOld = (Date.now() - reportedAt.getTime()) / 1000 > 3600
 	try {
 		return (
-			<span className={'reportedTime'}>
+			<span className={'reportedTime'} {...restProps}>
 				{reportIsOld ? emojify('🤷 ') : emojify('🕒 ')}
-				{!short && (
-					<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
-				)}
+				<RelativeTime ts={reportedAt} key={reportedAt.toISOString()} />
 				{reportedTimeIsOutDated && relativeTimesHaveDiff && (
-					<>
+					<OutDatedSpan>
 						{emojify('☁️ ')}
-						{!short && (
-							<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
-						)}
-					</>
+						<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
+					</OutDatedSpan>
 				)}
 			</span>
 		)
 	} catch {
 		return (
-			<span className={'reportedTime'}>
+			<span className={'reportedTime'} {...restProps}>
 				{emojify('☁️ ')}
-				{!short && (
-					<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
-				)}
+				<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
 			</span>
 		)
 	}
