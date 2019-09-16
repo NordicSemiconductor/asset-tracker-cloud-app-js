@@ -8,7 +8,7 @@ const CatMapMain = styled.main`
 	max-width: 100%;
 	position: absolute;
 	margin: 0;
-	top: 55px;
+	top: 58px;
 	z-index: 10;
 	.leaflet-container {
 		height: 100%;
