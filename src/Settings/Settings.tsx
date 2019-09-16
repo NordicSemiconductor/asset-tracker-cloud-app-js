@@ -10,8 +10,6 @@ import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
 
 const SettingsForm = styled(Form)`
-	margin-top: 1rem;
-
 	@media (min-width: ${mobileBreakpoint}) {
 		display: grid;
 		grid-template-columns: 1fr 1fr;

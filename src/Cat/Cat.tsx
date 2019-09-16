@@ -114,9 +114,6 @@ const CatCard = styled(Card)`
 		h4 {
 			font-size: 105%;
 		}
-		.device-information {
-			margin-top: 1rem;
-		}
 		.collapsable {
 			&.personalization {
 				.content {
@@ -550,7 +547,7 @@ export const Cat = ({ catId }: { catId: string }) => (
 												lng: parseFloat,
 												date: v => new Date(v),
 											}}
-											QueryString={`SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.gps IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT 10`}
+											QueryString={`SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.gps IS NOT NULL AND reported.gps.v.lat IS NOT NULL AND reported.gps.v.lng IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT 10`}
 											workGroup={athenaWorkGroup}
 											loading={
 												<Map
@@ -558,8 +555,8 @@ export const Cat = ({ catId }: { catId: string }) => (
 														lat: gps.v.lat.value,
 														lng: gps.v.lng.value,
 													}}
-													accuracy={gps.v.acc.value}
-													heading={gps.v.hdg.value}
+													accuracy={gps.v.acc && gps.v.acc.value}
+													heading={gps.v.hdg && gps.v.hdg.value}
 													label={catId}
 												/>
 											}
@@ -570,8 +567,8 @@ export const Cat = ({ catId }: { catId: string }) => (
 														lat: gps.v.lat.value,
 														lng: gps.v.lng.value,
 													}}
-													accuracy={gps.v.acc.value}
-													heading={gps.v.hdg.value}
+													accuracy={gps.v.acc && gps.v.acc.value}
+													heading={gps.v.hdg && gps.v.hdg.value}
 													label={catId}
 													history={
 														(data as unknown) as ({

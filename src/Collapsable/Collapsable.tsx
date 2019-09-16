@@ -1,22 +1,21 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 
-const CollapsableDiv = styled.div`
-	div.header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		cursor: pointer;
-		> button.toggle {
-			border: 0;
-			padding: 0;
-			background-color: transparent;
-			transition-duration: 250ms;
-		}
-	}
+const CollapsableHeader = styled.div`
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	cursor: pointer;
 `
 
-const CollapsedCollapsableDiv = styled(CollapsableDiv)`
+const ToggleButton = styled.button`
+	border: 0;
+	padding: 0;
+	background-color: transparent;
+	transition-duration: 250ms;
+`
+
+const CollapsedCollapsableDiv = styled.div`
 	div.header {
 		> button.toggle {
 			transform: rotate(0);
@@ -29,7 +28,7 @@ const CollapsedCollapsableDiv = styled(CollapsableDiv)`
 	}
 `
 
-const ExpandedCollapsableDiv = styled(CollapsableDiv)`
+const ExpandedCollapsableDiv = styled.div`
 	div.header {
 		> button.toggle {
 			transform: rotate(180deg);
@@ -40,6 +39,10 @@ const ExpandedCollapsableDiv = styled(CollapsableDiv)`
 			}
 		}
 	}
+`
+
+const Content = styled.div`
+	margin-top: 1rem;
 `
 
 export const Collapsable = ({
@@ -74,28 +77,23 @@ export const Collapsable = ({
 		<>
 			{collapsed && (
 				<ExpandedCollapsableDiv className={`collapsable ${className}`}>
-					<div className={'header'} onClick={toggle}>
-						<div className={'title'}>{title}</div>
-						<button className={'toggle'} title={'Expand'} onClick={toggle}>
+					<CollapsableHeader onClick={toggle}>
+						<div>{title}</div>
+						<ToggleButton title={'Expand'} onClick={toggle}>
 							⌃
-						</button>
-					</div>
+						</ToggleButton>
+					</CollapsableHeader>
 				</ExpandedCollapsableDiv>
 			)}
 			{!collapsed && (
 				<CollapsedCollapsableDiv className={`collapsable ${className}`}>
-					<div className={'header'} onClick={toggle}>
-						<div className={'title'}>{title}</div>
-						<button
-							className={'toggle'}
-							color={'link'}
-							title={'Collapse'}
-							onClick={toggle}
-						>
+					<CollapsableHeader onClick={toggle}>
+						<div>{title}</div>
+						<ToggleButton color={'link'} title={'Collapse'} onClick={toggle}>
 							⌃
-						</button>
-					</div>
-					<div className={'content'}>{children}</div>
+						</ToggleButton>
+					</CollapsableHeader>
+					<Content>{children}</Content>
 				</CollapsedCollapsableDiv>
 			)}
 		</>
