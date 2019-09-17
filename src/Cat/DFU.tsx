@@ -159,7 +159,7 @@ const Jobs = ({
 					startedAt,
 					lastUpdatedAt,
 					executionNumber,
-					document: { size, fwversion, targetBoard, location },
+					document: { size, fwversion, targetBoard, location, filename },
 				}) => {
 					const isCanceled = status === 'CANCELED'
 					const canCancel = status === 'QUEUED'
@@ -189,7 +189,7 @@ const Jobs = ({
 								<em>{description}</em>
 								<br />
 								<DownloadLink href={location} target={'_blank'}>
-									{location}
+									{filename}
 								</DownloadLink>
 								<UpgradeDocument>
 									<dt>Version:</dt>
