@@ -29,7 +29,15 @@ import { emojify } from '../Emojify/Emojify'
 import { hideOnDesktop, mobileBreakpoint } from '../Styles'
 import styled from 'styled-components'
 import { NoMap } from './NoMap'
-import { DFU } from './DFU'
+import { DFU, OnCreateUpgradeJob } from './DFU'
+import { describeCatIotThing } from './iot'
+import { upgradeFirmware } from './upgradeFirmware'
+import {
+	DeviceUpgradeFirmwareJob,
+	listUpgradeFirmwareJobs,
+	cancelUpgradeFirmwareJob,
+	deleteUpgradeFirmwareJob,
+} from './listUpgradeFirmwareJobs'
 
 const intro = introJs()
 
@@ -130,8 +138,13 @@ const ShowCat = ({
 	catId,
 	iot,
 	iotData,
+	onCreateUpgradeJob,
 	onAvatarChange,
 	onNameChange,
+	describeThing,
+	listUpgradeJobs,
+	cancelUpgradeJob,
+	deleteUpgradeJob,
 	identityId,
 	credentials,
 	children,
@@ -141,6 +154,15 @@ const ShowCat = ({
 	iotData: IotData
 	onAvatarChange: (args: { avatar: Blob }) => void
 	onNameChange: (args: { name: string }) => void
+	onCreateUpgradeJob: OnCreateUpgradeJob
+	describeThing: describeCatIotThing
+	listUpgradeJobs: (
+		deviceId: string,
+	) => () => Promise<DeviceUpgradeFirmwareJob[]>
+	cancelUpgradeJob: (deviceId: string) => (jobId: string) => Promise<void>
+	deleteUpgradeJob: (
+		deviceId: string,
+	) => (args: { jobId: string; executionNumber: number }) => Promise<void>
 	catId: string
 	identityId: string
 	credentials: {
@@ -171,11 +193,7 @@ const ShowCat = ({
 	useEffect(() => {
 		let connection: device
 		Promise.all([
-			iot
-				.describeThing({
-					thingName: catId,
-				})
-				.promise(),
+			describeThing({ catId }),
 			new Promise(resolve => {
 				console.log('Connecting ...')
 				connection = new device({
@@ -257,7 +275,16 @@ const ShowCat = ({
 			connection && connection.end()
 			resetNavbar()
 		}
-	}, [iot, iotData, catId, identityId, credentials, setNavbar, resetNavbar])
+	}, [
+		iot,
+		iotData,
+		catId,
+		identityId,
+		credentials,
+		setNavbar,
+		resetNavbar,
+		describeThing,
+	])
 
 	useEffect(() => {
 		if (!loading && !error) {
@@ -457,7 +484,15 @@ const ShowCat = ({
 									roaming={reported.roam}
 								/>
 							</Collapsable>
-							<DFU device={reported.dev} />
+							<hr />
+							<DFU
+								key={`${cat.version}`}
+								device={reported.dev}
+								onCreateUpgradeJob={onCreateUpgradeJob}
+								listUpgradeJobs={listUpgradeJobs(catId)}
+								cancelUpgradeJob={cancelUpgradeJob(catId)}
+								deleteUpgradeJob={deleteUpgradeJob(catId)}
+							/>
 						</>
 					)}
 					{reported && reported.acc && reported.acc.v && (
@@ -516,6 +551,28 @@ export const Cat = ({ catId }: { catId: string }) => (
 								thingName: catId,
 							})
 
+							const createUpgradeJob = upgradeFirmware({
+								s3,
+								bucketName: `${process.env.REACT_APP_DFU_BUCKET_NAME}`,
+								iot,
+							})
+
+							const listUpgradeJobs = listUpgradeFirmwareJobs({
+								iot,
+							})
+
+							const cancelUpgradeJob = cancelUpgradeFirmwareJob({
+								iot,
+							})
+
+							const deleteUpgradeJob = deleteUpgradeFirmwareJob({
+								s3,
+								bucketName: `${process.env.REACT_APP_DFU_BUCKET_NAME}`,
+								iot,
+							})
+
+							const describeThing = describeCatIotThing({ iot })
+
 							return (
 								<ShowCat
 									catId={catId}
@@ -523,6 +580,26 @@ export const Cat = ({ catId }: { catId: string }) => (
 									iotData={iotData}
 									identityId={identityId}
 									credentials={credentials}
+									describeThing={describeThing}
+									listUpgradeJobs={deviceId => async () =>
+										listUpgradeJobs(deviceId)}
+									cancelUpgradeJob={deviceId => async (jobId: string) =>
+										cancelUpgradeJob({ deviceId, jobId })}
+									deleteUpgradeJob={deviceId => async ({
+										jobId,
+										executionNumber,
+									}: {
+										jobId: string
+										executionNumber: number
+									}) => deleteUpgradeJob({ deviceId, jobId, executionNumber })}
+									onCreateUpgradeJob={async args =>
+										describeThing({ catId }).then(async ({ thingArn }) =>
+											createUpgradeJob({
+												...args,
+												catArn: thingArn,
+											}),
+										)
+									}
 									onAvatarChange={({ avatar }) => {
 										avatarUploader({
 											avatar,

@@ -55,11 +55,12 @@ const SettingsForm = styled(Form)`
 	label {
 		font-weight: normal;
 	}
-	footer {
-		grid-column: auto / span 2;
-		display: flex;
-		flex-direction: column;
-	}
+`
+
+export const FooterWithFullWidthButton = styled.footer`
+	grid-column: auto / span 2;
+	display: flex;
+	flex-direction: column;
 `
 
 export type DesiredConfig = {
@@ -234,7 +235,7 @@ export const Settings = ({
 					onChange={updateConfigProperty('actwt')}
 				/>
 			</fieldset>
-			<footer>
+			<FooterWithFullWidthButton>
 				<Button
 					color={'primary'}
 					disabled={!changed || saving}
@@ -246,7 +247,7 @@ export const Settings = ({
 					{saving && 'Saving ...'}
 					{!saving && 'Save'}
 				</Button>
-			</footer>
+			</FooterWithFullWidthButton>
 		</SettingsForm>
 	)
 }

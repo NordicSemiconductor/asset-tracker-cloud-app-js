@@ -38,12 +38,14 @@
     "intro.js": "^2.9.3",
     "leaflet": "^1.5.1",
     "mcc-mnc-list": "git+https://github.com/bifravst/mcc-mnc-list.git#add-typescript-declarations",
+    "memoize-one": "^5.1.1",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-leaflet": "^2.4.0",
     "react-router-dom": "^5.0.1",
     "reactstrap": "^8.0.0",
     "styled-components": "^4.3.2",
+    "use-debounce": "^3.0.1",
     "uuid": "^3.3.3"
   },
   "devDependencies": {

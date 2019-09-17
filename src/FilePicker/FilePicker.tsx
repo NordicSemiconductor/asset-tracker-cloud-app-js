@@ -5,7 +5,9 @@ export const FilePicker = ({
 	maxSize,
 	onError,
 	onFile,
+	...restProps
 }: {
+	[key: string]: any
 	accept: string
 	maxSize: number
 	onError: (result: Error) => void
@@ -14,6 +16,7 @@ export const FilePicker = ({
 	const inputRef = createRef<HTMLInputElement>()
 	return (
 		<input
+			{...restProps}
 			type="file"
 			accept={accept}
 			ref={inputRef}
