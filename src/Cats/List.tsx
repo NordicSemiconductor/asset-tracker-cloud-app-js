@@ -54,11 +54,16 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 				</Table>
 			)}
 			{!cats.length && (
-				<div>
-					No cats, yet. Read more about how to create{' '}
-					<em>Device Credentials</em> for your cat trackers{' '}
-					<a href={'https://bifravst.github.io/'}>in the handbook</a>.
-				</div>
+				<CardBody>
+					<p>
+						No cats, yet. Read more about how to create{' '}
+						<em>Device Credentials</em> for your cat trackers{' '}
+						<a href={'https://bifravst.github.io/'} target={'_blank'}>
+							in the handbook
+						</a>
+						.
+					</p>
+				</CardBody>
 			)}
 		</Card>
 	)
