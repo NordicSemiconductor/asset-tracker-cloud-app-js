@@ -16,6 +16,13 @@ export const About = () => (
 				</a>
 				.
 			</p>
+			<p>
+				Please also consider the{' '}
+				<a href={'https://bifravst.github.io/'} target={'_blank'}>
+					Bifravst handbook
+				</a>
+				.
+			</p>
 			<dl>
 				<dt>Version</dt>
 				<dd>
