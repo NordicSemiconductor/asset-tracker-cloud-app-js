@@ -53,7 +53,7 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 					</tbody>
 				</Table>
 			)}
-			{!cats.length && (
+			{cats.length === 0 && (
 				<CardBody>
 					<p>
 						No cats, yet. Read more about how to create{' '}
