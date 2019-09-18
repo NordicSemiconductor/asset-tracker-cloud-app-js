@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, ButtonGroup, Form, FormGroup } from 'reactstrap'
 import equal from 'fast-deep-equal'
-import { Config } from '../DeviceShadow'
+import { Config } from '../@types/DeviceShadow'
 import { OutDatedWarning } from './OutDatedWarning'
 import { NumberConfigSetting } from './NumberConfigSetting'
 import { formatDistanceToNow } from 'date-fns'

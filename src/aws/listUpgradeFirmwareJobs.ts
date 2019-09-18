@@ -1,5 +1,5 @@
-import { Iot, S3 } from 'aws-sdk'
-import { paginate } from '../paginate'
+import { Iot } from 'aws-sdk'
+import { paginate } from '../util/paginate'
 
 export type DeviceUpgradeFirmwareJob = {
 	jobId: string
@@ -80,60 +80,3 @@ export const listUpgradeFirmwareJobs = ({ iot }: { iot: Iot }) => async (
 			}
 		},
 	})
-
-export const cancelUpgradeFirmwareJob = ({ iot }: { iot: Iot }) => async ({
-	jobId,
-	deviceId,
-}: {
-	deviceId: string
-	jobId: string
-}): Promise<void> => {
-	await iot
-		.cancelJobExecution({
-			jobId,
-			thingName: deviceId,
-		})
-		.promise()
-}
-
-export const deleteUpgradeFirmwareJob = ({
-	iot,
-	s3,
-	bucketName,
-}: {
-	iot: Iot
-	s3: S3
-	bucketName: string
-}) => async ({
-	jobId,
-	deviceId,
-	executionNumber,
-}: {
-	deviceId: string
-	jobId: string
-	executionNumber: number
-}): Promise<void> => {
-	await Promise.all([
-		await s3
-			.deleteObject({
-				Bucket: bucketName,
-				Key: jobId,
-			})
-			.promise()
-			.catch(error => {
-				console.error(`Failed to delete firmware file for job ${jobId}`)
-				console.error(error)
-			}),
-		await iot
-			.deleteJobExecution({
-				jobId,
-				thingName: deviceId,
-				executionNumber,
-			})
-			.promise()
-			.catch(error => {
-				console.error(`Failed to delete job ${jobId}`)
-				console.error(error)
-			}),
-	])
-}

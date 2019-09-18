@@ -8,11 +8,11 @@ import { Error } from '../Error/Error'
 import { device } from 'aws-iot-device-sdk'
 import { Map } from '../Map/Map'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
-import { uploadAvatar } from './uploadAvatar'
+import { uploadAvatar } from '../aws/uploadAvatar'
 import { Editable } from '../Editable/Editable'
-import { updateThingAttributes } from './updateThingAttributes'
+import { updateThingAttributes } from '../aws/updateThingAttributes'
 import { AccelerometerDiagram } from '../AccelerometerDiagram/AccelerometerDiagram'
-import { mergeReportedAndMetadata } from '../mergeReportedAndMetadata'
+import { mergeReportedAndMetadata } from '../util/mergeReportedAndMetadata'
 import * as introJs from 'intro.js'
 import { HistoricalDataChart } from '../HistoricalData/HistoricalDataChart'
 import { Collapsable } from '../Collapsable/Collapsable'
@@ -20,7 +20,7 @@ import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
 import { ConnectionInformation } from './ConnectionInformation'
 import { DeviceInfo } from './DeviceInformation'
 import { Settings } from '../Settings/Settings'
-import { DeviceShadow, Gps } from '../DeviceShadow'
+import { DeviceShadow, Gps } from '../@types/DeviceShadow'
 import { ReportedTime } from './ReportedTime'
 import { NavbarBrandContext } from '../Navigation/NavbarBrand'
 import { CatNavbar } from './CatNavbar'
@@ -30,14 +30,14 @@ import { hideOnDesktop, mobileBreakpoint } from '../Styles'
 import styled from 'styled-components'
 import { NoMap } from './NoMap'
 import { DFU, OnCreateUpgradeJob } from './DFU'
-import { describeCatIotThing } from './iot'
-import { upgradeFirmware } from './upgradeFirmware'
+import { describeCatIotThing } from '../aws/describeCatIotThing'
+import { upgradeFirmware } from '../aws/upgradeFirmware'
 import {
 	DeviceUpgradeFirmwareJob,
 	listUpgradeFirmwareJobs,
-	cancelUpgradeFirmwareJob,
-	deleteUpgradeFirmwareJob,
-} from './listUpgradeFirmwareJobs'
+} from '../aws/listUpgradeFirmwareJobs'
+import { cancelUpgradeFirmwareJob } from '../aws/cancelUpgradeFirmwareJob'
+import { deleteUpgradeFirmwareJob } from '../aws/deleteUpgradeFirmwareJob'
 
 const intro = introJs()
 

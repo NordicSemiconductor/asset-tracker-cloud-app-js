@@ -2,7 +2,7 @@ import React from 'react'
 import { ReportedTime } from './ReportedTime'
 import styled from 'styled-components'
 
-import { DeviceInformation, RoamingInformation } from '../DeviceShadow'
+import { DeviceInformation, RoamingInformation } from '../@types/DeviceShadow'
 
 const StyledReportedTime = styled(ReportedTime)`
 	font-size: 85%;

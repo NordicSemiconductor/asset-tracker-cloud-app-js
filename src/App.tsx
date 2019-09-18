@@ -8,7 +8,6 @@ import { CatsPage } from './Cats/Page'
 import { CatPage } from './Cat/Page'
 import { CatsMapPage } from './CatsMap/Page'
 import { Iot, IotData } from 'aws-sdk'
-import { getPolicyNameFromArn } from './getPolicyNameFromArn'
 import { NavbarBrandContextProvider } from './Navigation/NavbarBrand'
 import { ToggleNavigation } from './Navigation/ToggleNavigation'
 import { GlobalStyle } from './Styles'
@@ -79,9 +78,10 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 						return iot
 							.attachPrincipalPolicy({
 								principal: `${c.identityId}`,
-								policyName: getPolicyNameFromArn(
-									`${process.env.REACT_APP_USER_IOT_POLICY_ARN}`,
-								),
+								policyName:
+									`${process.env.REACT_APP_USER_IOT_POLICY_ARN}`.split(
+										'/',
+									)[1] || '',
 							})
 							.promise()
 							.then(() => undefined)
