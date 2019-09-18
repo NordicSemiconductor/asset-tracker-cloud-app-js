@@ -40,7 +40,7 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 	return (
 		<Card data-intro="This lists your cats. Click on one to see its details.">
 			<CardHeader>Cats</CardHeader>
-			{cats.length && (
+			{cats.length > 0 && (
 				<Table>
 					<tbody>
 						{cats.map(({ id, name }) => (
@@ -53,16 +53,14 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 					</tbody>
 				</Table>
 			)}
-			{cats.length === 0 && (
+			{!cats.length && (
 				<CardBody>
-					<p>
-						No cats, yet. Read more about how to create{' '}
-						<em>Device Credentials</em> for your cat trackers{' '}
-						<a href={'https://bifravst.github.io/'} target={'_blank'}>
-							in the handbook
-						</a>
-						.
-					</p>
+					No cats, yet. Read more about how to create{' '}
+					<em>Device Credentials</em> for your cat trackers{' '}
+					<a href={'https://bifravst.github.io/'} target={'_blank'}>
+						in the handbook
+					</a>
+					.
 				</CardBody>
 			)}
 		</Card>
