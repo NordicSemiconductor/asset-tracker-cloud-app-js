@@ -7,6 +7,15 @@ export const About = () => (
 	<Card>
 		<CardHeader>About</CardHeader>
 		<CardBody>
+			<p>
+				This is the web application of <em>Bifravst</em> which aims to provide a
+				concrete end-to-end sample for an IoT product in the asset tracker
+				space, a Cat Tracker. You can find the source code on{' '}
+				<a href={'https://github.com/bifravst'} target={'_blank'}>
+					GitHub
+				</a>
+				.
+			</p>
 			<dl>
 				<dt>Version</dt>
 				<dd>
