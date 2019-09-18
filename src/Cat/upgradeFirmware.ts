@@ -34,7 +34,7 @@ export const upgradeFirmware = ({
 		})
 		.promise()
 	const description = `Updated ${catArn.split('/')[1]} to version ${version}.`
-	const res = await iot
+	await iot
 		.createJob({
 			jobId,
 			targets: [catArn],
