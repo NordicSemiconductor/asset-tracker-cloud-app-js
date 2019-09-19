@@ -49,7 +49,7 @@
     "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "@bifravst/code-style": "^3.0.1",
+    "@bifravst/code-style": "^4.0.1",
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-angular": "^8.2.0",
     "@types/aws-iot-device-sdk": "^2.2.0",
