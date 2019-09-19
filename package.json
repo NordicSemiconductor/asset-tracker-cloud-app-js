@@ -27,7 +27,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@amcharts/amcharts4": "^4.6.1",
-    "@bifravst/athena-helpers": "^4.0.2",
+    "@bifravst/athena-helpers": "^5.0.0",
     "@bifravst/twemoji": "^12.1.2-typescript",
     "aws-amplify": "^1.1.40",
     "aws-amplify-react": "^2.4.4",
