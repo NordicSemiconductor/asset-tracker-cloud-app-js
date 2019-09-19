@@ -11,6 +11,7 @@ import { Iot, IotData } from 'aws-sdk'
 import { NavbarBrandContextProvider } from './Navigation/NavbarBrand'
 import { ToggleNavigation } from './Navigation/ToggleNavigation'
 import { GlobalStyle } from './Styles'
+import { attachIotPolicyToIdentity } from './aws/attachIotPolicyToIdentity'
 
 Amplify.configure({
 	Auth: {
@@ -48,7 +49,7 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 
 	useEffect(() => {
 		Auth.currentCredentials()
-			.then(creds => {
+			.then(async creds => {
 				const c = Auth.essentialCredentials(creds)
 				const iot = new Iot({
 					credentials: creds,
@@ -66,32 +67,14 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 				})
 
 				// Attach Iot Policy to user
-				iot
-					.listPrincipalPolicies({
-						principal: c.identityId,
-					})
-					.promise()
-					.then(async ({ policies }) => {
-						if (policies && policies.length) {
-							return
-						}
-						return iot
-							.attachPrincipalPolicy({
-								principal: `${c.identityId}`,
-								policyName:
-									`${process.env.REACT_APP_USER_IOT_POLICY_ARN}`.split(
-										'/',
-									)[1] || '',
-							})
-							.promise()
-							.then(() => undefined)
-					})
-					.catch(err => {
-						console.error(err)
-					})
+				await attachIotPolicyToIdentity({
+					iot,
+					policyName:
+						`${process.env.REACT_APP_USER_IOT_POLICY_ARN}`.split('/')[1] || '',
+				})(c.identityId)
 			})
 			.catch(error => {
-				//
+				console.error(error)
 			})
 	}, [authData])
 

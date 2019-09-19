@@ -13,13 +13,13 @@ export const upgradeFirmware = ({
 }) => async ({
 	data,
 	file,
-	catArn,
+	thingArn,
 	version,
 	targetBoard,
 }: {
 	data: Blob
 	file: File
-	catArn: string
+	thingArn: string
 	version: string
 	targetBoard: string
 }): Promise<DeviceUpgradeFirmwareJob> => {
@@ -33,11 +33,11 @@ export const upgradeFirmware = ({
 			ContentType: 'text/x-hex',
 		})
 		.promise()
-	const description = `Updated ${catArn.split('/')[1]} to version ${version}.`
+	const description = `Updated ${thingArn.split('/')[1]} to version ${version}.`
 	await iot
 		.createJob({
 			jobId,
-			targets: [catArn],
+			targets: [thingArn],
 			document: JSON.stringify({
 				operation: 'app_fw_update',
 				size: file.size,

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { CredentialsConsumer, IdentityIdConsumer, IotConsumer } from '../App'
-import { Card, CardBody, CardHeader } from 'reactstrap'
+import { Card, CardBody, CardHeader, Alert } from 'reactstrap'
 import { Iot, IotData, S3 } from 'aws-sdk'
 import Athena from 'aws-sdk/clients/athena'
 import { Loading } from '../Loading/Loading'
@@ -30,7 +30,7 @@ import { hideOnDesktop, mobileBreakpoint } from '../Styles'
 import styled from 'styled-components'
 import { NoMap } from './NoMap'
 import { DFU, OnCreateUpgradeJob } from './DFU'
-import { describeCatIotThing } from '../aws/describeCatIotThing'
+import { describeIotThing, ThingInfo } from '../aws/describeIotThing'
 import { upgradeFirmware } from '../aws/upgradeFirmware'
 import {
 	DeviceUpgradeFirmwareJob,
@@ -38,6 +38,8 @@ import {
 } from '../aws/listUpgradeFirmwareJobs'
 import { cancelUpgradeFirmwareJob } from '../aws/cancelUpgradeFirmwareJob'
 import { deleteUpgradeFirmwareJob } from '../aws/deleteUpgradeFirmwareJob'
+import { DeleteCat } from './DeleteCat'
+import { deleteIotThing } from '../aws/deleteIotThing'
 
 const intro = introJs()
 
@@ -155,7 +157,7 @@ const ShowCat = ({
 	onAvatarChange: (args: { avatar: Blob }) => void
 	onNameChange: (args: { name: string }) => void
 	onCreateUpgradeJob: OnCreateUpgradeJob
-	describeThing: describeCatIotThing
+	describeThing: (deviceId: string) => Promise<ThingInfo>
 	listUpgradeJobs: (
 		deviceId: string,
 	) => () => Promise<DeviceUpgradeFirmwareJob[]>
@@ -193,7 +195,7 @@ const ShowCat = ({
 	useEffect(() => {
 		let connection: device
 		Promise.all([
-			describeThing({ catId }),
+			describeThing(catId),
 			new Promise(resolve => {
 				console.log('Connecting ...')
 				connection = new device({
@@ -527,181 +529,212 @@ const athenaWorkGroup =
 const athenaDataBase = process.env.REACT_APP_HISTORICALDATA_DATABASE_NAME || ''
 const athenaRawDataTable = process.env.REACT_APP_HISTORICALDATA_TABLE_NAME || ''
 
-export const Cat = ({ catId }: { catId: string }) => (
-	<CredentialsConsumer>
-		{credentials => (
-			<IdentityIdConsumer>
-				{identityId => (
-					<IotConsumer>
-						{({ iot, iotData }) => {
-							const s3 = new S3({
-								credentials,
-								region: process.env.REACT_APP_REGION,
-							})
-							const athena = new Athena({
-								credentials,
-								region: process.env.REACT_APP_REGION,
-							})
-							const avatarUploader = uploadAvatar({
-								s3,
-								bucketName: `${process.env.REACT_APP_AVATAR_BUCKET_NAME}`,
-							})
-							const attributeUpdater = updateThingAttributes({
-								iot,
-								thingName: catId,
-							})
+export const Cat = ({ catId }: { catId: string }) => {
+	const [deleted, setDeleted] = useState(false)
 
-							const createUpgradeJob = upgradeFirmware({
-								s3,
-								bucketName: `${process.env.REACT_APP_DFU_BUCKET_NAME}`,
-								iot,
-							})
+	if (deleted) {
+		return (
+			<Card>
+				<CardBody>
+					<Alert color={'success'}>
+						The cat <code>{catId}</code> has been deleted.
+					</Alert>
+				</CardBody>
+			</Card>
+		)
+	}
 
-							const listUpgradeJobs = listUpgradeFirmwareJobs({
-								iot,
-							})
+	return (
+		<CredentialsConsumer>
+			{credentials => (
+				<IdentityIdConsumer>
+					{identityId => (
+						<IotConsumer>
+							{({ iot, iotData }) => {
+								const s3 = new S3({
+									credentials,
+									region: process.env.REACT_APP_REGION,
+								})
+								const athena = new Athena({
+									credentials,
+									region: process.env.REACT_APP_REGION,
+								})
+								const avatarUploader = uploadAvatar({
+									s3,
+									bucketName: `${process.env.REACT_APP_AVATAR_BUCKET_NAME}`,
+								})
+								const attributeUpdater = updateThingAttributes({
+									iot,
+									thingName: catId,
+								})
 
-							const cancelUpgradeJob = cancelUpgradeFirmwareJob({
-								iot,
-							})
+								const createUpgradeJob = upgradeFirmware({
+									s3,
+									bucketName: `${process.env.REACT_APP_DFU_BUCKET_NAME}`,
+									iot,
+								})
 
-							const deleteUpgradeJob = deleteUpgradeFirmwareJob({
-								s3,
-								bucketName: `${process.env.REACT_APP_DFU_BUCKET_NAME}`,
-								iot,
-							})
+								const listUpgradeJobs = listUpgradeFirmwareJobs({
+									iot,
+								})
 
-							const describeThing = describeCatIotThing({ iot })
+								const cancelUpgradeJob = cancelUpgradeFirmwareJob({
+									iot,
+								})
 
-							return (
-								<ShowCat
-									catId={catId}
-									iot={iot}
-									iotData={iotData}
-									identityId={identityId}
-									credentials={credentials}
-									describeThing={describeThing}
-									listUpgradeJobs={deviceId => async () =>
-										listUpgradeJobs(deviceId)}
-									cancelUpgradeJob={deviceId => async (jobId: string) =>
-										cancelUpgradeJob({ deviceId, jobId })}
-									deleteUpgradeJob={deviceId => async ({
-										jobId,
-										executionNumber,
-									}: {
-										jobId: string
-										executionNumber: number
-									}) => deleteUpgradeJob({ deviceId, jobId, executionNumber })}
-									onCreateUpgradeJob={async args =>
-										describeThing({ catId }).then(async ({ thingArn }) =>
-											createUpgradeJob({
-												...args,
-												catArn: thingArn,
-											}),
-										)
-									}
-									onAvatarChange={({ avatar }) => {
-										avatarUploader({
-											avatar,
-										})
-											.then(async ({ url }) =>
-												attributeUpdater({ avatar: url }),
+								const deleteUpgradeJob = deleteUpgradeFirmwareJob({
+									s3,
+									bucketName: `${process.env.REACT_APP_DFU_BUCKET_NAME}`,
+									iot,
+								})
+
+								const describeCat = describeIotThing({ iot })
+
+								const deleteCat = deleteIotThing({ iot })
+
+								return (
+									<ShowCat
+										catId={catId}
+										iot={iot}
+										iotData={iotData}
+										identityId={identityId}
+										credentials={credentials}
+										describeThing={describeCat}
+										listUpgradeJobs={deviceId => async () =>
+											listUpgradeJobs(deviceId)}
+										cancelUpgradeJob={deviceId => async (jobId: string) =>
+											cancelUpgradeJob({ deviceId, jobId })}
+										deleteUpgradeJob={deviceId => async ({
+											jobId,
+											executionNumber,
+										}: {
+											jobId: string
+											executionNumber: number
+										}) =>
+											deleteUpgradeJob({ deviceId, jobId, executionNumber })}
+										onCreateUpgradeJob={async args =>
+											describeCat(catId).then(async ({ thingArn }) =>
+												createUpgradeJob({
+													...args,
+													thingArn: thingArn,
+												}),
 											)
-											.catch(err => {
-												console.error(err)
+										}
+										onAvatarChange={({ avatar }) => {
+											avatarUploader({
+												avatar,
 											})
-									}}
-									onNameChange={({ name }) => {
-										attributeUpdater({ name }).catch(err => {
-											console.error(err)
-										})
-									}}
-									map={({ gps }: { gps: Gps }) => (
-										<HistoricalDataLoader
-											athena={athena}
-											deviceId={catId}
-											formatFields={{
-												lat: parseFloat,
-												lng: parseFloat,
-												date: v => new Date(v),
-											}}
-											QueryString={`SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.gps IS NOT NULL AND reported.gps.v.lat IS NOT NULL AND reported.gps.v.lng IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT 10`}
-											workGroup={athenaWorkGroup}
-											loading={
-												<Map
-													position={{
-														lat: gps.v.lat.value,
-														lng: gps.v.lng.value,
-													}}
-													accuracy={gps.v.acc && gps.v.acc.value}
-													heading={gps.v.hdg && gps.v.hdg.value}
-													label={catId}
-												/>
-											}
-										>
-											{({ data }) => (
-												<Map
-													position={{
-														lat: gps.v.lat.value,
-														lng: gps.v.lng.value,
-													}}
-													accuracy={gps.v.acc && gps.v.acc.value}
-													heading={gps.v.hdg && gps.v.hdg.value}
-													label={catId}
-													history={
-														(data as unknown) as ({
-															lat: number
-															lng: number
-														}[])
-													}
-												/>
-											)}
-										</HistoricalDataLoader>
-									)}
-								>
-									<Collapsable
-										id={'cat:bat'}
-										title={<h3>{emojify('🔋 Battery')}</h3>}
+												.then(async ({ url }) =>
+													attributeUpdater({ avatar: url }),
+												)
+												.catch(console.error)
+										}}
+										onNameChange={({ name }) => {
+											attributeUpdater({ name }).catch(console.error)
+										}}
+										map={({ gps }: { gps: Gps }) => (
+											<HistoricalDataLoader
+												athena={athena}
+												deviceId={catId}
+												formatFields={{
+													lat: parseFloat,
+													lng: parseFloat,
+													date: v => new Date(v),
+												}}
+												QueryString={`SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.gps IS NOT NULL AND reported.gps.v.lat IS NOT NULL AND reported.gps.v.lng IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT 10`}
+												workGroup={athenaWorkGroup}
+												loading={
+													<Map
+														position={{
+															lat: gps.v.lat.value,
+															lng: gps.v.lng.value,
+														}}
+														accuracy={gps.v.acc && gps.v.acc.value}
+														heading={gps.v.hdg && gps.v.hdg.value}
+														label={catId}
+													/>
+												}
+											>
+												{({ data }) => (
+													<Map
+														position={{
+															lat: gps.v.lat.value,
+															lng: gps.v.lng.value,
+														}}
+														accuracy={gps.v.acc && gps.v.acc.value}
+														heading={gps.v.hdg && gps.v.hdg.value}
+														label={catId}
+														history={
+															(data as unknown) as ({
+																lat: number
+																lng: number
+															}[])
+														}
+													/>
+												)}
+											</HistoricalDataLoader>
+										)}
 									>
-										<HistoricalDataLoader
-											athena={athena}
-											deviceId={catId}
-											QueryString={`SELECT min(reported.bat.v) as value, CAST(date_format(timestamp, '%Y-%m-%d') AS DATE) AS date FROM 
+										<Collapsable
+											id={'cat:bat'}
+											title={<h3>{emojify('🔋 Battery')}</h3>}
+										>
+											<HistoricalDataLoader
+												athena={athena}
+												deviceId={catId}
+												QueryString={`SELECT min(reported.bat.v) as value, CAST(date_format(timestamp, '%Y-%m-%d') AS DATE) AS date FROM 
 ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.bat IS NOT NULL GROUP BY CAST(date_format(timestamp, '%Y-%m-%d') AS DATE) ORDER BY date LIMIT 100`}
-											formatFields={{
-												value: v => parseInt(v, 10) / 1000,
-												date: v => new Date(`${v}T00:00:00Z`),
-											}}
-											workGroup={athenaWorkGroup}
+												formatFields={{
+													value: v => parseInt(v, 10) / 1000,
+													date: v => new Date(`${v}T00:00:00Z`),
+												}}
+												workGroup={athenaWorkGroup}
+											>
+												{({ data }) => <HistoricalDataChart data={data} />}
+											</HistoricalDataLoader>
+										</Collapsable>
+										<hr />
+										<Collapsable
+											id={'cat:act'}
+											title={<h3>{emojify('🏋️ Activity')}</h3>}
 										>
-											{({ data }) => <HistoricalDataChart data={data} />}
-										</HistoricalDataLoader>
-									</Collapsable>
-									<hr />
-									<Collapsable
-										id={'cat:act'}
-										title={<h3>{emojify('🏋️ Activity')}</h3>}
-									>
-										<HistoricalDataLoader
-											athena={athena}
-											deviceId={catId}
-											formatFields={{
-												value: (v: number[]) =>
-													v.reduce((sum, v) => sum + Math.abs(v), 0),
-												date: v => new Date(v),
-											}}
-											QueryString={`SELECT reported.acc.ts as date, reported.acc.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.acc IS NOT NULL ORDER BY reported.acc.ts DESC LIMIT 100`}
-											workGroup={athenaWorkGroup}
+											<HistoricalDataLoader
+												athena={athena}
+												deviceId={catId}
+												formatFields={{
+													value: (v: number[]) =>
+														v.reduce((sum, v) => sum + Math.abs(v), 0),
+													date: v => new Date(v),
+												}}
+												QueryString={`SELECT reported.acc.ts as date, reported.acc.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.acc IS NOT NULL ORDER BY reported.acc.ts DESC LIMIT 100`}
+												workGroup={athenaWorkGroup}
+											>
+												{({ data }) => <HistoricalDataChart data={data} />}
+											</HistoricalDataLoader>
+										</Collapsable>
+										<hr />
+										<Collapsable
+											id={'cat:dangerzone'}
+											title={<h3>{emojify('☠️ Danger Zone')}</h3>}
 										>
-											{({ data }) => <HistoricalDataChart data={data} />}
-										</HistoricalDataLoader>
-									</Collapsable>
-								</ShowCat>
-							)
-						}}
-					</IotConsumer>
-				)}
-			</IdentityIdConsumer>
-		)}
-	</CredentialsConsumer>
-)
+											<DeleteCat
+												catId={catId}
+												onDelete={() => {
+													deleteCat(catId)
+														.then(() => {
+															setDeleted(true)
+														})
+														.catch(console.error)
+												}}
+											/>
+										</Collapsable>
+									</ShowCat>
+								)
+							}}
+						</IotConsumer>
+					)}
+				</IdentityIdConsumer>
+			)}
+		</CredentialsConsumer>
+	)
+}

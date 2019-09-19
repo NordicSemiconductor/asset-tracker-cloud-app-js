@@ -8,16 +8,12 @@ export type ThingInfo = {
 	attributes: Iot.Attributes
 	version: Iot.Version
 }
-export type describeCatIotThing = (args: {
-	catId: string
-}) => Promise<ThingInfo>
-
-export const describeCatIotThing = ({ iot }: { iot: Iot }) =>
+export const describeIotThing = ({ iot }: { iot: Iot }) =>
 	memoize(
-		async ({ catId }: { catId: string }) =>
+		async (thingName: string) =>
 			iot
 				.describeThing({
-					thingName: catId,
+					thingName,
 				})
 				.promise() as Promise<ThingInfo>,
 	)
