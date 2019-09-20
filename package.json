@@ -49,7 +49,8 @@
     "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "@bifravst/code-style": "^4.0.1",
+    "@bifravst/code-style": "^4.0.2",
+    "@bifravst/eslint-config-typescript": "^3.0.1",
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-angular": "^8.2.0",
     "@types/aws-iot-device-sdk": "^2.2.0",
@@ -63,17 +64,19 @@
     "@types/reactstrap": "^8.0.4",
     "@types/styled-components": "^4.1.19",
     "@types/uuid": "^3.4.5",
+    "@typescript-eslint/eslint-plugin": "^2.3.0",
+    "@typescript-eslint/parser": "^2.3.0",
     "babel-eslint": "^10.0.3",
     "eslint-config-react-app": "^5.0.2",
     "eslint-plugin-flowtype": "^4.3.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.14.3",
-    "eslint-plugin-react-app": "^6.0.2",
     "eslint-plugin-react-hooks": "^2.0.1",
     "husky": "^3.0.5",
     "react-scripts": "^3.1.2",
-    "ts-jest": "^24.1.0"
+    "ts-jest": "^24.1.0",
+    "typescript-eslint": "0.0.1-alpha.0"
   },
   "husky": {
     "hooks": {

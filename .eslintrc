@@ -1,5 +1,5 @@
 {
-  "extends": ["@bifravst/eslint-config-typescript", "react-app"],
+  "extends": ["@bifravst/eslint-config-typescript"],
   "rules": {
     "@typescript-eslint/indent": "warn"
   }
