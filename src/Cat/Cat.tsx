@@ -161,7 +161,9 @@ const ShowCat = ({
 	listUpgradeJobs: (
 		deviceId: string,
 	) => () => Promise<DeviceUpgradeFirmwareJob[]>
-	cancelUpgradeJob: (deviceId: string) => (jobId: string) => Promise<void>
+	cancelUpgradeJob: (
+		deviceId: string,
+	) => (args: { jobId: string; force: boolean }) => Promise<void>
 	deleteUpgradeJob: (
 		deviceId: string,
 	) => (args: { jobId: string; executionNumber: number }) => Promise<void>
@@ -602,8 +604,13 @@ export const Cat = ({ catId }: { catId: string }) => {
 										describeThing={describeCat}
 										listUpgradeJobs={deviceId => async () =>
 											listUpgradeJobs(deviceId)}
-										cancelUpgradeJob={deviceId => async (jobId: string) =>
-											cancelUpgradeJob({ deviceId, jobId })}
+										cancelUpgradeJob={deviceId => async ({
+											jobId,
+											force,
+										}: {
+											jobId: string
+											force: boolean
+										}) => cancelUpgradeJob({ deviceId, jobId, force })}
 										deleteUpgradeJob={deviceId => async ({
 											jobId,
 											executionNumber,

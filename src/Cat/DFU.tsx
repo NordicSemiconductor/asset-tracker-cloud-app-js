@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DeviceInformation } from '../@types/DeviceShadow'
 import { Collapsable } from '../Collapsable/Collapsable'
 import { emojify } from '../Emojify/Emojify'
@@ -9,8 +9,7 @@ import semver from 'semver'
 import { FooterWithFullWidthButton } from '../Settings/Settings'
 import { DeviceUpgradeFirmwareJob } from '../aws/listUpgradeFirmwareJobs'
 import { useDebouncedCallback } from 'use-debounce'
-import styled from 'styled-components'
-import { RelativeTime } from '../RelativeTime/RelativeTime'
+import { Jobs } from './DFUJobs'
 
 export type OnCreateUpgradeJob = (args: {
 	file: File
@@ -29,7 +28,7 @@ export const DFU = ({
 	device: DeviceInformation
 	onCreateUpgradeJob: OnCreateUpgradeJob
 	listUpgradeJobs: () => Promise<DeviceUpgradeFirmwareJob[]>
-	cancelUpgradeJob: (jobId: string) => Promise<void>
+	cancelUpgradeJob: (args: { jobId: string; force: boolean }) => Promise<void>
 	deleteUpgradeJob: (args: {
 		jobId: string
 		executionNumber: number
@@ -85,8 +84,8 @@ export const DFU = ({
 						<hr />
 						<Jobs
 							jobs={jobs}
-							cancelUpgradeJob={jobId => {
-								cancelUpgradeJob(jobId)
+							cancelUpgradeJob={args => {
+								cancelUpgradeJob(args)
 									.then(() => {
 										debouncedListUpgradeJobs()
 									})
@@ -107,125 +106,6 @@ export const DFU = ({
 					</>
 				) : null}
 			</Collapsable>
-		</>
-	)
-}
-
-const JobItem = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-`
-
-const TimeInfo = styled.span`
-	margin-left: 0.5rem;
-`
-
-const UpgradeDocument = styled.dl`
-	display: flex;
-	font-size: 80%;
-	dt,
-	dl {
-		margin-right: 0.25rem;
-		margin-left: 0.25rem;
-	}
-	dt:first-child {
-		margin-left: 0;
-	}
-`
-
-const DownloadLink = styled.a`
-	font-size: 80%;
-`
-
-const Jobs = ({
-	jobs,
-	cancelUpgradeJob,
-	deleteUpgradeJob,
-}: {
-	jobs: DeviceUpgradeFirmwareJob[]
-	cancelUpgradeJob: (jobId: string) => void
-	deleteUpgradeJob: (args: { jobId: string; executionNumber: number }) => void
-}) => {
-	return (
-		<>
-			<h4>Jobs for this device</h4>
-			{jobs.map(
-				({
-					jobId,
-					status,
-					description,
-					queuedAt,
-					startedAt,
-					lastUpdatedAt,
-					executionNumber,
-					document: { size, fwversion, targetBoard, location, filename },
-				}) => {
-					const isCanceled = status === 'CANCELED'
-					const canCancel = status === 'QUEUED'
-					return (
-						<JobItem key={jobId}>
-							<span>
-								<code>{status}</code>{' '}
-								{!isCanceled && queuedAt && (
-									<TimeInfo>
-										{emojify('📩 ')}
-										<RelativeTime ts={queuedAt} />
-									</TimeInfo>
-								)}
-								{startedAt && (
-									<TimeInfo>
-										{emojify('⏳ ')}
-										<RelativeTime ts={startedAt} />
-									</TimeInfo>
-								)}
-								{lastUpdatedAt && (
-									<TimeInfo>
-										{emojify('🕒 ')}
-										<RelativeTime ts={lastUpdatedAt} />
-									</TimeInfo>
-								)}
-								<br />
-								<em>{description}</em>
-								<br />
-								<DownloadLink href={location} target={'_blank'}>
-									{filename}
-								</DownloadLink>
-								<UpgradeDocument>
-									<dt>Version:</dt>
-									<dd>{fwversion}</dd>
-									<dt>Size:</dt>
-									<dd>{size} byte</dd>
-									<dt>Target Board:</dt>
-									<dd>{targetBoard}</dd>
-								</UpgradeDocument>
-							</span>
-							{canCancel && (
-								<Button
-									color={'danger'}
-									onClick={() => cancelUpgradeJob(jobId)}
-								>
-									Cancel
-								</Button>
-							)}
-							{isCanceled && (
-								<Button
-									color={'danger'}
-									outline
-									onClick={() =>
-										deleteUpgradeJob({
-											jobId,
-											executionNumber,
-										})
-									}
-								>
-									Delete
-								</Button>
-							)}
-						</JobItem>
-					)
-				},
-			)}
 		</>
 	)
 }
