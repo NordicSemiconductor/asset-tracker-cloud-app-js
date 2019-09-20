@@ -33,7 +33,7 @@ export const upgradeFirmware = ({
 			ContentType: 'text/x-hex',
 		})
 		.promise()
-	const description = `Updated ${thingArn.split('/')[1]} to version ${version}.`
+	const description = `Update ${thingArn.split('/')[1]} to version ${version}.`
 	await iot
 		.createJob({
 			jobId,
