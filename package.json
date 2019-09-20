@@ -32,7 +32,7 @@
     "aws-amplify": "^1.1.40",
     "aws-amplify-react": "^2.4.4",
     "aws-iot-device-sdk": "^2.2.1",
-    "aws-sdk": "^2.530.0",
+    "aws-sdk": "^2.532.0",
     "date-fns": "^2.2.1",
     "fast-deep-equal": "^2.0.1",
     "intro.js": "^2.9.3",
@@ -64,7 +64,7 @@
     "@types/styled-components": "^4.1.19",
     "@types/uuid": "^3.4.5",
     "babel-eslint": "^10.0.3",
-    "eslint-config-react-app": "5.0.1",
+    "eslint-config-react-app": "^5.0.2",
     "eslint-plugin-flowtype": "^4.3.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
@@ -72,7 +72,7 @@
     "eslint-plugin-react-app": "^6.0.2",
     "eslint-plugin-react-hooks": "^2.0.1",
     "husky": "^3.0.5",
-    "react-scripts": "^3.1.1",
+    "react-scripts": "^3.1.2",
     "ts-jest": "^24.1.0"
   },
   "husky": {
