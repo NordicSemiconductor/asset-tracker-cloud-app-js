@@ -80,12 +80,12 @@ export const About = () => (
 						<code>{process.env.REACT_APP_AVATAR_BUCKET_NAME}</code>
 					</a>
 				</dd>
-				<dt>DFU</dt>
+				<dt>FOTA</dt>
 				<dd>
 					<a
-						href={`https://s3.console.aws.amazon.com/s3/buckets/${process.env.REACT_APP_DFU_BUCKET_NAME}/?region=${process.env.REACT_APP_REGION}&tab=overview`}
+						href={`https://s3.console.aws.amazon.com/s3/buckets/${process.env.REACT_APP_FOTA_BUCKET_NAME}/?region=${process.env.REACT_APP_REGION}&tab=overview`}
 					>
-						<code>{process.env.REACT_APP_DFU_BUCKET_NAME}</code>
+						<code>{process.env.REACT_APP_FOTA_BUCKET_NAME}</code>
 					</a>
 				</dd>
 			</dl>

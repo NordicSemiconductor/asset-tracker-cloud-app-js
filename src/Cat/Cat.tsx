@@ -29,7 +29,7 @@ import { emojify } from '../Emojify/Emojify'
 import { hideOnDesktop, mobileBreakpoint } from '../Styles'
 import styled from 'styled-components'
 import { NoMap } from './NoMap'
-import { DFU, OnCreateUpgradeJob } from './DFU'
+import { FOTA, OnCreateUpgradeJob } from './FOTA'
 import { describeIotThing, ThingInfo } from '../aws/describeIotThing'
 import { upgradeFirmware } from '../aws/upgradeFirmware'
 import {
@@ -489,7 +489,7 @@ const ShowCat = ({
 								/>
 							</Collapsable>
 							<hr />
-							<DFU
+							<FOTA
 								key={`${cat.version}`}
 								device={reported.dev}
 								onCreateUpgradeJob={onCreateUpgradeJob}
@@ -572,7 +572,7 @@ export const Cat = ({ catId }: { catId: string }) => {
 
 								const createUpgradeJob = upgradeFirmware({
 									s3,
-									bucketName: `${process.env.REACT_APP_DFU_BUCKET_NAME}`,
+									bucketName: `${process.env.REACT_APP_FOTA_BUCKET_NAME}`,
 									iot,
 								})
 
@@ -586,7 +586,7 @@ export const Cat = ({ catId }: { catId: string }) => {
 
 								const deleteUpgradeJob = deleteUpgradeFirmwareJob({
 									s3,
-									bucketName: `${process.env.REACT_APP_DFU_BUCKET_NAME}`,
+									bucketName: `${process.env.REACT_APP_FOTA_BUCKET_NAME}`,
 									iot,
 								})
 

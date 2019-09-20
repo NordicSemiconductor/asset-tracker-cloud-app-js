@@ -9,7 +9,7 @@ import semver from 'semver'
 import { FooterWithFullWidthButton } from '../Settings/Settings'
 import { DeviceUpgradeFirmwareJob } from '../aws/listUpgradeFirmwareJobs'
 import { useDebouncedCallback } from 'use-debounce'
-import { Jobs } from './DFUJobs'
+import { Jobs } from './FOTAJob'
 
 export type OnCreateUpgradeJob = (args: {
 	file: File
@@ -18,7 +18,7 @@ export type OnCreateUpgradeJob = (args: {
 	version: string
 }) => Promise<DeviceUpgradeFirmwareJob>
 
-export const DFU = ({
+export const FOTA = ({
 	device,
 	onCreateUpgradeJob,
 	listUpgradeJobs,
@@ -53,8 +53,10 @@ export const DFU = ({
 	return (
 		<>
 			<Collapsable
-				id={'cat:dfu'}
-				title={<h3>{emojify('🌩️ Device Firmware Upgrade (DFU)')}</h3>}
+				id={'cat:fota'}
+				title={
+					<h3>{emojify('🌩️ Device Firmware Upgrade over the air (FOTA)')}</h3>
+				}
 			>
 				{(!device.v.appV && (
 					<Alert color={'danger'}>
