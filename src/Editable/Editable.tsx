@@ -37,15 +37,17 @@ const EditableInputWithError = styled(EditableInput)`
 export const Editable = ({
 	text: originalText,
 	onChange,
+	isValid,
 }: {
 	text: string
 	onChange: (updatedText: string) => void
+	isValid: (text: string) => boolean
 }) => {
 	const [editing, setEditing] = useState(false)
 	const [input, updateInput] = useState(originalText)
 	const [text, updateText] = useState(originalText)
 
-	const Input = !input.length ? EditableInputWithError : EditableInput
+	const Input = !isValid(input) ? EditableInputWithError : EditableInput
 
 	if (editing) {
 		return (
@@ -54,7 +56,7 @@ export const Editable = ({
 				value={input}
 				autoFocus
 				onBlur={() => {
-					if (!input.length) {
+					if (!isValid(input)) {
 						return
 					}
 					setEditing(false)

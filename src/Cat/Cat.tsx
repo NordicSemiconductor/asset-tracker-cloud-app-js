@@ -340,6 +340,9 @@ const ShowCat = ({
 		setNavbar(<CatNavbar name={v} avatar={cat.avatar} />)
 	}
 
+	const isCatNameValid = (name: string): boolean =>
+		/^[0-9a-z_.,@/:#-]{1,800}$/i.test(name)
+
 	const onAvatarUploaded = (blob: Blob) => {
 		// Display image directly
 		const reader = new FileReader()
@@ -371,6 +374,7 @@ const ShowCat = ({
 							key={`${cat.version}`}
 							text={cat.name}
 							onChange={onNameChanged}
+							isValid={isCatNameValid}
 						/>
 					</MobileOnlyH2>
 					{reported && (
@@ -424,6 +428,7 @@ const ShowCat = ({
 									key={`${cat.version}`}
 									text={cat.name}
 									onChange={onNameChanged}
+									isValid={isCatNameValid}
 								/>
 							</dd>
 						</dl>
