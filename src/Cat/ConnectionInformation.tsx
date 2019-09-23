@@ -4,7 +4,14 @@ import { ReportedTime } from './ReportedTime'
 import { DeviceInformation, RoamingInformation } from '../@types/DeviceShadow'
 import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
 import { emojify } from '../Emojify/Emojify'
+import { rsrpToPercent } from './rsrpToPercent'
+import styled from 'styled-components'
+import { RSRPBar } from './RSRPBar'
 
+const StyledRSRPBar = styled(RSRPBar)`
+	width: 20px;
+	height: 20px;
+`
 /**
  * Renders the Reference Signal Received Power (RSRP).
  *
@@ -18,32 +25,21 @@ import { emojify } from '../Emojify/Emojify'
  * 97: When −44 dBm ≤ RSRP
  * 255: Not known or not detectable
  */
-export const RSRP = ({
-	rsrp: { value, receivedAt },
-}: {
-	rsrp: { value: number; receivedAt: Date }
-}) => {
+export const RSRP = ({ rsrp: { value } }: { rsrp: { value: number } }) => {
 	if (value === 255) {
-		return <abbr title={'Not known or not detectable'}>{emojify('❎')}</abbr>
+		return (
+			<abbr title={'Not known or not detectable'}>
+				<StyledRSRPBar quality={0} />
+			</abbr>
+		)
 	}
+
 	if (value >= 0 && value <= 140) {
 		const dbm = -140 + value
-		let icon = emojify('👍')
-		let rotation = 0
-		if (dbm <= -80) {
-			rotation = -60
-			icon = emojify('👎')
-		} else if (dbm <= -90) {
-			rotation = -120
-			icon = emojify('👎')
-		} else if (dbm <= -100) {
-			icon = emojify('👎')
-		} else if (dbm <= -110) {
-			icon = emojify('📵')
-		}
+		const quality = rsrpToPercent(dbm)
 		return (
 			<>
-				<span style={{ transform: `rotate(${rotation}deg)` }}>{icon}</span>
+				<StyledRSRPBar quality={quality} />
 				<small>{`(${dbm}dBm)`}</small>
 			</>
 		)
@@ -81,7 +77,10 @@ export const ConnectionInformation = ({
 	return (
 		<div className={'info connection-information'}>
 			<TextWithIcon icon={<RSRP rsrp={rsrp} />}>
-				<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
+				<>
+					&nbsp;
+					<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
+				</>
 			</TextWithIcon>
 			{emojify(`📱 ${nw}`)}
 			<ReportedTime
