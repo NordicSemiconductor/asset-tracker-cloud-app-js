@@ -702,7 +702,9 @@ ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.b
 												}}
 												workGroup={athenaWorkGroup}
 											>
-												{({ data }) => <HistoricalDataChart data={data} />}
+												{({ data }) => (
+													<HistoricalDataChart data={data} type={'line'} />
+												)}
 											</HistoricalDataLoader>
 										</Collapsable>
 										<hr />
@@ -721,7 +723,9 @@ ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.b
 												QueryString={`SELECT reported.acc.ts as date, reported.acc.v as value FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${catId}' AND reported.acc IS NOT NULL ORDER BY reported.acc.ts DESC LIMIT 100`}
 												workGroup={athenaWorkGroup}
 											>
-												{({ data }) => <HistoricalDataChart data={data} />}
+												{({ data }) => (
+													<HistoricalDataChart data={data} type={'column'} />
+												)}
 											</HistoricalDataLoader>
 										</Collapsable>
 										<hr />

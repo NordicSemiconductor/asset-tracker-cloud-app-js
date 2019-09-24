@@ -88,6 +88,14 @@ export const About = () => (
 						<code>{process.env.REACT_APP_FOTA_BUCKET_NAME}</code>
 					</a>
 				</dd>
+				<dt>Historical Data</dt>
+				<dd>
+					<a
+						href={`https://s3.console.aws.amazon.com/s3/buckets/${process.env.REACT_APP_HISTORICAL_DATA_BUCKET_NAME}/?region=${process.env.REACT_APP_REGION}&tab=overview`}
+					>
+						<code>{process.env.REACT_APP_HISTORICAL_DATA_BUCKET_NAME}</code>
+					</a>
+				</dd>
 			</dl>
 			<hr />
 			<p>

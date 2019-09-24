@@ -6,13 +6,15 @@ import styled from 'styled-components'
 
 const HistoricalDataChartDiv = styled.div`
 	width: 100%;
-	height: 400px;
+	height: 300px;
 `
 
 export const HistoricalDataChart = ({
 	data,
+	type,
 }: {
 	data: { date: Date; value: number }[]
+	type: 'line' | 'column'
 }) => {
 	const chartRef = useRef<am4charts.XYChart>()
 	const uuid = useRef<string>(v4())
@@ -32,7 +34,11 @@ export const HistoricalDataChart = ({
 		)
 		valueAxes.fontSize = 10
 
-		const series = chart.series.push(new am4charts.LineSeries())
+		const series = chart.series.push(
+			type === 'column'
+				? new am4charts.ColumnSeries()
+				: new am4charts.LineSeries(),
+		)
 		series.dataFields.valueY = 'value'
 		series.dataFields.dateX = 'date'
 		series.tooltipText = '{value}'
@@ -41,15 +47,6 @@ export const HistoricalDataChart = ({
 		chart.cursor = new am4charts.XYCursor()
 		chart.cursor.snapToSeries = series
 		chart.cursor.xAxis = dateAxis
-
-		// Add scrollbar
-		chart.scrollbarX = new am4charts.XYChartScrollbar()
-		;(chart.scrollbarX as am4charts.XYChartScrollbar).series.push(series)
-
-		// Create vertical scrollbar and place it before the value axis
-		chart.scrollbarY = new am4core.Scrollbar()
-		chart.scrollbarY.parent = chart.leftAxesContainer
-		chart.scrollbarY.toBack()
 
 		chart.data = data
 
