@@ -39,6 +39,7 @@
     "leaflet": "^1.5.1",
     "mcc-mnc-list": "git+https://github.com/bifravst/mcc-mnc-list.git#add-typescript-declarations",
     "memoize-one": "^5.1.1",
+    "p-queue": "^6.1.1",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-leaflet": "^2.4.0",

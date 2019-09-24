@@ -7,6 +7,9 @@ import {
 } from '@bifravst/athena-helpers'
 import { Loading } from '../Loading/Loading'
 import { Error as ShowError } from '../Error/Error'
+import PQueue from 'p-queue'
+
+const queue = new PQueue({ concurrency: 1 })
 
 export const HistoricalDataLoader = ({
 	athena,
@@ -41,7 +44,8 @@ export const HistoricalDataLoader = ({
 				console.error('[athena]', ...args)
 			},
 		})
-		q({ QueryString })
+		queue
+			.add(async () => q({ QueryString }))
 			.then(async ResultSet => {
 				if (removed) {
 					console.debug(
