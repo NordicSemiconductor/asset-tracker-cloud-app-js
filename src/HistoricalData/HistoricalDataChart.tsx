@@ -53,7 +53,7 @@ export const HistoricalDataChart = ({
 		return () => {
 			chartRef.current && chartRef.current.dispose()
 		}
-	}, [data])
+	}, [data, type])
 
 	return <HistoricalDataChartDiv id={uuid.current} />
 }
