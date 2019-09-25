@@ -1,5 +1,5 @@
 import React from 'react'
-import { default as twemoji } from '@bifravst/twemoji'
+import twemoji from 'twemoji'
 import styled from 'styled-components'
 
 const Twemoji = styled.span`
