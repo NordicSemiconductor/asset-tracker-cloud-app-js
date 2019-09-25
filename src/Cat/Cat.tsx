@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { CredentialsConsumer, IdentityIdConsumer, IotConsumer } from '../App'
-import { Card, CardBody, CardHeader, Alert } from 'reactstrap'
+import { Alert, Card, CardBody, CardHeader } from 'reactstrap'
 import { Iot, IotData, S3 } from 'aws-sdk'
 import Athena from 'aws-sdk/clients/athena'
 import { Loading } from '../Loading/Loading'
@@ -29,7 +29,7 @@ import { emojify } from '../Emojify/Emojify'
 import { hideOnDesktop, mobileBreakpoint } from '../Styles'
 import styled from 'styled-components'
 import { NoMap } from './NoMap'
-import { FOTA, OnCreateUpgradeJob } from './FOTA'
+import { FOTA, OnCreateUpgradeJob } from '../FOTA/FOTA'
 import { describeIotThing, ThingInfo } from '../aws/describeIotThing'
 import { upgradeFirmware } from '../aws/upgradeFirmware'
 import {
@@ -494,14 +494,19 @@ const ShowCat = ({
 								/>
 							</Collapsable>
 							<hr />
-							<FOTA
-								key={`${cat.version}`}
-								device={reported.dev}
-								onCreateUpgradeJob={onCreateUpgradeJob}
-								listUpgradeJobs={listUpgradeJobs(catId)}
-								cancelUpgradeJob={cancelUpgradeJob(catId)}
-								deleteUpgradeJob={deleteUpgradeJob(catId)}
-							/>
+							<Collapsable
+								id={'cat:fota'}
+								title={<h3>{emojify('🌩️ Device Firmware Upgrade (FOTA)')}</h3>}
+							>
+								<FOTA
+									key={`${cat.version}`}
+									device={reported.dev}
+									onCreateUpgradeJob={onCreateUpgradeJob}
+									listUpgradeJobs={listUpgradeJobs(catId)}
+									cancelUpgradeJob={cancelUpgradeJob(catId)}
+									deleteUpgradeJob={deleteUpgradeJob(catId)}
+								/>
+							</Collapsable>
 						</>
 					)}
 					{reported && reported.acc && reported.acc.v && (
