@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { withAuthenticator } from 'aws-amplify-react'
 import Amplify, { Auth } from 'aws-amplify'
+import { ICredentials } from '@aws-amplify/core'
 import { CognitoUser } from 'amazon-cognito-identity-js'
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 import { AboutPage } from './About/Page'
@@ -25,14 +26,12 @@ Amplify.configure({
 
 const IdentityIdContext = React.createContext<string>('unauthorized')
 export const IdentityIdConsumer = IdentityIdContext.Consumer
-const CredentialsContext = React.createContext<{
-	accessKeyId: string
-	sessionToken: string
-	secretAccessKey: string
-}>({
+const CredentialsContext = React.createContext<ICredentials>({
 	accessKeyId: '',
 	sessionToken: '',
 	secretAccessKey: '',
+	identityId: '',
+	authenticated: false,
 })
 export const CredentialsConsumer = CredentialsContext.Consumer
 const IotContext = React.createContext<{ iot: Iot; iotData: IotData }>({

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, ButtonGroup, Form, FormGroup } from 'reactstrap'
 import equal from 'fast-deep-equal'
-import { Config } from '../@types/DeviceShadow'
+import { DeviceConfig } from '../@types/DeviceShadow'
 import { OutDatedWarning } from './OutDatedWarning'
 import { NumberConfigSetting } from './NumberConfigSetting'
 import { formatDistanceToNow } from 'date-fns'
@@ -77,8 +77,8 @@ export const Settings = ({
 	desired,
 	reported,
 }: {
-	desired?: DesiredConfig
-	reported?: Config
+	desired?: Partial<DesiredConfig>
+	reported?: DeviceConfig
 	onSave: (config: Partial<DesiredConfig>) => void
 }) => {
 	const [newDesired, setNewDesired] = useState(
@@ -106,7 +106,7 @@ export const Settings = ({
 		updateConfig({ [property]: parser ? parser(value) : parseInt(value, 10) })
 	}
 
-	const r: Partial<Config> = reported || {}
+	const r: Partial<DeviceConfig> = reported || {}
 
 	return (
 		<SettingsForm>

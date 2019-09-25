@@ -115,7 +115,7 @@ export type RoamingInformation = {
 	}
 }
 
-export type Config = {
+export type DeviceConfig = {
 	act: {
 		value: boolean
 		receivedAt: Date
@@ -148,5 +148,5 @@ export type DeviceShadow = {
 	gps: Gps
 	dev: DeviceInformation
 	roam: RoamingInformation
-	cfg: Config
+	cfg: DeviceConfig
 }

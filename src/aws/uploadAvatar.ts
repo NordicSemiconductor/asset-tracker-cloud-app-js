@@ -7,7 +7,7 @@ export const uploadAvatar = ({
 }: {
 	s3: S3
 	bucketName: string
-}) => async ({ avatar }: { avatar: Blob }): Promise<{ url: string }> => {
+}) => async (avatar: Blob): Promise<string> => {
 	const id = v4()
 	const url = `https://${bucketName}.s3.amazonaws.com/${id}.jpg`
 	await s3
@@ -20,5 +20,5 @@ export const uploadAvatar = ({
 		})
 		.promise()
 
-	return { url }
+	return url
 }
