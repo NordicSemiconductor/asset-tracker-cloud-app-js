@@ -100,9 +100,7 @@ export const CreateFOTAJob = ({
 									file: hexfile.file,
 									targetBoard,
 									version: nextVersion,
-								}).catch(error => {
-									console.log(error)
-								})
+								}).catch(console.error)
 							}}
 						>
 							{saving && 'Creating ...'}

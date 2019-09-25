@@ -6,11 +6,6 @@ export const RSRPBar = ({ quality, ...props }: { quality: number }) => {
 	// instead of only having the width/height.
 	const t = Math.sqrt(quality * 2)
 	const d = t / Math.sqrt(2)
-	console.log({
-		quality,
-		t,
-		d,
-	})
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
