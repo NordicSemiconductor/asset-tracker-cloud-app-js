@@ -153,14 +153,33 @@ export const Cat = ({
 	const [error, setError] = useState()
 
 	useEffect(() => {
+		let didCancel = false
 		let stopListening: () => void
-		Promise.all([
-			getThingState().then(setState),
-			listenForStateChange(setState).then(s => (stopListening = s)),
-		]).catch(setError)
+
+		const setStateIfNotCanceled = (state: AWSIotThingState) =>
+			!didCancel && setState(state)
+		const setErrorIfNotCanceled = (error: Error) =>
+			!didCancel && setError(error)
+
+		getThingState()
+			.then(setStateIfNotCanceled)
+			.catch(setErrorIfNotCanceled)
+
+		listenForStateChange(setState)
+			.then(s => {
+				if (didCancel) {
+					s()
+				}
+				stopListening = s
+			})
+			.catch(setErrorIfNotCanceled)
 
 		return () => {
-			stopListening && stopListening()
+			if (stopListening) {
+				console.log('Stopping listening...')
+				stopListening()
+			}
+			didCancel = true
 		}
 	}, [identityId, credentials, getThingState, listenForStateChange])
 

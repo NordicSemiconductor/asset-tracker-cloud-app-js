@@ -20,8 +20,7 @@ export const connectAndListenForStateChange = async ({
 	onNewState: (newState: AWSIotThingState) => void
 }): Promise<device> =>
 	new Promise(resolve => {
-		console.log('Connecting ...')
-		const connection = new device({
+		const connectArgs = {
 			clientId,
 			region: process.env.REACT_APP_REGION,
 			host: process.env.REACT_APP_MQTT_ENDPOINT,
@@ -29,9 +28,11 @@ export const connectAndListenForStateChange = async ({
 			accessKeyId: credentials.accessKeyId,
 			sessionToken: credentials.sessionToken,
 			secretKey: credentials.secretAccessKey,
-		})
+		} as const
+		console.log('[Iot]', `Connecting ${clientId}...`, connectArgs)
+		const connection = new device(connectArgs)
 		connection.on('connect', async () => {
-			console.log('connected')
+			console.log('[Iot]', `connected ${clientId}`)
 			connection.subscribe(
 				`$aws/things/${deviceId}/shadow/update/documents`,
 				undefined,
@@ -50,5 +51,14 @@ export const connectAndListenForStateChange = async ({
 			} as AWSIotThingState
 			onNewState(newState)
 			console.log('Updated state', deviceId, newState)
+		})
+		connection.on('error', () => {
+			console.error('[Iot]', 'error', clientId)
+		})
+		connection.on('offline', () => {
+			console.log('[Iot]', 'offline', clientId)
+		})
+		connection.on('close', () => {
+			console.log('[Iot]', 'close', clientId)
 		})
 	})

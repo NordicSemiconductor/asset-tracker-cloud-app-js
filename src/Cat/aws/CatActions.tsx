@@ -103,7 +103,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 												}
 												listenForStateChange={async onNewState =>
 													connectAndListenForStateChange({
-														clientId: `user-${identityId}`,
+														clientId: `user-${identityId}-${Date.now()}`,
 														credentials,
 														deviceId: catId,
 														onNewState,
