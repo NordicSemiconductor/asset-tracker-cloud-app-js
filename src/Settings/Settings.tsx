@@ -81,8 +81,8 @@ export const Settings = ({
 	reported?: DeviceConfig
 	onSave: (config: Partial<DesiredConfig>) => void
 }) => {
-	const [newDesired, setNewDesired] = useState(
-		desired || ({} as Partial<DesiredConfig>),
+	const [newDesired, setNewDesired] = useState<Partial<DesiredConfig>>(
+		desired || {},
 	)
 	const hasInitial = desired === undefined
 	const [changed, setChanged] = useState(hasInitial)

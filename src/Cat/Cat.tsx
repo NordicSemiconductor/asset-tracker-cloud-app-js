@@ -297,7 +297,9 @@ export const Cat = ({
 					title={<h3>{emojify('⚙️ Settings')}</h3>}
 				>
 					<Settings
-						key={`${cat.version}`}
+						key={`${cat.version}.${desired &&
+							desired.cfg === undefined}.${reported &&
+							reported.cfg === undefined}`}
 						desired={desired && desired.cfg}
 						reported={reported && reported.cfg}
 						onSave={config => {
