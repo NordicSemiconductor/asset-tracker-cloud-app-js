@@ -54,15 +54,23 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   @media (max-width: ${mobileBreakpoint}) {
-  .card-body {
-    padding: 0.5rem;
-    hr {
-      margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
+    .card-body {
+      padding: 0.5rem;
+      hr {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+    }
+    .card-header {
+      padding: 0.5rem;
     }
   }
-  .card-header {
-    padding: 0.5rem;
+  
+  .card + .card {
+    margin-top: 1rem;
   }
-}
+  
+  .card p:last-child {
+    margin-bottom: 0;
+  }
 `
