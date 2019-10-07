@@ -27,7 +27,7 @@ export const NumberConfigSetting = ({
 	unit?: string
 	example?: number
 	step?: number
-	id: 'actwt' | 'mvres' | 'mvt' | 'gpst' | 'acct'
+	id: 'actwt' | 'mvres' | 'mvt' | 'gpst' | 'acct' | 'celt'
 	onChange: (v: string) => any
 	desired?: number
 	reported?: {

@@ -136,6 +136,10 @@ export type DeviceConfig = {
 		value: number
 		receivedAt: Date
 	}
+	celt: {
+		value: number
+		receivedAt: Date
+	}
 	acct: {
 		value: number
 		receivedAt: Date

@@ -40,21 +40,22 @@ const SettingsForm = styled(Form)`
 			width: auto;
 			margin: 0;
 		}
-		.sidebyside {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			grid-column-gap: 1rem;
-			align-items: baseline;
-			@media (min-width: ${mobileBreakpoint}) {
-				display: block;
-			}
-		}
 	}
 	.btn-group {
 		width: 100%;
 	}
 	label {
 		font-weight: normal;
+	}
+`
+
+const SideBySide = styled.div`
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-column-gap: 1rem;
+	align-items: baseline;
+	@media (min-width: ${mobileBreakpoint}) {
+		display: block;
 	}
 `
 
@@ -70,6 +71,7 @@ export type DesiredConfig = {
 	mvres: number
 	mvt: number
 	gpst: number
+	celt: number
 	acct: number
 }
 
@@ -170,19 +172,23 @@ export const Settings = ({
 					</ButtonGroup>
 				</FormGroup>
 			</fieldset>
-			<fieldset data-intro={'Timeout for GPS fix'}>
-				<legend>GPS Timeout</legend>
+			<fieldset>
+				<legend>Active Mode Settings</legend>
+
 				<NumberConfigSetting
-					id={'gpst'}
-					desired={newDesired.gpst}
-					reported={r.gpst}
-					example={180}
-					onChange={updateConfigProperty('gpst')}
+					label={'Active Wait Time'}
+					intro={
+						'In <em>active</em> mode: wait this long until sending the next update. The actual interval will be this time plus the time it takes to get a GPS fix.'
+					}
+					id={'actwt'}
+					desired={newDesired.actwt}
+					reported={r.actwt}
+					onChange={updateConfigProperty('actwt')}
 				/>
 			</fieldset>
 			<fieldset>
 				<legend>Passive Mode Settings</legend>
-				<div className={'sidebyside'}>
+				<SideBySide>
 					<NumberConfigSetting
 						label={'Movement Resolution'}
 						intro={
@@ -202,7 +208,7 @@ export const Settings = ({
 						reported={r.mvt}
 						onChange={updateConfigProperty('mvt')}
 					/>
-				</div>
+				</SideBySide>
 				<NumberConfigSetting
 					label={'Accelerometer threshold'}
 					intro={
@@ -225,18 +231,27 @@ export const Settings = ({
 				/>
 			</fieldset>
 			<fieldset>
-				<legend>Active Mode Settings</legend>
-
-				<NumberConfigSetting
-					label={'Active Wait Time'}
-					intro={
-						'In <em>active</em> mode: wait this long until sending the next update. The actual interval will be this time plus the time it takes to get a GPS fix.'
-					}
-					id={'actwt'}
-					desired={newDesired.actwt}
-					reported={r.actwt}
-					onChange={updateConfigProperty('actwt')}
-				/>
+				<legend>Timeouts</legend>
+				<SideBySide>
+					<NumberConfigSetting
+						id={'gpst'}
+						label={'GPS Timeout'}
+						intro={'Timeout for GPS fix'}
+						desired={newDesired.gpst}
+						reported={r.gpst}
+						example={180}
+						onChange={updateConfigProperty('gpst')}
+					/>
+					<NumberConfigSetting
+						id={'celt'}
+						label={'Cellular Timeout'}
+						intro={'Timeout for cellular establishing the connection'}
+						desired={newDesired.celt}
+						reported={r.celt}
+						example={6000}
+						onChange={updateConfigProperty('celt')}
+					/>
+				</SideBySide>
 			</fieldset>
 			<FooterWithFullWidthButton>
 				<Button
