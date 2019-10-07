@@ -248,7 +248,7 @@ export const Settings = ({
 						intro={'Timeout for cellular establishing the connection'}
 						desired={newDesired.celt}
 						reported={r.celt}
-						example={6000}
+						example={600}
 						onChange={updateConfigProperty('celt')}
 					/>
 				</SideBySide>
