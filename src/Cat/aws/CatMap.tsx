@@ -7,13 +7,21 @@ import { AWSIotThingState } from '../../aws/connectAndListenForStateChange'
 import { NoMap } from '../NoMap'
 import { FormGroup, Label, Input } from 'reactstrap'
 import styled from 'styled-components'
+import { mobileBreakpoint } from '../../Styles'
 
 const SettingsFormGroup = styled(FormGroup)`
 	position: absolute;
-	bottom: 0;
-	z-index: 10000;
 	padding: 0.5rem 0.5rem 0.5rem 2rem;
 	background-color: #ffffffaf;
+	top: 0;
+	right: 0;
+	z-index: 999;
+	@media (min-width: ${mobileBreakpoint}) {
+		top: auto;
+		right: auto;
+		bottom: 0;
+		z-index: 10000;
+	}
 `
 
 const CatMapContainer = styled.div`
@@ -87,7 +95,7 @@ export const CatMap = ({
 					onChange={toggle}
 					checked={fetchHistoricalData}
 				/>{' '}
-				Fetch past positions?
+				Fetch history?
 			</Label>
 		</SettingsFormGroup>
 	)
