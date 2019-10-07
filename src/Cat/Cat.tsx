@@ -148,9 +148,10 @@ export const Cat = ({
 	) => Promise<() => void>
 	catMap: (state: AWSIotThingState) => React.ReactElement<any>
 }) => {
-	const [state, setState] = useState({} as AWSIotThingState)
-	const { reported, desired } = state
+	const [state, setState] = useState<AWSIotThingState>()
 	const [error, setError] = useState()
+	const reported = state && state.reported
+	const desired = state && state.desired
 
 	useEffect(() => {
 		let didCancel = false
@@ -211,7 +212,7 @@ export const Cat = ({
 
 	return (
 		<CatCard>
-			{catMap(state)}
+			{state && catMap(state)}
 			<CardHeader>
 				<MobileOnlyAvatarPicker
 					key={`${cat.version}`}
@@ -291,35 +292,35 @@ export const Cat = ({
 						/>
 					</AvatarPicker>
 				</Collapsable>
-				<hr />
-				<Collapsable
-					id={'cat:settings'}
-					title={<h3>{emojify('⚙️ Settings')}</h3>}
-				>
-					<Settings
-						key={`${cat.version}.${desired &&
-							desired.cfg === undefined}.${reported &&
-							reported.cfg === undefined}`}
-						desired={desired && desired.cfg}
-						reported={reported && reported.cfg}
-						onSave={config => {
-							updateDeviceConfig(config)
-								.catch(setError)
-								.then(() => {
-									setState({
-										desired: {
-											...(desired ? desired : {}),
-											cfg: config,
-										},
-										reported: {
-											...(reported ? reported : {}),
-										},
-									})
-								})
-								.catch(setError)
-						}}
-					/>
-				</Collapsable>
+				{state && (
+					<>
+						<hr />
+						<Collapsable
+							id={'cat:settings'}
+							title={<h3>{emojify('⚙️ Settings')}</h3>}
+						>
+							<Settings
+								state={state}
+								onSave={config => {
+									updateDeviceConfig(config)
+										.catch(setError)
+										.then(() => {
+											setState({
+												desired: {
+													...(desired ? desired : {}),
+													cfg: config,
+												},
+												reported: {
+													...(reported ? reported : {}),
+												},
+											})
+										})
+										.catch(setError)
+								}}
+							/>
+						</Collapsable>
+					</>
+				)}
 				{reported && reported.dev && (
 					<>
 						<hr />

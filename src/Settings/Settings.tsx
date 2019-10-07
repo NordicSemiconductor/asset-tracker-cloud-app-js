@@ -8,6 +8,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { emojify } from '../Emojify/Emojify'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
+import { AWSIotThingState } from '../aws/connectAndListenForStateChange'
 
 const SettingsForm = styled(Form)`
 	@media (min-width: ${mobileBreakpoint}) {
@@ -74,16 +75,18 @@ export type DesiredConfig = {
 
 export const Settings = ({
 	onSave,
-	desired,
-	reported,
+	state,
 }: {
-	desired?: Partial<DesiredConfig>
-	reported?: DeviceConfig
+	state: AWSIotThingState
 	onSave: (config: Partial<DesiredConfig>) => void
 }) => {
+	const desired = state.desired && state.desired.cfg
+	const reported = state.reported && state.reported.cfg
+
 	const [newDesired, setNewDesired] = useState<Partial<DesiredConfig>>(
 		desired || {},
 	)
+
 	const hasInitial = desired === undefined
 	const [changed, setChanged] = useState(hasInitial)
 	const [saving, setSaving] = useState(false)
