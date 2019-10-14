@@ -5,12 +5,15 @@ import * as introJs from 'intro.js'
 import { emojify } from '../Emojify/Emojify'
 const intro = introJs()
 
-export const Navigation = (props: {
+export const Navigation = ({
+	navbar,
+	onLogout,
+	onClick,
+}: {
 	navbar?: boolean
-	logout: () => void
+	onLogout: () => void
 	onClick?: () => void
 }) => {
-	const { navbar, logout, onClick } = props
 	return (
 		<Nav navbar={navbar}>
 			<NavItem>
@@ -45,7 +48,7 @@ export const Navigation = (props: {
 				</Button>
 			</NavItem>
 			<NavItem>
-				<Button onClick={logout} outline color="danger">
+				<Button onClick={onLogout} outline color="danger">
 					{emojify('🚪')} Log out
 				</Button>
 			</NavItem>

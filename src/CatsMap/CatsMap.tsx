@@ -1,5 +1,5 @@
 import React, { createRef, useEffect, useState } from 'react'
-import { IotConsumer } from '../App'
+import { IotConsumer } from '../aws/App'
 import { Iot, IotData } from 'aws-sdk'
 import { Map as LeafletMap, TileLayer, Marker, Popup } from 'react-leaflet'
 
@@ -44,7 +44,7 @@ const Map = ({ iot, iotData }: { iot: Iot; iotData: IotData }) => {
 									}
 								}
 							})
-							.catch(() => {}),
+							.catch(() => { }),
 					),
 				),
 			)

@@ -4,15 +4,15 @@ import Amplify, { Auth } from 'aws-amplify'
 import { ICredentials } from '@aws-amplify/core'
 import { CognitoUser } from 'amazon-cognito-identity-js'
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
-import { AboutPage } from './About/Page'
-import { CatsPage } from './Cats/Page'
-import { CatPage } from './Cat/Page'
-import { CatsMapPage } from './CatsMap/Page'
+import { AboutPage } from '../About/Page'
+import { CatsPage } from '../Cats/Page'
+import { CatPage } from '../Cat/Page'
+import { CatsMapPage } from '../CatsMap/Page'
 import { Iot, IotData } from 'aws-sdk'
-import { NavbarBrandContextProvider } from './Navigation/NavbarBrand'
-import { ToggleNavigation } from './Navigation/ToggleNavigation'
-import { GlobalStyle } from './Styles'
-import { attachIotPolicyToIdentity } from './aws/attachIotPolicyToIdentity'
+import { NavbarBrandContextProvider } from '../Navigation/NavbarBrand'
+import { ToggleNavigation } from '../Navigation/ToggleNavigation'
+import { GlobalStyle } from '../Styles'
+import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
 
 Amplify.configure({
 	Auth: {
@@ -81,7 +81,19 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 		<Router>
 			<GlobalStyle />
 			<NavbarBrandContextProvider>
-				<ToggleNavigation />
+				<ToggleNavigation
+					loggedIn={true}
+					onLogout={() => {
+						Auth.signOut()
+							.then(() => {
+								window.location.reload()
+							})
+							.catch(error => {
+								// Woot?!
+								console.error(error)
+							})
+					}}
+				/>
 				<Route exact path="/" render={() => <Redirect to="/cats" />} />
 				{credentials && iot && (
 					<CredentialsContext.Provider value={credentials}>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { IotConsumer } from '../App'
+import { IotConsumer } from '../aws/App'
 import { Card, CardBody, CardHeader, Table } from 'reactstrap'
 import { Iot } from 'aws-sdk'
 import { Loading } from '../Loading/Loading'

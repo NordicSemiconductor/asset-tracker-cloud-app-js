@@ -73,4 +73,8 @@ export const GlobalStyle = createGlobalStyle`
   .card p:last-child {
     margin-bottom: 0;
   }
+
+  button + button {
+    margin-left: 0.5rem;
+  }
 `

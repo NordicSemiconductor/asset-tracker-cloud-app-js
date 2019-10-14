@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { IdentityIdConsumer } from '../App'
+import { IdentityIdConsumer } from '../aws/App'
 
 export const Configuration = () => (
 	<Card data-intro="This card lists the apps configuration.">

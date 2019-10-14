@@ -1,9 +1,9 @@
-import { ThingInfo } from '../../aws/describeIotThing'
+import { ThingInfo } from '../describeIotThing'
 import React, { useContext, useEffect, useState } from 'react'
 import { Error } from '../../Error/Error'
 import { Card, CardBody } from 'reactstrap'
 import { Loading } from '../../Loading/Loading'
-import { CatNavbar } from '../CatNavbar'
+import { CatNavbar } from '../../Cat/CatNavbar'
 import { NavbarBrandContext } from '../../Navigation/NavbarBrand'
 
 export type CatInfo = {

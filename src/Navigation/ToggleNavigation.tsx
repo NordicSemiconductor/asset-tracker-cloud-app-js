@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
-import { Auth } from 'aws-amplify'
 import { Collapse, Navbar, NavbarToggler } from 'reactstrap'
-import { NavbarBrandConsumer } from './NavbarBrand'
-import { Navigation } from './Navigation'
 import styled from 'styled-components'
+
 import {
 	hideOnDesktop,
 	mobileBreakpoint,
 	showOnDesktop,
 	wideBreakpoint,
 } from '../Styles'
+import { NavbarBrandConsumer } from './NavbarBrand'
+import { Navigation } from './Navigation'
 
 const StyledNavbar = styled(Navbar)`
 	z-index: 100;
@@ -42,15 +42,16 @@ const DesktopOnlyNavigation = styled.div`
 }
 `
 
-export const ToggleNavigation = () => {
+export const ToggleNavigation = ({
+	loggedIn,
+	onLogout,
+}: {
+	loggedIn: boolean
+	onLogout: () => void
+}) => {
 	const [navigationVisible, setNavigationVisible] = useState(false)
 
 	const toggleNavigation = () => setNavigationVisible(!navigationVisible)
-
-	const logout = async () => {
-		await Auth.signOut()
-		window.location.reload()
-	}
 
 	return (
 		<header className="bg-light">
@@ -62,16 +63,20 @@ export const ToggleNavigation = () => {
 				<DesktopOnly>
 					<NavbarBrandConsumer>{({ navbar }) => navbar}</NavbarBrandConsumer>
 				</DesktopOnly>
-				<MobileOnlyCollapse isOpen={navigationVisible} navbar>
-					<Navigation
-						navbar={true}
-						onClick={toggleNavigation}
-						logout={logout}
-					/>
-				</MobileOnlyCollapse>
-				<DesktopOnlyNavigation>
-					<Navigation onClick={toggleNavigation} logout={logout} />
-				</DesktopOnlyNavigation>
+				{loggedIn && (
+					<>
+						<MobileOnlyCollapse isOpen={navigationVisible} navbar>
+							<Navigation
+								navbar={true}
+								onClick={toggleNavigation}
+								onLogout={onLogout}
+							/>
+						</MobileOnlyCollapse>
+						<DesktopOnlyNavigation>
+							<Navigation onClick={toggleNavigation} onLogout={onLogout} />
+						</DesktopOnlyNavigation>
+					</>
+				)}
 			</StyledNavbar>
 		</header>
 	)

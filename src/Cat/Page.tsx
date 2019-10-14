@@ -1,5 +1,5 @@
 import React from 'react'
-import { CatActions } from './aws/CatActions'
+import { CatActions } from '../aws/Cat/CatActions'
 import { RouteComponentProps } from 'react-router-dom'
 import { Main } from '../Styles'
 

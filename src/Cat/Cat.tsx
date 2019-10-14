@@ -18,7 +18,7 @@ import { ReportedTime } from './ReportedTime'
 import { Collapsable } from '../Collapsable/Collapsable'
 import { DeviceInfo } from './DeviceInformation'
 import { AccelerometerDiagram } from '../AccelerometerDiagram/AccelerometerDiagram'
-import { CatInfo } from './aws/CatLoader'
+import { CatInfo } from '../aws/Cat/CatLoader'
 
 const intro = introJs()
 const MobileOnlyAvatarPicker = hideOnDesktop(AvatarPicker)
