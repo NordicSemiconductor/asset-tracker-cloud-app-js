@@ -8,6 +8,20 @@ export const LogoImg = styled.img`
 	border-radius: 100%;
 `
 
+const Flavour = styled.small`
+	opacity: 0.75;
+	:before {
+		content: '(';
+		opacity: 0.75;
+	}
+	:after {
+		content: ')';
+		opacity: 0.75;
+	}
+`
+
+const cloudFlavour = process.env.REACT_APP_CLOUD_FLAVOUR || 'AWS'
+
 const defaultNavbarBrand: React.ReactElement<any> = (
 	<NavbarBrand href="/">
 		<LogoImg
@@ -15,9 +29,9 @@ const defaultNavbarBrand: React.ReactElement<any> = (
 			width="30"
 			height="30"
 			className="d-inline-block align-top"
-			alt="Cat Tracker"
+			alt={`Cat Tracker (${cloudFlavour})`}
 		/>
-		Cat Tracker
+		Cat Tracker <Flavour>{cloudFlavour}</Flavour>
 	</NavbarBrand>
 )
 
@@ -40,9 +54,12 @@ export const NavbarBrandContextProvider = ({
 	children: React.ReactNode
 }) => {
 	const set = (navbar: React.ReactElement<any>) => {
+		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		setState({ ...state, navbar })
 	}
+
 	const reset = () => {
+		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		setState({ ...state, navbar: defaultNavbarBrand })
 	}
 
