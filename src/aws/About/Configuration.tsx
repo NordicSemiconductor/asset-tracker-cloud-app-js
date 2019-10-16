@@ -1,19 +1,17 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { IdentityIdConsumer } from '../aws/App'
+import { IdentityIdConsumer } from '../App'
 
 export const Configuration = () => (
 	<Card data-intro="This card lists the apps configuration.">
 		<CardHeader>Environment</CardHeader>
 		<CardBody>
 			<dl>
-				<dt>Version</dt>
-				<dd>
-					<code>{process.env.REACT_APP_VERSION || '0.0.0-development'}</code>
-				</dd>
 				<dt>User</dt>
 				<dd>
-					<IdentityIdConsumer>{identityId => identityId}</IdentityIdConsumer>
+					<IdentityIdConsumer>
+						{identityId => <code>{identityId}</code>}
+					</IdentityIdConsumer>
 				</dd>
 				<dt>User Pool</dt>
 				<dd>

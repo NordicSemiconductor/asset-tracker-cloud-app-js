@@ -10,6 +10,7 @@ import { ToggleNavigation } from '../Navigation/ToggleNavigation'
 import { GlobalStyle } from '../Styles'
 import { FirebaseUserPanel } from './FirebaseUserPanel'
 import { VerifyUserEmail } from './VerifyUserEmail'
+import { AboutPage } from './About/Page'
 
 export const boot = ({
 	apiKey,
@@ -56,11 +57,17 @@ export const boot = ({
 				{!user && <FirebaseUserPanel />}
 				{user && (
 					<NavbarBrandContextProvider>
-						<VerifyUserEmail user={user} />
-						<Route exact path="/" render={() => <Redirect to="/cats" />} />
+						<IdentityIdContext.Provider value={user.uid}>
+							<VerifyUserEmail user={user} />
+							<Route exact path="/" render={() => <Redirect to="/cats" />} />
+							<Route exact path="/about" component={AboutPage} />
+						</IdentityIdContext.Provider>
 					</NavbarBrandContextProvider>
 				)}
 			</Router>
 		)
 	}
 }
+
+const IdentityIdContext = React.createContext<string>('unauthorized')
+export const IdentityIdConsumer = IdentityIdContext.Consumer

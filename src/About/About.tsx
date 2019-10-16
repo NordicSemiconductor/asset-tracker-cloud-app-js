@@ -21,6 +21,12 @@ export const About = () => (
 				</a>
 				.
 			</p>
+			<dl>
+				<dt>Version</dt>
+				<dd>
+					<code>{process.env.REACT_APP_VERSION || '0.0.0-development'}</code>
+				</dd>
+			</dl>
 		</CardBody>
 	</Card>
 )
