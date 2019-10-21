@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { withAuthenticator } from 'aws-amplify-react'
+import { withAuthenticator, Authenticator } from 'aws-amplify-react'
 import Amplify, { Auth } from 'aws-amplify'
 import { ICredentials } from '@aws-amplify/core'
 import { CognitoUser } from 'amazon-cognito-identity-js'
@@ -106,7 +106,12 @@ export const boot = ({
 		)
 	}
 
-	return withAuthenticator(App)
+	return withAuthenticator(App, {
+		usernameAttributes: 'email',
+		signUpConfig: {
+			hiddenDefaults: ['phone_number'],
+		},
+	})
 }
 
 const IdentityIdContext = React.createContext<string>('unauthorized')
