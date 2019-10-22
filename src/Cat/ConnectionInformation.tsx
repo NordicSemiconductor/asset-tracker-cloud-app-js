@@ -60,7 +60,7 @@ export const ConnectionInformation = ({
 	device,
 	roaming,
 }: {
-	device: DeviceInformation
+	device?: DeviceInformation
 	roaming: RoamingInformation
 }) => {
 	const {
@@ -69,11 +69,7 @@ export const ConnectionInformation = ({
 			mccmnc: { value: mccmnc },
 		},
 	} = roaming
-	const {
-		v: {
-			nw: { value: nw },
-		},
-	} = device
+	const nw = device && device.v.nw.value
 	return (
 		<div className={'info connection-information'}>
 			<TextWithIcon icon={<RSRP rsrp={rsrp} />}>
@@ -82,7 +78,7 @@ export const ConnectionInformation = ({
 					<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
 				</>
 			</TextWithIcon>
-			{emojify(`📱 ${nw}`)}
+			{emojify(`📱 ${nw || '?'}`)}
 			<ReportedTime
 				receivedAt={roaming.v.rsrp.receivedAt}
 				reportedAt={new Date(roaming.ts.value)}

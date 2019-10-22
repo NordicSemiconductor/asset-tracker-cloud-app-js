@@ -230,7 +230,7 @@ export const Cat = ({
 				</MobileOnlyH2>
 				{reported && (
 					<>
-						{reported.dev && reported.roam && (
+						{reported.roam && (
 							<Toggle>
 								<ConnectionInformation
 									device={reported.dev}
