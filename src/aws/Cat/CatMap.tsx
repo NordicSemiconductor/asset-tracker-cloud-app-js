@@ -36,8 +36,7 @@ export const CatMap = ({
 	athenaWorkGroup,
 	athenaDataBase,
 	athenaRawDataTable,
-	cellGeoLocationTable,
-	cellGeoLocationTableCellIdIndex,
+	cellGeoLocationCacheTable,
 	state,
 	dynamoDBClient,
 }: {
@@ -48,8 +47,7 @@ export const CatMap = ({
 	athenaRawDataTable: string
 	state: AWSIotThingState
 	dynamoDBClient: DynamoDBClient
-	cellGeoLocationTable: string
-	cellGeoLocationTableCellIdIndex: string
+	cellGeoLocationCacheTable: string
 }) => {
 	let initialState = true
 
@@ -67,8 +65,7 @@ export const CatMap = ({
 			dynamoDBClient
 				.send(
 					new QueryCommand({
-						TableName: cellGeoLocationTable,
-						IndexName: cellGeoLocationTableCellIdIndex,
+						TableName: cellGeoLocationCacheTable,
 						KeyConditionExpression: 'cellId = :cellId',
 						ExpressionAttributeValues: {
 							':cellId': {
@@ -90,12 +87,7 @@ export const CatMap = ({
 					console.error(err)
 				})
 		}
-	}, [
-		reported,
-		cellGeoLocationTable,
-		cellGeoLocationTableCellIdIndex,
-		dynamoDBClient,
-	])
+	}, [reported, cellGeoLocationCacheTable, dynamoDBClient])
 
 	if (
 		!reported ||

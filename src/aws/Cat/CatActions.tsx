@@ -183,13 +183,9 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																region: process.env.REACT_APP_REGION,
 															})
 														}
-														cellGeoLocationTable={
+														cellGeoLocationCacheTable={
 															process.env
 																.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE as string
-														}
-														cellGeoLocationTableCellIdIndex={
-															process.env
-																.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE_CELL_ID_INDEX as string
 														}
 													/>
 												)}
