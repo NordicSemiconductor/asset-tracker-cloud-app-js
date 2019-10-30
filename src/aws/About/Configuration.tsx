@@ -53,6 +53,8 @@ export const Configuration = () => (
 				<dd>
 					<a
 						href={`https://s3.console.aws.amazon.com/s3/buckets/${process.env.REACT_APP_AVATAR_BUCKET_NAME}/?region=${process.env.REACT_APP_REGION}&tab=overview`}
+						target="_blank"
+						rel="noopener noreferrer"
 					>
 						<code>{process.env.REACT_APP_AVATAR_BUCKET_NAME}</code>
 					</a>
@@ -61,8 +63,26 @@ export const Configuration = () => (
 				<dd>
 					<a
 						href={`https://s3.console.aws.amazon.com/s3/buckets/${process.env.REACT_APP_FOTA_BUCKET_NAME}/?region=${process.env.REACT_APP_REGION}&tab=overview`}
+						target="_blank"
+						rel="noopener noreferrer"
 					>
 						<code>{process.env.REACT_APP_FOTA_BUCKET_NAME}</code>
+					</a>
+				</dd>
+				<dt>Cell Geolocation</dt>
+				<dd>
+					<a
+						href={`https://${process.env.REACT_APP_REGION}.console.aws.amazon.com/dynamodb/home?region=${process.env.REACT_APP_REGION}#tables:selected=${process.env.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE};tab=overview`}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<code>
+							{process.env.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE}/
+							{
+								process.env
+									.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE_CELL_ID_INDEX
+							}
+						</code>
 					</a>
 				</dd>
 			</dl>

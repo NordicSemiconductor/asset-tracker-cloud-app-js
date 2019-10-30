@@ -9,6 +9,7 @@ import { FormGroup, Label, Input } from 'reactstrap'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../../Styles'
 import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb-v2-node'
+import { cellId } from '@bifravst/cell-geolocation-helpers'
 
 const SettingsFormGroup = styled(FormGroup)`
 	position: absolute;
@@ -35,6 +36,8 @@ export const CatMap = ({
 	athenaWorkGroup,
 	athenaDataBase,
 	athenaRawDataTable,
+	cellGeoLocationTable,
+	cellGeoLocationTableCellIdIndex,
 	state,
 	dynamoDBClient,
 }: {
@@ -45,6 +48,8 @@ export const CatMap = ({
 	athenaRawDataTable: string
 	state: AWSIotThingState
 	dynamoDBClient: DynamoDBClient
+	cellGeoLocationTable: string
+	cellGeoLocationTableCellIdIndex: string
 }) => {
 	let initialState = true
 
@@ -56,6 +61,41 @@ export const CatMap = ({
 	const [fetchHistoricalData, setFetchHistoricalData] = useState(initialState)
 
 	const { reported } = state
+
+	useEffect(() => {
+		if (reported && reported.roam && reported.roam.v.area) {
+			dynamoDBClient
+				.send(
+					new QueryCommand({
+						TableName: cellGeoLocationTable,
+						IndexName: cellGeoLocationTableCellIdIndex,
+						KeyConditionExpression: 'cellId = :cellId',
+						ExpressionAttributeValues: {
+							':cellId': {
+								S: cellId({
+									area: reported.roam.v.area.value,
+									cell: reported.roam.v.cell.value,
+									mccmnc: reported.roam.v.mccmnc.value,
+								}),
+							},
+						},
+						ProjectionExpression: 'lat,lng',
+					}),
+				)
+				.then(({ Items }) => {
+					console.log('cell geolocation', Items)
+				})
+				.catch(err => {
+					console.error(`Cell Geolocation query failed!`)
+					console.error(err)
+				})
+		}
+	}, [
+		reported,
+		cellGeoLocationTable,
+		cellGeoLocationTableCellIdIndex,
+		dynamoDBClient,
+	])
 
 	if (
 		!reported ||
@@ -76,28 +116,6 @@ export const CatMap = ({
 			state ? '1' : '0',
 		)
 	}
-
-	useEffect(() => {
-		if (reported.roam && reported.roam.v.area) {
-			const { Items } = dynamoDBClient
-				.send(
-					new QueryCommand({
-						TableName,
-						IndexName,
-						KeyConditionExpression: 'cellId = :cellId',
-						ExpressionAttributeValues: {
-							[':cellId']: {
-								S: cellId(cell),
-							},
-						},
-						ProjectionExpression: 'lat,lng',
-					}),
-				)
-				.then(({ Items }) => {
-					console.log(Items)
-				})
-		}
-	}, [reported.roam])
 
 	const mapWithoutHistoricalData = (
 		<Map

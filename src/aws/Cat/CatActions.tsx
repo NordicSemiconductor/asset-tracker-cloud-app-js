@@ -22,7 +22,7 @@ import { updateThingConfig } from '../updateThingConfig'
 import { Cat } from '../../Cat/Cat'
 import { CatLoader } from './CatLoader'
 import { CatMap } from './CatMap'
-import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb-v2-node'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb-v2-node'
 
 const athenaWorkGroup =
 	process.env.REACT_APP_HISTORICALDATA_WORKGROUP_NAME || ''
@@ -179,8 +179,17 @@ export const CatActions = ({ catId }: { catId: string }) => {
 														athenaRawDataTable={athenaRawDataTable}
 														dynamoDBClient={
 															new DynamoDBClient({
+																credentials,
 																region: process.env.REACT_APP_REGION,
 															})
+														}
+														cellGeoLocationTable={
+															process.env
+																.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE as string
+														}
+														cellGeoLocationTableCellIdIndex={
+															process.env
+																.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE_CELL_ID_INDEX as string
 														}
 													/>
 												)}
