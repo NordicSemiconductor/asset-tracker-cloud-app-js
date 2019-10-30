@@ -22,6 +22,7 @@ import { updateThingConfig } from '../updateThingConfig'
 import { Cat } from '../../Cat/Cat'
 import { CatLoader } from './CatLoader'
 import { CatMap } from './CatMap'
+import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb-v2-node'
 
 const athenaWorkGroup =
 	process.env.REACT_APP_HISTORICALDATA_WORKGROUP_NAME || ''
@@ -176,6 +177,11 @@ export const CatActions = ({ catId }: { catId: string }) => {
 														athenaDataBase={athenaDataBase}
 														athenaWorkGroup={athenaWorkGroup}
 														athenaRawDataTable={athenaRawDataTable}
+														dynamoDBClient={
+															new DynamoDBClient({
+																region: process.env.REACT_APP_REGION,
+															})
+														}
 													/>
 												)}
 											>

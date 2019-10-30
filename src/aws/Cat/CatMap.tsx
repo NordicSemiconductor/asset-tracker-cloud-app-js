@@ -2,12 +2,13 @@ import Athena from 'aws-sdk/clients/athena'
 import { CatInfo } from './CatLoader'
 import { HistoricalDataLoader } from '../../HistoricalData/HistoricalDataLoader'
 import { Map } from '../../Map/Map'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AWSIotThingState } from '../connectAndListenForStateChange'
 import { NoMap } from '../../Cat/NoMap'
 import { FormGroup, Label, Input } from 'reactstrap'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../../Styles'
+import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb-v2-node'
 
 const SettingsFormGroup = styled(FormGroup)`
 	position: absolute;
@@ -35,6 +36,7 @@ export const CatMap = ({
 	athenaDataBase,
 	athenaRawDataTable,
 	state,
+	dynamoDBClient,
 }: {
 	athena: Athena
 	cat: CatInfo
@@ -42,6 +44,7 @@ export const CatMap = ({
 	athenaDataBase: string
 	athenaRawDataTable: string
 	state: AWSIotThingState
+	dynamoDBClient: DynamoDBClient
 }) => {
 	let initialState = true
 
@@ -73,6 +76,28 @@ export const CatMap = ({
 			state ? '1' : '0',
 		)
 	}
+
+	useEffect(() => {
+		if (reported.roam && reported.roam.v.area) {
+			const { Items } = dynamoDBClient
+				.send(
+					new QueryCommand({
+						TableName,
+						IndexName,
+						KeyConditionExpression: 'cellId = :cellId',
+						ExpressionAttributeValues: {
+							[':cellId']: {
+								S: cellId(cell),
+							},
+						},
+						ProjectionExpression: 'lat,lng',
+					}),
+				)
+				.then(({ Items }) => {
+					console.log(Items)
+				})
+		}
+	}, [reported.roam])
 
 	const mapWithoutHistoricalData = (
 		<Map
