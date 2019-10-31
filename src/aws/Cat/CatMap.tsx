@@ -1,15 +1,15 @@
 import Athena from 'aws-sdk/clients/athena'
 import { CatInfo } from './CatLoader'
 import { HistoricalDataLoader } from '../../HistoricalData/HistoricalDataLoader'
-import { Map } from '../../Map/Map'
+import { Map, Location } from '../../Map/Map'
 import React, { useState, useEffect } from 'react'
 import { AWSIotThingState } from '../connectAndListenForStateChange'
-import { NoMap } from '../../Cat/NoMap'
 import { FormGroup, Label, Input } from 'reactstrap'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../../Styles'
 import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb-v2-node'
 import { cellId } from '@bifravst/cell-geolocation-helpers'
+import { RoamingInformation } from '../../@types/DeviceShadow'
 
 const SettingsFormGroup = styled(FormGroup)`
 	position: absolute;
@@ -57,11 +57,12 @@ export const CatMap = ({
 		initialState = false
 	}
 	const [fetchHistoricalData, setFetchHistoricalData] = useState(initialState)
+	const [cellLocation, setCellLocation] = useState<Location>()
 
 	const { reported } = state
 
 	useEffect(() => {
-		if (reported && reported.roam && reported.roam.v.area) {
+		if (reported && reported.roam) {
 			dynamoDBClient
 				.send(
 					new QueryCommand({
@@ -80,25 +81,24 @@ export const CatMap = ({
 					}),
 				)
 				.then(({ Items }) => {
-					console.log('cell geolocation', Items)
+					if (Items && Items.length) {
+						const l: Location = {
+							ts: new Date((reported.roam as RoamingInformation).ts.value),
+							position: {
+								lat: parseFloat(Items[0].lat.N as string),
+								lng: parseFloat(Items[0].lng.N as string),
+							},
+						}
+						console.log('cell geolocation', l)
+						setCellLocation(l)
+					}
 				})
 				.catch(err => {
 					console.error(`Cell Geolocation query failed!`)
 					console.error(err)
 				})
 		}
-	}, [reported, cellGeoLocationCacheTable, dynamoDBClient])
-
-	if (
-		!reported ||
-		!reported.gps ||
-		!reported.gps.v ||
-		!reported.gps.v.lat ||
-		!reported.gps.v.lng
-	)
-		return <NoMap />
-
-	const gps = reported.gps
+	}, [reported, cellGeoLocationCacheTable, dynamoDBClient, setCellLocation])
 
 	const toggle = () => {
 		const state = !fetchHistoricalData
@@ -109,14 +109,26 @@ export const CatMap = ({
 		)
 	}
 
-	const mapWithoutHistoricalData = (
-		<Map
-			position={{
+	const gps = reported && reported.gps
+
+	let deviceLocation: Location | undefined = undefined
+
+	if (gps !== undefined) {
+		deviceLocation = {
+			ts: new Date(gps.ts.value),
+			position: {
 				lat: gps.v.lat.value,
 				lng: gps.v.lng.value,
-			}}
-			accuracy={gps.v.acc && gps.v.acc.value}
-			heading={gps.v.hdg && gps.v.hdg.value}
+			},
+		}
+	}
+
+	const mapWithoutHistoricalData = (
+		<Map
+			deviceLocation={deviceLocation}
+			cellLocation={cellLocation}
+			accuracy={gps && gps.v.acc && gps.v.acc.value}
+			heading={gps && gps.v.hdg && gps.v.hdg.value}
 			label={cat.id}
 		/>
 	)
@@ -160,19 +172,22 @@ export const CatMap = ({
 			>
 				{({ data }) => (
 					<Map
-						position={{
-							lat: gps.v.lat.value,
-							lng: gps.v.lng.value,
-						}}
-						accuracy={gps.v.acc && gps.v.acc.value}
-						heading={gps.v.hdg && gps.v.hdg.value}
+						deviceLocation={deviceLocation}
+						cellLocation={cellLocation}
+						accuracy={gps && gps.v.acc && gps.v.acc.value}
+						heading={gps && gps.v.hdg && gps.v.hdg.value}
 						label={cat.id}
-						history={
-							(data as unknown) as ({
-								lat: number
-								lng: number
-							}[])
-						}
+						history={((data as unknown) as {
+							date: string
+							lat: number
+							lng: number
+						}[]).map(({ date, lat, lng }) => ({
+							ts: new Date(date),
+							position: {
+								lat,
+								lng,
+							},
+						}))}
 					/>
 				)}
 			</HistoricalDataLoader>

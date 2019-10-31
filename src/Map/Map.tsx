@@ -8,25 +8,34 @@ import {
 	Polyline,
 	LeafletConsumer,
 } from 'react-leaflet'
+import { NoMap } from './NoMap'
 import styled from 'styled-components'
 
 const StyledLeafletMap = styled(LeafletMap)`
 	height: 300px;
 `
-type Point = { lat: number; lng: number }
+
+type Position = { lat: number; lng: number }
+
+export type Location = {
+	position: Position
+	ts: Date
+}
 
 export const Map = ({
-	position: { lat, lng },
+	deviceLocation,
+	cellLocation,
 	accuracy,
 	heading,
 	label,
 	history,
 }: {
-	position: Point
+	deviceLocation?: Location
+	cellLocation?: Location
 	accuracy?: number
 	heading?: number
 	label: string
-	history?: Point[]
+	history?: Location[]
 }) => {
 	let zoom = 13
 	const userZoom = window.localStorage.getItem('bifravst:zoom')
@@ -35,9 +44,21 @@ export const Map = ({
 	}
 	const [mapZoom, setMapZoom] = useState(zoom)
 	const mapRef = createRef<LeafletMap>()
+
+	if (!cellLocation && !deviceLocation) return <NoMap />
+
+	let center: Location = cellLocation || (deviceLocation as Location)
+	if (
+		cellLocation &&
+		deviceLocation &&
+		deviceLocation.ts.getTime() > cellLocation.ts.getTime()
+	) {
+		center = deviceLocation
+	}
+
 	return (
 		<StyledLeafletMap
-			center={[lat, lng]}
+			center={center.position}
 			zoom={zoom}
 			ref={mapRef}
 			onzoomend={(e: object) => {
@@ -58,15 +79,24 @@ export const Map = ({
 				attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 			/>
-			<Marker position={[lat, lng]}>
+			<Marker position={center.position}>
 				<Popup>{label}</Popup>
 			</Marker>
-			{accuracy && <Circle center={[lat, lng]} radius={accuracy} />}
-			{heading && (
+			{deviceLocation && accuracy && (
+				<Circle center={deviceLocation.position} radius={accuracy} />
+			)}
+			{cellLocation && (
+				<Circle
+					center={cellLocation.position}
+					radius={2000}
+					color={'#F6C270'}
+				/>
+			)}
+			{deviceLocation && heading && (
 				<LeafletConsumer key={mapZoom}>
 					{({ map }) => {
 						if (map) {
-							const { x, y } = map.project([lat, lng], mapZoom)
+							const { x, y } = map.project(deviceLocation.position, mapZoom)
 							const endpoint = map.unproject(
 								[
 									x +
@@ -82,7 +112,7 @@ export const Map = ({
 							)
 							return (
 								<Polyline
-									positions={[[lat, lng], endpoint]}
+									positions={[deviceLocation.position, endpoint]}
 									weight={mapZoom > 16 ? 1 : 2}
 									linecap={'round'}
 									color={'#000000'}
@@ -92,19 +122,17 @@ export const Map = ({
 					}}
 				</LeafletConsumer>
 			)}
-			{history &&
-				history.map(({ lat, lng }, k) => {
+			{deviceLocation &&
+				history &&
+				history.map(({ position: { lat, lng } }, k) => {
 					const alpha = Math.round((1 - k / history.length) * 255).toString(16)
 					const color = `#1f56d2${alpha}`
 					return (
 						<React.Fragment key={`history-${k}`}>
-							<Circle center={[lat, lng]} radius={1} color={color} />
+							<Circle center={{ lat, lng }} radius={1} color={color} />
 							{k > 0 && (
 								<Polyline
-									positions={[
-										[history[k - 1].lat, history[k - 1].lng],
-										[lat, lng],
-									]}
+									positions={[history[k - 1].position, { lat, lng }]}
 									weight={mapZoom > 16 ? 1 : 2}
 									linecap={'round'}
 									color={color}
