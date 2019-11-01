@@ -38,7 +38,7 @@ export const FilePicker = ({
 								data: e.target.result,
 							})
 						}
-						reader.readAsBinaryString(f)
+						reader.readAsArrayBuffer(f)
 					}
 				}
 			}}

@@ -18,7 +18,7 @@ export const CreateFOTAJob = ({
 	onJob: OnCreateUpgradeJob
 	onError: (error?: Error) => void
 }) => {
-	const [hexfile, setHexFile] = useState()
+	const [updateFile, setUpdateFile] = useState()
 	const [nextVersion, setNextVersion] = useState(getNextAppVersion(device))
 	const [targetBoard, setTargetBoard] = useState(device.v.brdV.value)
 	const [saving, setSaving] = useState(false)
@@ -29,13 +29,13 @@ export const CreateFOTAJob = ({
 					<Label>Firmware file</Label>
 					<p>
 						<FilePicker
-							accept={'text/x-hex,.hex'}
+							accept={'text/octet-stream,.bin'}
 							maxSize={1024 * 1024}
 							onError={onError}
 							disabled={saving}
 							onFile={file => {
 								onError(undefined)
-								setHexFile(file)
+								setUpdateFile(file)
 								const semverMatch = /v([0-9]+\.[0-9]+\..+)\.[^.]+$/.exec(
 									file.file.name,
 								)
@@ -55,12 +55,12 @@ export const CreateFOTAJob = ({
 					</p>
 				</FormGroup>
 			</fieldset>
-			{hexfile && (
+			{updateFile && (
 				<>
 					<fieldset>
 						<FormGroup>
 							<Label>Size</Label>
-							<p>{hexfile.file.size} bytes</p>
+							<p>{updateFile.file.size} bytes</p>
 						</FormGroup>
 						<FormGroup>
 							<Label for={'nextVersion'}>Firmware version</Label>
@@ -96,8 +96,8 @@ export const CreateFOTAJob = ({
 							onClick={() => {
 								setSaving(true)
 								onJob({
-									data: hexfile.data,
-									file: hexfile.file,
+									data: updateFile.data,
+									file: updateFile.file,
 									targetBoard,
 									version: nextVersion,
 								}).catch(console.error)
