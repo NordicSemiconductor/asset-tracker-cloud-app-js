@@ -7,7 +7,10 @@ import { AWSIotThingState } from '../connectAndListenForStateChange'
 import { FormGroup, Label, Input } from 'reactstrap'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../../Styles'
-import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb-v2-node'
+import {
+	DynamoDBClient,
+	GetItemCommand,
+} from '@aws-sdk/client-dynamodb-v2-node'
 import { cellId } from '@bifravst/cell-geolocation-helpers'
 import { RoamingInformation } from '../../@types/DeviceShadow'
 
@@ -65,11 +68,10 @@ export const CatMap = ({
 		if (reported && reported.roam) {
 			dynamoDBClient
 				.send(
-					new QueryCommand({
+					new GetItemCommand({
 						TableName: cellGeoLocationCacheTable,
-						KeyConditionExpression: 'cellId = :cellId',
-						ExpressionAttributeValues: {
-							':cellId': {
+						Key: {
+							cellId: {
 								S: cellId({
 									area: reported.roam.v.area.value,
 									cell: reported.roam.v.cell.value,
@@ -80,13 +82,13 @@ export const CatMap = ({
 						ProjectionExpression: 'lat,lng',
 					}),
 				)
-				.then(({ Items }) => {
-					if (Items && Items.length) {
+				.then(({ Item }) => {
+					if (Item) {
 						const l: Location = {
 							ts: new Date((reported.roam as RoamingInformation).ts.value),
 							position: {
-								lat: parseFloat(Items[0].lat.N as string),
-								lng: parseFloat(Items[0].lng.N as string),
+								lat: parseFloat(Item.lat.N as string),
+								lng: parseFloat(Item.lng.N as string),
 							},
 						}
 						console.log('cell geolocation', l)
