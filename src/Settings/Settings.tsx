@@ -242,6 +242,8 @@ export const Settings = ({
 						example={180}
 						onChange={updateConfigProperty('gpst')}
 					/>
+					{/*
+					FIXME: enable once https://github.com/bifravst/cat-tracker-fw/issues/25 is implemented
 					<NumberConfigSetting
 						id={'celt'}
 						label={'Cellular Timeout'}
@@ -251,6 +253,7 @@ export const Settings = ({
 						example={600}
 						onChange={updateConfigProperty('celt')}
 					/>
+					*/}
 				</SideBySide>
 			</fieldset>
 			<FooterWithFullWidthButton>
