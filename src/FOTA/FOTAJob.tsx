@@ -57,7 +57,7 @@ export const Jobs = ({
 				}) => {
 					const isInProgress = status === 'IN_PROGRESS'
 					const canCancel = ['QUEUED', 'IN_PROGRESS'].includes(status)
-					const canDelete = ['FAILED', 'CANCELED'].includes(status)
+					const canDelete = ['FAILED', 'CANCELED', 'SUCCEEDED'].includes(status)
 					return (
 						<JobItem key={jobId}>
 							<span>
