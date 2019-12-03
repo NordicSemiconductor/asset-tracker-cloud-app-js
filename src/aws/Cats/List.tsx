@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { getIotConsumer } from '../aws/App'
+import { getIotConsumer } from '../App'
 import { Card, CardBody, CardHeader, Table } from 'reactstrap'
 import { Iot } from 'aws-sdk'
-import { Loading } from '../Loading/Loading'
-import { Error } from '../Error/Error'
+import { Loading } from '../../Loading/Loading'
+import { Error } from '../../Error/Error'
 import { Link } from 'react-router-dom'
 
 const ListCats = ({ iot }: { iot: Iot }) => {

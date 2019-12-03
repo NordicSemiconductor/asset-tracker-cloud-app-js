@@ -1,6 +1,5 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { IdentityIdConsumer } from '../App'
 
 export const Configuration = () => (
 	<Card data-intro="This card lists the apps configuration.">
@@ -9,9 +8,11 @@ export const Configuration = () => (
 			<dl>
 				<dt>User</dt>
 				<dd>
+					{/* 
 					<IdentityIdConsumer>
 						{identityId => <code>{identityId}</code>}
 					</IdentityIdConsumer>
+					*/}
 				</dd>
 				<dt>App client id</dt>
 				<dd>

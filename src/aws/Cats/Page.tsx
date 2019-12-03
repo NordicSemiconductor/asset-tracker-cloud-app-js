@@ -1,6 +1,6 @@
 import React from 'react'
 import { List } from './List'
-import { Main } from '../Styles'
+import { Main } from '../../Styles'
 
 export const CatsPage = () => (
 	<Main>
