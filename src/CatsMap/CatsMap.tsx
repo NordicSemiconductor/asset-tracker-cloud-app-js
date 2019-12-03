@@ -1,5 +1,5 @@
 import React, { createRef, useEffect, useState } from 'react'
-import { IotConsumer } from '../aws/App'
+import { getIotConsumer } from '../aws/App'
 import { Iot, IotData } from 'aws-sdk'
 import { Map as LeafletMap, TileLayer, Marker, Popup } from 'react-leaflet'
 
@@ -44,7 +44,9 @@ const Map = ({ iot, iotData }: { iot: Iot; iotData: IotData }) => {
 									}
 								}
 							})
-							.catch(() => { }),
+							.catch(err => {
+								console.error(err)
+							}),
 					),
 				),
 			)
@@ -86,8 +88,11 @@ const Map = ({ iot, iotData }: { iot: Iot; iotData: IotData }) => {
 	)
 }
 
-export const CatsMap = () => (
-	<IotConsumer>
-		{({ iot, iotData }) => <Map iot={iot} iotData={iotData} />}
-	</IotConsumer>
-)
+export const CatsMap = () => {
+	const IotConsumer = getIotConsumer()
+	return (
+		<IotConsumer>
+			{({ iot, iotData }) => <Map iot={iot} iotData={iotData} />}
+		</IotConsumer>
+	)
+}

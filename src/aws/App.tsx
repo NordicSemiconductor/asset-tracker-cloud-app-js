@@ -124,10 +124,17 @@ const CredentialsContext = React.createContext<ICredentials>({
 	authenticated: false,
 })
 export const CredentialsConsumer = CredentialsContext.Consumer
-const IotContext = React.createContext<{ iot: Iot; iotData: IotData }>({
-	iot: new Iot(),
-	iotData: new IotData({
-		endpoint: process.env.REACT_APP_MQTT_ENDPOINT,
-	}),
-})
-export const IotConsumer = IotContext.Consumer
+
+let IotContext: React.Context<{ iot: Iot; iotData: IotData }>
+
+export const getIotConsumer = () => {
+	if (!IotContext) {
+		IotContext = React.createContext<{ iot: Iot; iotData: IotData }>({
+			iot: new Iot(),
+			iotData: new IotData({
+				endpoint: process.env.REACT_APP_MQTT_ENDPOINT,
+			}),
+		})
+	}
+	return IotContext.Consumer
+}

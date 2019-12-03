@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { CredentialsConsumer, IdentityIdConsumer, IotConsumer } from '../App'
+import { CredentialsConsumer, IdentityIdConsumer, getIotConsumer } from '../App'
 import { Alert, Card, CardBody } from 'reactstrap'
 import { S3 } from 'aws-sdk'
 import Athena from 'aws-sdk/clients/athena'
@@ -31,6 +31,8 @@ const athenaRawDataTable = process.env.REACT_APP_HISTORICALDATA_TABLE_NAME || ''
 
 export const CatActions = ({ catId }: { catId: string }) => {
 	const [deleted, setDeleted] = useState(false)
+
+	const IotConsumer = getIotConsumer()
 
 	if (deleted) {
 		return (

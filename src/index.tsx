@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { boot as bootAWS } from './aws/App'
 import { boot as bootGCP } from './gcp/App'
+import { boot as bootAzure } from './azure/App'
 
 const cloudFlavour = process.env.REACT_APP_CLOUD_FLAVOUR
 
@@ -12,6 +13,13 @@ switch (cloudFlavour) {
 		App = bootGCP({
 			apiKey: process.env.REACT_APP_FIREBASE_API_KEY || '',
 			authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || '',
+		})
+		break
+	case 'AZURE':
+		console.log(`Launching Microsoft Azure app ...`)
+		App = bootAzure({
+			clientId: process.env.REACT_APP_AZURE_CLIENT_ID || '',
+			redirectUri: process.env.REACT_APP_AZURE_REDIRECT_URI || '',
 		})
 		break
 	default:
