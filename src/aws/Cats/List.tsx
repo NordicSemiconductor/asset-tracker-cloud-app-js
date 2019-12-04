@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getIotConsumer } from '../App'
+import { IotConsumer } from '../App'
 import { Card, CardBody, CardHeader, Table } from 'reactstrap'
 import { Iot } from 'aws-sdk'
 import { Loading } from '../../Loading/Loading'
@@ -67,7 +67,6 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 	)
 }
 
-export const List = () => {
-	const IotConsumer = getIotConsumer()
-	return <IotConsumer>{({ iot }) => <ListCats iot={iot} />}</IotConsumer>
-}
+export const List = () => (
+	<IotConsumer>{({ iot }) => <ListCats iot={iot} />}</IotConsumer>
+)
