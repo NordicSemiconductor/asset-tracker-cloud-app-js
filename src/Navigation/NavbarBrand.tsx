@@ -41,7 +41,7 @@ export type NavbarBrandState = {
 	reset: () => void
 }
 
-export const NavbarBrandContext = React.createContext({
+export const NavbarBrandContext = React.createContext<NavbarBrandState>({
 	navbar: defaultNavbarBrand,
 	set: (navbar: React.ReactElement<any>) => undefined,
 	reset: () => undefined,
