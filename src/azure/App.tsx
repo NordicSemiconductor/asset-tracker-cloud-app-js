@@ -28,7 +28,7 @@ export const boot = ({
 	const history = createBrowserHistory()
 
 	return () => {
-		const storedUser = window.localStorage.getItem(USER_STORE)
+		// const storedUser = window.localStorage.getItem(USER_STORE)
 		const [user, setUser] = useState<LoggedIn>()
 		//(storedUser && JSON.parse(storedUser)) || undefined,
 		const [error, setError] = useState<Error>()

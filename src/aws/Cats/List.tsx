@@ -57,7 +57,11 @@ const ListCats = ({ iot }: { iot: Iot }) => {
 				<CardBody>
 					No cats, yet. Read more about how to create{' '}
 					<em>Device Credentials</em> for your cat trackers{' '}
-					<a href={'https://bifravst.github.io/'} target={'_blank'}>
+					<a
+						href={'https://bifravst.github.io/'}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
 						in the handbook
 					</a>
 					.

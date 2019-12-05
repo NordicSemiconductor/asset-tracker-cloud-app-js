@@ -9,14 +9,22 @@ export const About = () => (
 				This is the web application of <em>Bifravst</em> which aims to provide a
 				concrete end-to-end sample for an IoT product in the asset tracker
 				space, a Cat Tracker. You can find the source code on{' '}
-				<a href={'https://github.com/bifravst'} target={'_blank'}>
+				<a
+					href={'https://github.com/bifravst'}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
 					GitHub
 				</a>
 				.
 			</p>
 			<p>
 				Please also consider the{' '}
-				<a href={'https://bifravst.github.io/'} target={'_blank'}>
+				<a
+					href={'https://bifravst.github.io/'}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
 					Bifravst handbook
 				</a>
 				.

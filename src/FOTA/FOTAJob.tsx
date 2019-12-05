@@ -83,7 +83,11 @@ export const Jobs = ({
 								<br />
 								<em>{description}</em>
 								<br />
-								<DownloadLink href={location} target={'_blank'}>
+								<DownloadLink
+									href={location}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
 									{filename}
 								</DownloadLink>
 								<UpgradeDocument>
