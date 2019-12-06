@@ -8,10 +8,10 @@ import { AboutPage } from './About/Page'
 import { Error as ErrorComponent } from '../Error/Error'
 import { Login } from './Login'
 import { CatsPage } from './Cats/Page'
-import { AuthManager, LoggedIn } from '@azure/ms-rest-browserauth'
-import { ServiceClientCredentials } from '@azure/ms-rest-js'
+import { UserAgentApplication, AuthResponse } from 'msal'
 
-const USER_STORE = 'azure:user'
+const ACCESS_TOKEN = 'azure:accessToken'
+const USER = 'azure:user'
 
 export const boot = ({
 	clientId,
@@ -20,62 +20,96 @@ export const boot = ({
 	clientId: string
 	redirectUri: string
 }) => {
-	const authManager = new AuthManager({
-		clientId,
-		redirectUri,
+	const userAgentApplication = new UserAgentApplication({
+		auth: {
+			clientId,
+			redirectUri,
+		},
 	})
+
+	const scopes = {
+		scopes: ['user.read'],
+	}
 
 	const history = createBrowserHistory()
 
 	return () => {
-		// const storedUser = window.localStorage.getItem(USER_STORE)
-		const [user, setUser] = useState<LoggedIn>()
-		//(storedUser && JSON.parse(storedUser)) || undefined,
+		const storedAccessToken = window.localStorage.getItem(ACCESS_TOKEN)
+		const [accessToken, setAccessToken] = useState<AuthResponse>(
+			(storedAccessToken && JSON.parse(storedAccessToken)) || undefined,
+		)
+		const storedUser = window.localStorage.getItem(USER)
+		const [user, setUser] = useState<AuthResponse>(
+			(storedUser && JSON.parse(storedUser)) || undefined,
+		)
 		const [error, setError] = useState<Error>()
 
+		userAgentApplication.handleRedirectCallback((error, response) => {
+			if (error) {
+				setError(error)
+			} else if (response) {
+				console.log('user', response)
+				setUser(response)
+				window.localStorage.setItem(USER, JSON.stringify(response))
+			}
+		})
+
 		useEffect(() => {
-			authManager
-				.finalizeLogin()
-				.then(res => {
-					console.log(res)
-					if (res.isLoggedIn) {
-						setUser(res)
-						window.localStorage.setItem(USER_STORE, JSON.stringify(res))
-					} else {
-						console.error('Not logged in.')
+			if (!user) {
+				return
+			}
+			if (new Date(accessToken.expiresOn).getTime() > Date.now()) {
+				return
+			}
+			// FIXME: Refresh token regularly?
+			userAgentApplication
+				.acquireTokenSilent(scopes)
+				.then(accessTokenResponse => {
+					console.log('accessToken', accessTokenResponse)
+					// Acquire token silent success
+					// Call API with token
+					setAccessToken(accessTokenResponse)
+					window.localStorage.setItem(
+						ACCESS_TOKEN,
+						JSON.stringify(accessTokenResponse),
+					)
+				})
+				.catch(error => {
+					//Acquire token silent failure, and send an interactive request
+					setError(error)
+					if (error.errorMessage.indexOf('interaction_required') !== -1) {
+						userAgentApplication.acquireTokenRedirect(scopes)
 					}
 				})
-				.catch(err => {
-					console.error(`Login failed: ${err.message}`)
-					setError(err)
-				})
-		}, [authManager])
+		}, [user, accessToken])
 
 		return (
 			<Router history={history}>
 				<GlobalStyle />
 				<ToggleNavigation
-					loggedIn={user !== undefined}
+					loggedIn={accessToken !== undefined}
 					onLogout={() => {
 						window.localStorage.clear()
-						authManager.logout()
+						setUser(undefined as any)
+						setAccessToken(undefined as any)
+						// userAgentApplication.logout()
 					}}
 				/>
-				{!user && (
+				{!accessToken && (
 					<Login
 						onLogin={() => {
-							authManager.login()
+							userAgentApplication.loginRedirect(scopes)
 						}}
 					/>
 				)}
 				{error && <ErrorComponent error={error} />}
-				{user && (
+				{accessToken && (
 					<NavbarBrandContextProvider>
-						<ServiceClientCredentialsContext.Provider value={user.creds}>
+						<AccessTokenContext.Provider value={accessToken}>
 							<Route exact path="/" render={() => <Redirect to="/cats" />} />
 							<Route exact path="/about" component={AboutPage} />
 							<Route exact path="/cats" component={CatsPage} />
-						</ServiceClientCredentialsContext.Provider>
+						</AccessTokenContext.Provider>
 					</NavbarBrandContextProvider>
 				)}
 			</Router>
@@ -83,8 +117,7 @@ export const boot = ({
 	}
 }
 
-const ServiceClientCredentialsContext = React.createContext<
-	ServiceClientCredentials
->((undefined as unknown) as ServiceClientCredentials)
-export const ServiceClientCredentialsConsumer =
-	ServiceClientCredentialsContext.Consumer
+const AccessTokenContext = React.createContext<AuthResponse>(
+	(undefined as unknown) as AuthResponse,
+)
+export const AccessTokenConsumer = AccessTokenContext.Consumer
