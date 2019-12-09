@@ -17,6 +17,7 @@ export const OutDatedWarning = ({
 		receivedAt: Date
 	}) => React.ReactElement<any>
 }) => {
+	if (desired === undefined) return null // No config has been set by the user, yet
 	const reportedDoesNotMatchDesired = reported && desired === reported.value
 	if (reportedDoesNotMatchDesired) {
 		return null

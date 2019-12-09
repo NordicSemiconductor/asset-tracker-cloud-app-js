@@ -84,6 +84,7 @@ export const Settings = ({
 }) => {
 	const desired = state.desired && state.desired.cfg
 	const reported = state.reported && state.reported.cfg
+	const r: Partial<DeviceConfig> = reported || {}
 
 	const [newDesired, setNewDesired] = useState<Partial<DesiredConfig>>(
 		desired || {},
@@ -91,7 +92,6 @@ export const Settings = ({
 
 	const hasInitial = desired === undefined
 	const [changed, setChanged] = useState(hasInitial)
-	const [saving, setSaving] = useState(false)
 
 	const updateConfig = (cfg: Partial<DesiredConfig>) => {
 		const updated = {
@@ -111,7 +111,10 @@ export const Settings = ({
 		updateConfig({ [property]: parser ? parser(value) : parseInt(value, 10) })
 	}
 
-	const r: Partial<DeviceConfig> = reported || {}
+	const isActive =
+		newDesired.act !== undefined
+			? newDesired.act === true
+			: r.act?.value === true
 
 	return (
 		<SettingsForm>
@@ -119,37 +122,12 @@ export const Settings = ({
 				<legend>Mode</legend>
 				<FormGroup data-intro={'This sets the operation mode of the Tracker.'}>
 					<ButtonGroup>
-						<Button
-							color={'info'}
-							data-intro={
-								'In <em>active</em> mode the tracker will continuously send updates.'
-							}
-							outline={newDesired.act === undefined || newDesired.act}
-							onClick={() => {
-								updateConfig({ act: false })
-							}}
-						>
-							Passive
-						</Button>
-						<Button
-							color={'success'}
-							data-intro={
-								'In <em>passive</em> mode only if it detects movement.'
-							}
-							outline={newDesired.act === undefined || !newDesired.act}
-							onClick={() => {
-								updateConfig({ act: true })
-							}}
-						>
-							Active
-						</Button>
 						<OutDatedWarning
 							desired={newDesired.act}
 							reported={r.act}
 							onNotReported={
 								<Button
 									color={'danger'}
-									outline={true}
 									disabled={true}
 									title={'Device has not reported this setting, yet.'}
 								>
@@ -169,12 +147,35 @@ export const Settings = ({
 								</Button>
 							)}
 						/>
+						<Button
+							color={'info'}
+							data-intro={
+								'In <em>passive</em> mode only if it detects movement.'
+							}
+							outline={isActive}
+							onClick={() => {
+								updateConfig({ act: false })
+							}}
+						>
+							Passive
+						</Button>
+						<Button
+							color={'success'}
+							data-intro={
+								'In <em>active</em> mode the tracker will continuously send updates.'
+							}
+							outline={!isActive}
+							onClick={() => {
+								updateConfig({ act: true })
+							}}
+						>
+							Active
+						</Button>
 					</ButtonGroup>
 				</FormGroup>
 			</fieldset>
 			<fieldset>
 				<legend>Active Mode Settings</legend>
-
 				<NumberConfigSetting
 					label={'Active Wait Time'}
 					intro={
@@ -259,14 +260,12 @@ export const Settings = ({
 			<FooterWithFullWidthButton>
 				<Button
 					color={'primary'}
-					disabled={!changed || saving}
+					disabled={!changed}
 					onClick={() => {
-						setSaving(true)
 						onSave(newDesired)
 					}}
 				>
-					{saving && 'Saving ...'}
-					{!saving && 'Save'}
+					Update
 				</Button>
 			</FooterWithFullWidthButton>
 		</SettingsForm>

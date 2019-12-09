@@ -35,11 +35,37 @@ export const NumberConfigSetting = ({
 		receivedAt: Date
 	}
 }) => {
-	const [input, updateInput] = useState(desired ? `${desired}` : '')
+	const [input, updateInput] = useState(`${desired || reported?.value}`)
 	return (
 		<FormGroup data-intro={intro} className={'number-config-setting'}>
 			{label && <Label for={id}>{label}:</Label>}
 			<InputGroup>
+				<OutDatedWarning
+					desired={desired}
+					reported={reported}
+					onNotReported={
+						<InputGroupAddon addonType="prepend" className={'is-outdated'}>
+							<InputGroupText className={'text-danger'}>
+								<abbr title={'Device has not reported this setting, yet.'}>
+									{emojify('❓')}
+								</abbr>
+							</InputGroupText>
+						</InputGroupAddon>
+					}
+					onOutDated={r => (
+						<InputGroupAddon addonType="prepend" className={'is-outdated'}>
+							<InputGroupText className={'text-danger'}>
+								<abbr
+									title={`Device has last synced this setting ${formatDistanceToNow(
+										r.receivedAt,
+									)}. Current value: ${JSON.stringify(r.value)}.`}
+								>
+									{emojify('⭕')}
+								</abbr>
+							</InputGroupText>
+						</InputGroupAddon>
+					)}
+				/>
 				<Input
 					type="number"
 					name={id}
@@ -56,32 +82,6 @@ export const NumberConfigSetting = ({
 				<InputGroupAddon addonType="append">
 					<InputGroupText>{unit || 's'}</InputGroupText>
 				</InputGroupAddon>
-				<OutDatedWarning
-					desired={desired}
-					reported={reported}
-					onNotReported={
-						<InputGroupAddon addonType="append" className={'is-outdated'}>
-							<InputGroupText className={'text-danger'}>
-								<abbr title={'Device has not reported this setting, yet.'}>
-									{emojify('❓')}
-								</abbr>
-							</InputGroupText>
-						</InputGroupAddon>
-					}
-					onOutDated={r => (
-						<InputGroupAddon addonType="append" className={'is-outdated'}>
-							<InputGroupText className={'text-danger'}>
-								<abbr
-									title={`Device has last synced this setting ${formatDistanceToNow(
-										r.receivedAt,
-									)}. Current value: ${JSON.stringify(r.value)}.`}
-								>
-									{emojify('⭕')}
-								</abbr>
-							</InputGroupText>
-						</InputGroupAddon>
-					)}
-				/>
 			</InputGroup>
 		</FormGroup>
 	)
