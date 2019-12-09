@@ -6,14 +6,6 @@ export const Configuration = () => (
 		<CardHeader>Environment</CardHeader>
 		<CardBody>
 			<dl>
-				<dt>User</dt>
-				<dd>
-					{/* 
-					<IdentityIdConsumer>
-						{identityId => <code>{identityId}</code>}
-					</IdentityIdConsumer>
-					*/}
-				</dd>
 				<dt>App client id</dt>
 				<dd>
 					<code>{process.env.REACT_APP_AZURE_CLIENT_ID}</code>
