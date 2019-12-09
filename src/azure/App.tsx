@@ -58,7 +58,10 @@ export const boot = ({
 			if (!user) {
 				return
 			}
-			if (new Date(accessToken.expiresOn).getTime() > Date.now()) {
+			if (
+				accessToken &&
+				new Date(accessToken.expiresOn).getTime() > Date.now()
+			) {
 				return
 			}
 			// FIXME: Refresh token regularly?
