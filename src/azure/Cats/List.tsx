@@ -11,21 +11,23 @@ const ListCats = ({ accessToken }: { accessToken: AuthResponse }) => {
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState()
 	useEffect(() => {
-		const headers = new Headers()
-		const bearer = 'Bearer ' + accessToken.accessToken
-		headers.append('Authorization', bearer)
-		const options = {
-			method: 'GET',
-			headers: headers,
-		}
-		const graphEndpoint = 'https://graph.microsoft.com/v1.0/me'
-		fetch(graphEndpoint, options)
-			.then(async resp => {
-				console.log(await resp.json())
-			})
-			.catch(err => {
-				console.error(err)
-			})
+		// IoT Hub
+		// FIXME: Cross-Origin Request Blocked
+		const iotHubEndpoint =
+			'https://bifravst.azure-devices.net/devices/query?api-version=2018-06-30'
+		const iotHubRequestHeaders = new Headers()
+		iotHubRequestHeaders.append(
+			'Authorization',
+			'Bearer ' + accessToken.accessToken,
+		)
+		iotHubRequestHeaders.append('Content-Type', 'application/json')
+		fetch(iotHubEndpoint, {
+			method: 'POST',
+			headers: iotHubRequestHeaders,
+			body: JSON.stringify({ query: 'SELECT * FROM devices' }),
+		}).catch(err => {
+			console.error(err)
+		})
 	}, [accessToken])
 	if (loading || error)
 		return (
@@ -70,10 +72,8 @@ const ListCats = ({ accessToken }: { accessToken: AuthResponse }) => {
 	)
 }
 
-export const List = () => {
-	return (
-		<AccessTokenConsumer>
-			{credentials => <ListCats accessToken={credentials} />}
-		</AccessTokenConsumer>
-	)
-}
+export const List = () => (
+	<AccessTokenConsumer>
+		{credentials => <ListCats accessToken={credentials} />}
+	</AccessTokenConsumer>
+)
