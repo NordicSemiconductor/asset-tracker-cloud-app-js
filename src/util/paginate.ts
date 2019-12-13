@@ -1,5 +1,5 @@
 /**
- * Recursively follows paginates results concatenates the result.
+ * Recursively follows paginated results and concatenates the result into one array.
  * NOTE: This method has no upper runtime limit and may time out.
  */
 export const paginate = async <A>({
