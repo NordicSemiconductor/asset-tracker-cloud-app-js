@@ -47,11 +47,18 @@ export const Map = ({
 
 	if (!cellLocation && !deviceLocation) return <NoMap />
 
-	let center: Location = cellLocation || (deviceLocation as Location)
-	if (
+	// Hide the cell location circle if the GPS location exists and is not older than 5 minutes
+	const cellLocationIsMoreUpToDate =
 		cellLocation &&
 		deviceLocation &&
-		deviceLocation.ts.getTime() > cellLocation.ts.getTime()
+		cellLocation.ts.getTime() - 10 * 60 * 1000 > deviceLocation.ts.getTime()
+
+	let center: Location = cellLocation || (deviceLocation as Location)
+	if (
+		(cellLocation &&
+			deviceLocation &&
+			deviceLocation.ts.getTime() > cellLocation.ts.getTime()) ||
+		(deviceLocation && !cellLocationIsMoreUpToDate)
 	) {
 		center = deviceLocation
 	}
@@ -85,7 +92,7 @@ export const Map = ({
 			{deviceLocation && accuracy && (
 				<Circle center={deviceLocation.position} radius={accuracy} />
 			)}
-			{cellLocation && (
+			{cellLocation && cellLocationIsMoreUpToDate && (
 				<Circle
 					center={cellLocation.position}
 					radius={2000}
