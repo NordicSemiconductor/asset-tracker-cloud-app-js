@@ -25,8 +25,6 @@ export const hideOnDesktop = (el: React.ComponentType<any>) => styled(el)`
 `
 
 export const GlobalStyle = createGlobalStyle`
-  @import url("https://rsms.me/inter/inter-ui.css");
-  
   body {
     font-family: "Inter UI", sans-serif;
   }
