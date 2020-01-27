@@ -1,8 +1,9 @@
 import { Button, Nav, NavItem } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import React from 'react'
-import * as introJs from 'intro.js'
+import { default as introJs } from 'intro.js'
 import { emojify } from '../Emojify/Emojify'
+
 const intro = introJs()
 
 export const Navigation = ({

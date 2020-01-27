@@ -1,7 +1,7 @@
 import { hideOnDesktop, mobileBreakpoint } from '../Styles'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
 import styled from 'styled-components'
-import * as introJs from 'intro.js'
+import { default as introJs } from 'intro.js'
 import { FOTA, OnCreateUpgradeJob } from '../FOTA/FOTA'
 import { DeviceUpgradeFirmwareJob } from '../aws/listUpgradeFirmwareJobs'
 import { AWSIotThingState } from '../aws/connectAndListenForStateChange'
