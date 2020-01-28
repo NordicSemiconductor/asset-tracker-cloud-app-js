@@ -14,7 +14,7 @@ const ListCats = ({ accessToken }: { accessToken: AuthResponse }) => {
 		// IoT Hub
 		// FIXME: Cross-Origin Request Blocked
 		const iotHubEndpoint =
-			'https://bifravst.azure-devices.net/devices/query?api-version=2018-06-30'
+			'https://bifravstwebsite.azurewebsites.net/api/listdevices'
 		const iotHubRequestHeaders = new Headers()
 		iotHubRequestHeaders.append(
 			'Authorization',
@@ -22,9 +22,8 @@ const ListCats = ({ accessToken }: { accessToken: AuthResponse }) => {
 		)
 		iotHubRequestHeaders.append('Content-Type', 'application/json')
 		fetch(iotHubEndpoint, {
-			method: 'POST',
+			method: 'GET',
 			headers: iotHubRequestHeaders,
-			body: JSON.stringify({ query: 'SELECT * FROM devices' }),
 		}).catch(err => {
 			console.error(err)
 		})

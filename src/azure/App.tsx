@@ -16,19 +16,27 @@ const USER = 'azure:user'
 export const boot = ({
 	clientId,
 	redirectUri,
+	authority,
 }: {
 	clientId: string
 	redirectUri: string
+	authority: string
 }) => {
 	const userAgentApplication = new UserAgentApplication({
 		auth: {
 			clientId,
 			redirectUri,
+			authority,
+			validateAuthority: false,
+		},
+		cache: {
+			cacheLocation: 'localStorage',
+			storeAuthStateInCookie: true,
 		},
 	})
 
-	const scopes = {
-		scopes: ['user.read'],
+	const tokenRequest = {
+		scopes: ['https://bifravstonazure.onmicrosoft.com/api/user_impersonation'],
 	}
 
 	const history = createBrowserHistory()
@@ -48,7 +56,7 @@ export const boot = ({
 			if (error) {
 				setError(error)
 			} else if (response) {
-				console.log('user', response)
+				console.log(response)
 				setUser(response)
 				window.localStorage.setItem(USER, JSON.stringify(response))
 			}
@@ -65,8 +73,18 @@ export const boot = ({
 				return
 			}
 			// FIXME: Refresh token regularly?
+			/*
 			userAgentApplication
-				.acquireTokenSilent(scopes)
+				.acquireTokenPopup(tokenRequest)
+				.then(tokenResponse => {
+					console.log(tokenResponse)
+				})
+				.catch(error => {
+					console.error(error)
+				})
+			*/
+			userAgentApplication
+				.acquireTokenSilent(tokenRequest)
 				.then(accessTokenResponse => {
 					console.log('accessToken', accessTokenResponse)
 					// Acquire token silent success
@@ -81,7 +99,7 @@ export const boot = ({
 					//Acquire token silent failure, and send an interactive request
 					setError(error)
 					if (error.errorMessage.indexOf('interaction_required') !== -1) {
-						userAgentApplication.acquireTokenRedirect(scopes)
+						userAgentApplication.acquireTokenRedirect(tokenRequest)
 					}
 				})
 		}, [user, accessToken])
@@ -101,7 +119,7 @@ export const boot = ({
 				{!accessToken && (
 					<Login
 						onLogin={() => {
-							userAgentApplication.loginRedirect(scopes)
+							userAgentApplication.loginRedirect(tokenRequest)
 						}}
 					/>
 				)}
