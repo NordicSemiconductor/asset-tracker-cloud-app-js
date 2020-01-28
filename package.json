@@ -101,12 +101,10 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "prettier --write",
-      "eslint --ext .js,.ts,.tsx",
-      "git add"
+      "eslint --ext .js,.ts,.tsx"
     ],
     "*.{md,json,yaml,yml,html}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
   "engines": {
