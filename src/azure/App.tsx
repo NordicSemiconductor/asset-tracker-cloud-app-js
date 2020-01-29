@@ -11,7 +11,7 @@ import { CatsPage } from './Cats/Page'
 import { UserAgentApplication, AuthResponse } from 'msal'
 
 const ACCESS_TOKEN = 'azure:accessToken'
-const USER = 'azure:user'
+const ID_TOKEN = 'azure:idToken'
 
 export const boot = ({
 	clientId,
@@ -46,8 +46,8 @@ export const boot = ({
 		const [accessToken, setAccessToken] = useState<AuthResponse>(
 			(storedAccessToken && JSON.parse(storedAccessToken)) || undefined,
 		)
-		const storedUser = window.localStorage.getItem(USER)
-		const [user, setUser] = useState<AuthResponse>(
+		const storedUser = window.localStorage.getItem(ID_TOKEN)
+		const [idToken, setIdToken] = useState<AuthResponse>(
 			(storedUser && JSON.parse(storedUser)) || undefined,
 		)
 		const [error, setError] = useState<Error>()
@@ -56,14 +56,22 @@ export const boot = ({
 			if (error) {
 				setError(error)
 			} else if (response) {
-				console.log(response)
-				setUser(response)
-				window.localStorage.setItem(USER, JSON.stringify(response))
+				const { tokenType } = response
+				switch (tokenType) {
+					case 'id_token':
+						setIdToken(response)
+						window.localStorage.setItem(ID_TOKEN, JSON.stringify(response))
+						break
+					case 'access_token':
+						setAccessToken(response)
+						window.localStorage.setItem(ACCESS_TOKEN, JSON.stringify(response))
+						break
+				}
 			}
 		})
 
 		useEffect(() => {
-			if (!user) {
+			if (!idToken) {
 				return
 			}
 			if (
@@ -72,37 +80,12 @@ export const boot = ({
 			) {
 				return
 			}
-			// FIXME: Refresh token regularly?
-			/*
-			userAgentApplication
-				.acquireTokenPopup(tokenRequest)
-				.then(tokenResponse => {
-					console.log(tokenResponse)
-				})
-				.catch(error => {
-					console.error(error)
-				})
-			*/
-			userAgentApplication
-				.acquireTokenSilent(tokenRequest)
-				.then(accessTokenResponse => {
-					console.log('accessToken', accessTokenResponse)
-					// Acquire token silent success
-					// Call API with token
-					setAccessToken(accessTokenResponse)
-					window.localStorage.setItem(
-						ACCESS_TOKEN,
-						JSON.stringify(accessTokenResponse),
-					)
-				})
-				.catch(error => {
-					//Acquire token silent failure, and send an interactive request
-					setError(error)
-					if (error.errorMessage.indexOf('interaction_required') !== -1) {
-						userAgentApplication.acquireTokenRedirect(tokenRequest)
-					}
-				})
-		}, [user, accessToken])
+			console.log({
+				idToken,
+				accessToken,
+			})
+			userAgentApplication.acquireTokenRedirect(tokenRequest)
+		}, [idToken, accessToken])
 
 		return (
 			<Router history={history}>
@@ -111,9 +94,10 @@ export const boot = ({
 					loggedIn={accessToken !== undefined}
 					onLogout={() => {
 						window.localStorage.clear()
-						setUser(undefined as any)
+						setIdToken(undefined as any)
 						setAccessToken(undefined as any)
-						// userAgentApplication.logout()
+						setError(undefined)
+						userAgentApplication.logout()
 					}}
 				/>
 				{!accessToken && (
