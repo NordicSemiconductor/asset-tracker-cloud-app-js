@@ -26,7 +26,7 @@
   "author": "Nordic Semiconductor ASA | nordicsemi.no",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@amcharts/amcharts4": "^4.8.4",
+    "@amcharts/amcharts4": "^4.8.5",
     "@aws-sdk/client-dynamodb-v2-node": "0.1.0-preview.2",
     "@bifravst/athena-helpers": "^6.0.2",
     "@bifravst/cell-geolocation-helpers": "^1.0.1",
@@ -66,8 +66,8 @@
     "@commitlint/config-angular": "^8.3.4",
     "@types/aws-iot-device-sdk": "^2.2.1",
     "@types/intro.js": "^2.4.6",
-    "@types/jest": "^25.1.0",
-    "@types/node": "^13.5.1",
+    "@types/jest": "^25.1.1",
+    "@types/node": "^13.5.2",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
     "@types/react-leaflet": "^2.5.0",
@@ -88,7 +88,7 @@
     "eslint-plugin-react-hooks": "^2.3.0",
     "husky": "^4.2.1",
     "react-scripts": "^3.2.0",
-    "ts-jest": "^25.0.0",
+    "ts-jest": "^25.1.0",
     "typescript": "^3.7.5",
     "typescript-eslint": "0.0.1-alpha.0"
   },
