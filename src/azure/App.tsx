@@ -9,6 +9,7 @@ import { Error as ErrorComponent } from '../Error/Error'
 import { Login } from './Login'
 import { CatsPage } from './Cats/Page'
 import { UserAgentApplication, AuthResponse } from 'msal'
+import { Twin } from 'azure-iothub'
 
 const ACCESS_TOKEN = 'azure:accessToken'
 const ID_TOKEN = 'azure:idToken'
@@ -17,10 +18,12 @@ export const boot = ({
 	clientId,
 	redirectUri,
 	authority,
+	apiEndpoint,
 }: {
 	clientId: string
 	redirectUri: string
 	authority: string
+	apiEndpoint: string
 }) => {
 	const userAgentApplication = new UserAgentApplication({
 		auth: {
@@ -55,6 +58,13 @@ export const boot = ({
 		userAgentApplication.handleRedirectCallback((error, response) => {
 			if (error) {
 				setError(error)
+				if (error.message.includes('AADB2C90118')) {
+					// FIXME: Implement lost password flow
+					console.log('Go to this link, to change your password')
+					console.log(
+						`https://bifravstonazure.b2clogin.com/bifravstonazure.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_pw_reset&client_id=${clientId}&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fbifravstwebsite.azurewebsites.net%2F.auth%2Flogin%2Faad%2Fcallback&scope=openid&response_type=id_token&prompt=login`,
+					)
+				}
 			} else if (response) {
 				const { tokenType } = response
 				switch (tokenType) {
@@ -111,9 +121,16 @@ export const boot = ({
 				{accessToken && (
 					<NavbarBrandContextProvider>
 						<AccessTokenContext.Provider value={accessToken}>
-							<Route exact path="/" render={() => <Redirect to="/cats" />} />
-							<Route exact path="/about" component={AboutPage} />
-							<Route exact path="/cats" component={CatsPage} />
+							<ApiClientContext.Provider
+								value={fetchApiClient({
+									endpoint: apiEndpoint,
+									token: accessToken.accessToken,
+								})}
+							>
+								<Route exact path="/" render={() => <Redirect to="/cats" />} />
+								<Route exact path="/about" component={AboutPage} />
+								<Route exact path="/cats" component={CatsPage} />
+							</ApiClientContext.Provider>
 						</AccessTokenContext.Provider>
 					</NavbarBrandContextProvider>
 				)}
@@ -126,3 +143,35 @@ const AccessTokenContext = React.createContext<AuthResponse>(
 	(undefined as unknown) as AuthResponse,
 )
 export const AccessTokenConsumer = AccessTokenContext.Consumer
+
+const ApiClientContext = React.createContext<ApiClient>(
+	(undefined as unknown) as ApiClient,
+)
+export const ApiClientConsumer = ApiClientContext.Consumer
+
+export type ApiClient = {
+	listDevices: () => Promise<Twin[]>
+}
+
+const fetchApiClient = ({
+	endpoint,
+	token,
+}: {
+	endpoint: string
+	token: string
+}): ApiClient => {
+	const iotHubRequestHeaders = new Headers()
+	iotHubRequestHeaders.append('Authorization', 'Bearer ' + token)
+	iotHubRequestHeaders.append('Content-Type', 'application/json')
+	const get = <A extends object>(resource: string) => async (): Promise<A> => {
+		const res = await fetch(`${endpoint}/api/${resource}`, {
+			method: 'GET',
+			headers: iotHubRequestHeaders,
+		})
+		return res.json()
+	}
+
+	return {
+		listDevices: get<Twin[]>('listdevices'),
+	}
+}

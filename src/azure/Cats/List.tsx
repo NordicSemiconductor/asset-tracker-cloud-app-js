@@ -3,31 +3,24 @@ import { Card, CardBody, CardHeader, Table } from 'reactstrap'
 import { Loading } from '../../Loading/Loading'
 import { Error as ErrorComponent } from '../../Error/Error'
 import { Link } from 'react-router-dom'
-import { AccessTokenConsumer } from '../App'
-import { AuthResponse } from 'msal'
+import { ApiClientConsumer, ApiClient } from '../App'
 
-const ListCats = ({ accessToken }: { accessToken: AuthResponse }) => {
+const ListCats = ({ apiClient }: { apiClient: ApiClient }) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState()
 	useEffect(() => {
-		// IoT Hub
-		// FIXME: Cross-Origin Request Blocked
-		const iotHubEndpoint =
-			'https://bifravstwebsite.azurewebsites.net/api/listdevices'
-		const iotHubRequestHeaders = new Headers()
-		iotHubRequestHeaders.append(
-			'Authorization',
-			'Bearer ' + accessToken.accessToken,
-		)
-		iotHubRequestHeaders.append('Content-Type', 'application/json')
-		fetch(iotHubEndpoint, {
-			method: 'GET',
-			headers: iotHubRequestHeaders,
-		}).catch(err => {
-			console.error(err)
-		})
-	}, [accessToken])
+		apiClient
+			.listDevices()
+			.then(res => {
+				setCats(res.map(({ deviceId }) => ({ id: deviceId, name: deviceId })))
+				setLoading(false)
+			})
+			.catch(err => {
+				setLoading(false)
+				setError(err)
+			})
+	}, [apiClient])
 	if (loading || error)
 		return (
 			<Card>
@@ -72,7 +65,7 @@ const ListCats = ({ accessToken }: { accessToken: AuthResponse }) => {
 }
 
 export const List = () => (
-	<AccessTokenConsumer>
-		{credentials => <ListCats accessToken={credentials} />}
-	</AccessTokenConsumer>
+	<ApiClientConsumer>
+		{apiClient => <ListCats apiClient={apiClient} />}
+	</ApiClientConsumer>
 )
