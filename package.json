@@ -30,7 +30,7 @@
     "@aws-sdk/client-dynamodb-v2-node": "0.1.0-preview.2",
     "@bifravst/athena-helpers": "^6.0.4",
     "@bifravst/cell-geolocation-helpers": "^1.0.3",
-    "@bifravst/rsrp-bar": "^1.0.2",
+    "@bifravst/rsrp-bar": "^1.1.0",
     "@react-firebase/auth": "^0.2.10",
     "aws-amplify": "^2.2.5",
     "aws-amplify-react": "^3.1.6",
