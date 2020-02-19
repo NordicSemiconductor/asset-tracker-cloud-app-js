@@ -30,6 +30,7 @@
     "@aws-sdk/client-dynamodb-v2-node": "0.1.0-preview.2",
     "@bifravst/athena-helpers": "^6.0.4",
     "@bifravst/cell-geolocation-helpers": "^1.0.3",
+    "@bifravst/rsrp-bar": "^1.0.2",
     "@react-firebase/auth": "^0.2.10",
     "aws-amplify": "^2.2.5",
     "aws-amplify-react": "^3.1.6",
@@ -61,8 +62,8 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.8.3",
-    "@bifravst/code-style": "^6.0.4",
-    "@bifravst/eslint-config-typescript": "^3.1.6",
+    "@bifravst/code-style": "^6.0.5",
+    "@bifravst/eslint-config-typescript": "^3.1.7",
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-angular": "^8.3.4",
     "@types/aws-iot-device-sdk": "^2.2.1",
@@ -89,7 +90,7 @@
     "eslint-plugin-react-hooks": "^2.4.0",
     "husky": "^4.2.3",
     "react-scripts": "^3.4.0",
-    "ts-jest": "^25.2.0",
+    "ts-jest": "^25.2.1",
     "typescript": "^3.7.5",
     "typescript-eslint": "0.0.1-alpha.0"
   },
