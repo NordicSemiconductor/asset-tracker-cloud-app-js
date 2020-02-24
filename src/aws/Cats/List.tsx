@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 const ListCats = ({ iot }: { iot: Iot }) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
-	const [error, setError] = useState()
+	const [error, setError] = useState<Error>()
 	useEffect(() => {
 		iot
 			.listThings()

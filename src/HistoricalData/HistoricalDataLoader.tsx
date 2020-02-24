@@ -4,6 +4,7 @@ import {
 	athenaQuery,
 	parseAthenaResult,
 	FieldFormatters,
+	ParsedResult,
 } from '@bifravst/athena-helpers'
 import { Loading } from '../Loading/Loading'
 import { Error as ShowError } from '../Error/Error'
@@ -30,7 +31,7 @@ export const HistoricalDataLoader = ({
 		data: { date: Date; value: number }[] // FIXME: should be generic
 	}) => React.ReactElement<any>
 }) => {
-	const [data, setData] = useState()
+	const [data, setData] = useState<{ date: Date; value: number }[]>()
 	const [error, setError] = useState<Error>()
 	useEffect(() => {
 		let removed = false
@@ -60,7 +61,7 @@ export const HistoricalDataLoader = ({
 					skip: 1,
 				})
 				console.debug('[Historical Data]', data)
-				setData(data)
+				setData((data as unknown) as { date: Date; value: number }[])
 			})
 			.catch(setError)
 		return () => {

@@ -8,7 +8,7 @@ import { AuthResponse } from 'msal'
 
 const UserInfo = ({ accessToken }: { accessToken: AuthResponse }) => {
 	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState()
+	const [error, setError] = useState<Error>()
 	const [user, setUser] = useState<{
 		displayName?: string
 		surname?: string

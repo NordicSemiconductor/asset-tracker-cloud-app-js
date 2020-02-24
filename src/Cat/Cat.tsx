@@ -149,7 +149,7 @@ export const Cat = ({
 	catMap: (state: AWSIotThingState) => React.ReactElement<any>
 }) => {
 	const [state, setState] = useState<AWSIotThingState>()
-	const [error, setError] = useState()
+	const [error, setError] = useState<Error>()
 	const reported = state && state.reported
 	const desired = state && state.desired
 

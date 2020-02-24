@@ -18,7 +18,10 @@ export const CreateFOTAJob = ({
 	onJob: OnCreateUpgradeJob
 	onError: (error?: Error) => void
 }) => {
-	const [updateFile, setUpdateFile] = useState()
+	const [updateFile, setUpdateFile] = useState<{
+		file: File
+		data: Blob
+	}>()
 	const [nextVersion, setNextVersion] = useState(getNextAppVersion(device))
 	const [targetBoard, setTargetBoard] = useState(device.v.brdV.value)
 	const [saving, setSaving] = useState(false)

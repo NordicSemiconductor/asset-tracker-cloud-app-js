@@ -36,8 +36,8 @@ export const boot = ({
 	})
 
 	const App = ({ authData }: { authData: CognitoUser }) => {
-		const [credentials, setCredentials] = useState()
-		const [iot, setIot] = useState()
+		const [credentials, setCredentials] = useState<ICredentials>()
+		const [iot, setIot] = useState<{ iot: Iot; iotData: IotData }>()
 
 		useEffect(() => {
 			Auth.currentCredentials()

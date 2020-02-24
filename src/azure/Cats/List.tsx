@@ -8,7 +8,7 @@ import { ApiClientConsumer, ApiClient } from '../App'
 const ListCats = ({ apiClient }: { apiClient: ApiClient }) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
-	const [error, setError] = useState()
+	const [error, setError] = useState<Error>()
 	useEffect(() => {
 		apiClient
 			.listDevices()

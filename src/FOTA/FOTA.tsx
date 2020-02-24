@@ -30,7 +30,7 @@ export const FOTA = ({
 		executionNumber: number
 	}) => Promise<void>
 }) => {
-	const [error, setError] = useState()
+	const [error, setError] = useState<Error>()
 	const [jobs, setJobs] = useState([] as DeviceUpgradeFirmwareJob[])
 	const [addJobKey, setAddJobKey] = useState(1)
 
