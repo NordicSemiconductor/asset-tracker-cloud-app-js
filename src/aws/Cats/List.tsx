@@ -6,7 +6,6 @@ import { Loading } from '../../Loading/Loading'
 import { Error } from '../../Error/Error'
 import { Link } from 'react-router-dom'
 import { connectAndListenForMessages } from '../connectAndListenForMessages'
-import { IdentityIdConsumer } from '../../gcp/App'
 import { ICredentials } from '@aws-amplify/core'
 import { device } from 'aws-iot-device-sdk'
 import { emojify } from '../../Emojify/Emojify'
@@ -37,11 +36,9 @@ const ClearButton = styled.button`
 const ListCats = ({
 	iot,
 	credentials,
-	identityId,
 }: {
 	iot: Iot
 	credentials: ICredentials
-	identityId: string
 }) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
@@ -71,7 +68,7 @@ const ListCats = ({
 	useEffect(() => {
 		let connection: device
 		connectAndListenForMessages({
-			clientId: `user-${identityId}-${Date.now()}`,
+			clientId: `user-${credentials.identityId}-${Date.now()}`,
 			credentials,
 			onMessage: ({ deviceId, message: { btn } }) => {
 				console.log({
@@ -97,7 +94,7 @@ const ListCats = ({
 				connection.end()
 			}
 		}
-	}, [iot, credentials, identityId])
+	}, [iot, credentials])
 
 	if (loading || error)
 		return (
@@ -161,19 +158,9 @@ const ListCats = ({
 export const List = () => (
 	<CredentialsConsumer>
 		{credentials => (
-			<IdentityIdConsumer>
-				{identityId => (
-					<IotConsumer>
-						{({ iot }) => (
-							<ListCats
-								iot={iot}
-								credentials={credentials}
-								identityId={identityId}
-							/>
-						)}
-					</IotConsumer>
-				)}
-			</IdentityIdConsumer>
+			<IotConsumer>
+				{({ iot }) => <ListCats iot={iot} credentials={credentials} />}
+			</IotConsumer>
 		)}
 	</CredentialsConsumer>
 )

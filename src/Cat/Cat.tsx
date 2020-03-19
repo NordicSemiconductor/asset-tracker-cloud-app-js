@@ -121,7 +121,6 @@ export const Cat = ({
 	listUpgradeJobs,
 	cancelUpgradeJob,
 	deleteUpgradeJob,
-	identityId,
 	credentials,
 	children,
 	getThingState,
@@ -141,7 +140,6 @@ export const Cat = ({
 	getThingState: () => Promise<AWSIotThingState>
 	updateDeviceConfig: (cfg: Partial<DesiredConfig>) => Promise<void>
 	cat: CatInfo
-	identityId: string
 	credentials: ICredentials
 	children: React.ReactElement<any> | React.ReactElement<any>[]
 	listenForStateChange: (listeners: {
@@ -189,7 +187,7 @@ export const Cat = ({
 			}
 			didCancel = true
 		}
-	}, [identityId, credentials, getThingState, listenForStateChange])
+	}, [credentials, getThingState, listenForStateChange])
 
 	useEffect(() => {
 		if (!error) {
