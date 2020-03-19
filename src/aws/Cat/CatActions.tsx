@@ -102,12 +102,16 @@ export const CatActions = ({ catId }: { catId: string }) => {
 												getThingState={async () =>
 													getThingState(iotData)(catId)
 												}
-												listenForStateChange={async onNewState =>
+												listenForStateChange={async ({
+													onNewState,
+													onMessage,
+												}) =>
 													connectAndListenForStateChange({
 														clientId: `user-${identityId}-${Date.now()}`,
 														credentials,
 														deviceId: catId,
 														onNewState,
+														onMessage,
 													}).then(connection => () => connection.end())
 												}
 												updateDeviceConfig={async cfg =>

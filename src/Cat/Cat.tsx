@@ -19,6 +19,7 @@ import { Collapsable } from '../Collapsable/Collapsable'
 import { DeviceInfo } from './DeviceInformation'
 import { AccelerometerDiagram } from '../AccelerometerDiagram/AccelerometerDiagram'
 import { CatInfo } from '../aws/Cat/CatLoader'
+import { Message } from '../@types/Message'
 
 const intro = introJs()
 const MobileOnlyAvatarPicker = hideOnDesktop(AvatarPicker)
@@ -143,9 +144,10 @@ export const Cat = ({
 	identityId: string
 	credentials: ICredentials
 	children: React.ReactElement<any> | React.ReactElement<any>[]
-	listenForStateChange: (
-		onNewState: (newState: AWSIotThingState) => void,
-	) => Promise<() => void>
+	listenForStateChange: (listeners: {
+		onNewState: (newState: AWSIotThingState) => void
+		onMessage: (message: Message) => void
+	}) => Promise<() => void>
 	catMap: (state: AWSIotThingState) => React.ReactElement<any>
 }) => {
 	const [state, setState] = useState<AWSIotThingState>()
@@ -166,7 +168,12 @@ export const Cat = ({
 			.then(setStateIfNotCanceled)
 			.catch(setErrorIfNotCanceled)
 
-		listenForStateChange(setState)
+		listenForStateChange({
+			onNewState: setState,
+			onMessage: m => {
+				console.log(m)
+			},
+		})
 			.then(s => {
 				if (didCancel) {
 					s()
