@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { IotConsumer, CredentialsConsumer } from '../App'
+import React, { useEffect, useState, useCallback } from 'react'
+import {
+	IotConsumer,
+	CredentialsConsumer,
+	AthenaConsumer,
+	AthenaContext,
+} from '../App'
 import { Card, CardBody, CardHeader, Table } from 'reactstrap'
 import { Iot } from 'aws-sdk'
 import { Loading } from '../../Loading/Loading'
@@ -11,13 +16,16 @@ import { device } from 'aws-iot-device-sdk'
 import { emojify } from '../../Emojify/Emojify'
 import styled from 'styled-components'
 import { RelativeTime } from '../../RelativeTime/RelativeTime'
+import { isAfter } from 'date-fns'
+import { athenaQuery, parseAthenaResult } from '@bifravst/athena-helpers'
 
 const Cat = styled.td`
 	display: flex;
 	justify-content: space-between;
-	&.buttonPressed {
-		background-color: #ffec8e63;
-	}
+`
+
+const CatWithWarning = styled(Cat)`
+	background-color: #ffec8e63;
 `
 
 const ClearButton = styled.button`
@@ -33,19 +41,26 @@ const ClearButton = styled.button`
 	}
 `
 
+type DeviceDateMap = {
+	[key: string]: Date
+}
+
 const ListCats = ({
 	iot,
 	credentials,
+	athenaContext,
 }: {
 	iot: Iot
 	credentials: ICredentials
+	athenaContext: AthenaContext
 }) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState<Error>()
-	const [buttonPresses, setButtonPresses] = useState<{
-		[key: string]: Date
-	}>({})
+	const [buttonSnoozes, setButtonSnoozes] = useState<DeviceDateMap>({})
+	const [buttonPresses, setButtonPresses] = useState<DeviceDateMap>({})
+
+	// Fetch list of devices
 	useEffect(() => {
 		iot
 			.listThings()
@@ -65,6 +80,7 @@ const ListCats = ({
 			})
 	}, [iot])
 
+	// Set up IoT subscription to listen for button presses
 	useEffect(() => {
 		let connection: device
 		connectAndListenForMessages({
@@ -96,6 +112,92 @@ const ListCats = ({
 		}
 	}, [iot, credentials])
 
+	// Fetch historical button presses
+	useEffect(() => {
+		const { athena, workGroup, dataBase, rawDataTable } = athenaContext
+		athenaQuery({
+			WorkGroup: workGroup,
+			athena,
+			debugLog: (...args: any) => {
+				console.debug('[athena]', ...args)
+			},
+			errorLog: (...args: any) => {
+				console.error('[athena]', ...args)
+			},
+		})({
+			QueryString: `		
+				SELECT m.message.btn.v as button, 
+						m.message.btn.ts as ts,
+						m.timestamp,
+						m.deviceid
+				FROM (
+					SELECT deviceid,
+						MAX(timestamp) AS max_timestamp
+				FROM ${dataBase}.${rawDataTable} t
+				WHERE t.message.btn IS NOT NULL
+				GROUP BY 1 
+					) t JOIN ${dataBase}.${rawDataTable} m ON m.timestamp = t.max_timestamp AND m.deviceid = t.deviceid
+				`,
+		})
+			.then(async ResultSet => {
+				const data = parseAthenaResult({
+					ResultSet,
+					skip: 1,
+					formatFields: {
+						ts: n => new Date(n),
+					},
+				})
+				setButtonPresses(presses => ({
+					...data.reduce(
+						(p, { deviceid, ts }) => ({
+							...p,
+							[deviceid as string]: (ts as unknown) as Date,
+						}),
+						{} as DeviceDateMap,
+					),
+					...presses,
+				}))
+				console.debug('[Button Presses]', data)
+			})
+			.catch(error => {
+				console.error(error)
+				setError(error)
+			})
+	}, [athenaContext])
+
+	// Read/Set localstorage of button snoozes
+	useEffect(() => {
+		const snoozes = window.localStorage.getItem(`bifravst:catlist:snoozes`)
+		if (snoozes) {
+			console.log(`Restoring`, JSON.parse(snoozes))
+			setButtonSnoozes(
+				Object.entries(JSON.parse(snoozes)).reduce(
+					(snoozes, [deviceId, ts]) => ({
+						...snoozes,
+						[deviceId]: new Date(ts as string),
+					}),
+					{},
+				),
+			)
+		}
+	}, [])
+	useEffect(() => {
+		return () => {
+			console.log(`Storing`, JSON.stringify(buttonSnoozes))
+			window.localStorage.setItem(
+				`bifravst:catlist:snoozes`,
+				JSON.stringify(buttonSnoozes),
+			)
+		}
+	}, [buttonSnoozes])
+
+	const showButtonWarning = (deviceId: string): boolean => {
+		if (!buttonPresses[deviceId]) return false
+		if (!buttonSnoozes[deviceId]) return true
+		if (isAfter(buttonPresses[deviceId], buttonSnoozes[deviceId])) return true
+		return false
+	}
+
 	if (loading || error)
 		return (
 			<Card>
@@ -111,29 +213,31 @@ const ListCats = ({
 			{cats.length > 0 && (
 				<Table>
 					<tbody>
-						{cats.map(({ id, name }) => (
-							<tr key={id}>
-								<Cat className={buttonPresses[id] && 'buttonPressed'}>
-									<Link to={`/cat/${id}`}>{name}</Link>
-									{buttonPresses[id] && (
-										<ClearButton
-											onClick={() => {
-												setButtonPresses(buttonPresses => {
-													const {
-														[id]: _,
-														...buttonPressesWithoutId
-													} = buttonPresses
-													return buttonPressesWithoutId
-												})
-											}}
-										>
-											{emojify('🔴')}
-											<RelativeTime ts={buttonPresses[id]} />
-										</ClearButton>
-									)}
-								</Cat>
-							</tr>
-						))}
+						{cats.map(({ id, name }) => {
+							const showWarning = showButtonWarning(id)
+							const Widget = showWarning ? CatWithWarning : Cat
+							return (
+								<tr key={id}>
+									<Widget>
+										<Link to={`/cat/${id}`}>{name}</Link>
+										{showWarning && (
+											<ClearButton
+												title="Click to snooze alarm"
+												onClick={() => {
+													setButtonSnoozes(snoozes => ({
+														...snoozes,
+														[id]: new Date(),
+													}))
+												}}
+											>
+												{emojify('🔴')}
+												<RelativeTime ts={buttonPresses[id]} />
+											</ClearButton>
+										)}
+									</Widget>
+								</tr>
+							)
+						})}
 					</tbody>
 				</Table>
 			)}
@@ -156,11 +260,15 @@ const ListCats = ({
 }
 
 export const List = () => (
-	<CredentialsConsumer>
-		{credentials => (
-			<IotConsumer>
-				{({ iot }) => <ListCats iot={iot} credentials={credentials} />}
-			</IotConsumer>
+	<AthenaConsumer>
+		{athenaContext => (
+			<CredentialsConsumer>
+				{credentials => (
+					<IotConsumer>
+						{({ iot }) => <ListCats {...{ athenaContext, iot, credentials }} />}
+					</IotConsumer>
+				)}
+			</CredentialsConsumer>
 		)}
-	</CredentialsConsumer>
+	</AthenaConsumer>
 )
