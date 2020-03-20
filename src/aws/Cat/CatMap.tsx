@@ -1,4 +1,3 @@
-import Athena from 'aws-sdk/clients/athena'
 import { CatInfo } from './CatLoader'
 import { HistoricalDataLoader } from '../../HistoricalData/HistoricalDataLoader'
 import { Map, Location } from '../../Map/Map'
@@ -13,6 +12,7 @@ import {
 } from '@aws-sdk/client-dynamodb-v2-node'
 import { cellId } from '@bifravst/cell-geolocation-helpers'
 import { RoamingInformation } from '../../@types/DeviceShadow'
+import { AthenaContext } from '../App'
 
 const SettingsFormGroup = styled(FormGroup)`
 	position: absolute;
@@ -34,20 +34,14 @@ const CatMapContainer = styled.div`
 `
 
 export const CatMap = ({
-	athena,
+	athenaContext,
 	cat,
-	athenaWorkGroup,
-	athenaDataBase,
-	athenaRawDataTable,
 	cellGeoLocationCacheTable,
 	state,
 	dynamoDBClient,
 }: {
-	athena: Athena
+	athenaContext: AthenaContext
 	cat: CatInfo
-	athenaWorkGroup: string
-	athenaDataBase: string
-	athenaRawDataTable: string
 	state: AWSIotThingState
 	dynamoDBClient: DynamoDBClient
 	cellGeoLocationCacheTable: string
@@ -161,15 +155,14 @@ export const CatMap = ({
 	return (
 		<CatMapContainer>
 			<HistoricalDataLoader
-				athena={athena}
+				athenaContext={athenaContext}
 				deviceId={cat.id}
 				formatFields={{
 					lat: parseFloat,
 					lng: parseFloat,
 					date: v => new Date(v),
 				}}
-				QueryString={`SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaDataBase}.${athenaRawDataTable} WHERE deviceId='${cat.id}' AND reported.gps IS NOT NULL AND reported.gps.v.lat IS NOT NULL AND reported.gps.v.lng IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT 10`}
-				workGroup={athenaWorkGroup}
+				QueryString={`SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${cat.id}' AND reported.gps IS NOT NULL AND reported.gps.v.lat IS NOT NULL AND reported.gps.v.lng IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT 10`}
 				loading={mapWithoutHistoricalData}
 			>
 				{({ data }) => (

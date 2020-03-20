@@ -1,30 +1,27 @@
 import React, { useEffect, useState } from 'react'
-import Athena from 'aws-sdk/clients/athena'
 import {
 	athenaQuery,
 	parseAthenaResult,
 	FieldFormatters,
-	ParsedResult,
 } from '@bifravst/athena-helpers'
 import { Loading } from '../Loading/Loading'
 import { Error as ShowError } from '../Error/Error'
 import PQueue from 'p-queue'
+import { AthenaContext } from '../aws/App'
 
 const queue = new PQueue({ concurrency: 1 })
 
 export const HistoricalDataLoader = ({
-	athena,
+	athenaContext,
 	deviceId,
 	children,
 	QueryString,
-	workGroup,
 	formatFields,
 	loading,
 }: {
-	athena: Athena
+	athenaContext: AthenaContext
 	deviceId: string
 	QueryString: string
-	workGroup: string
 	formatFields?: FieldFormatters
 	loading?: React.ReactElement<any>
 	children: (args: {
@@ -33,7 +30,9 @@ export const HistoricalDataLoader = ({
 }) => {
 	const [data, setData] = useState<{ date: Date; value: number }[]>()
 	const [error, setError] = useState<Error>()
+
 	useEffect(() => {
+		const { athena, workGroup } = athenaContext
 		let removed = false
 		const q = athenaQuery({
 			WorkGroup: workGroup,
@@ -67,7 +66,7 @@ export const HistoricalDataLoader = ({
 		return () => {
 			removed = true
 		}
-	}, [athena, deviceId, workGroup, QueryString, formatFields])
+	}, [athenaContext, deviceId, QueryString, formatFields])
 
 	return (
 		<>

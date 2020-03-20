@@ -3,6 +3,7 @@ import { CognitoUser } from 'amazon-cognito-identity-js'
 import Amplify, { Auth } from 'aws-amplify'
 import { withAuthenticator } from 'aws-amplify-react'
 import { Iot, IotData } from 'aws-sdk'
+import Athena from 'aws-sdk/clients/athena'
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 import { CatPage } from '../Cat/Page'
@@ -14,16 +15,46 @@ import { GlobalStyle } from '../Styles'
 import { AboutPage } from './About/Page'
 import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
 
+export type AthenaContext = {
+	athena: Athena
+	workGroup: string
+	dataBase: string
+	rawDataTable: string
+}
+
+export type StackConfigContext = {
+	region: string
+	avatarBucketName: string
+	fotaBucketName: string
+	cellGeoLocationCacheTable: string
+}
+
 export const boot = ({
 	identityPoolId,
+	userIotPolicyArn,
 	region,
 	userPoolId,
 	userPoolWebClientId,
+	athenaConfig,
+	mqttEndpoint,
+	avatarBucketName,
+	fotaBucketName,
+	cellGeoLocationCacheTable,
 }: {
 	identityPoolId: string
+	userIotPolicyArn: string
 	region: string
 	userPoolId: string
 	userPoolWebClientId: string
+	athenaConfig: {
+		workGroup: string
+		dataBase: string
+		rawDataTable: string
+	}
+	mqttEndpoint: string
+	avatarBucketName: string
+	fotaBucketName: string
+	cellGeoLocationCacheTable: string
 }) => {
 	Amplify.configure({
 		Auth: {
@@ -38,32 +69,33 @@ export const boot = ({
 	const App = ({ authData }: { authData: CognitoUser }) => {
 		const [credentials, setCredentials] = useState<ICredentials>()
 		const [iot, setIot] = useState<{ iot: Iot; iotData: IotData }>()
-
+		const [athenaContext, setAthenaContext] = useState<AthenaContext>()
 		useEffect(() => {
 			Auth.currentCredentials()
 				.then(async creds => {
 					const c = Auth.essentialCredentials(creds)
 					const iot = new Iot({
 						credentials: creds,
-						region: process.env.REACT_APP_REGION,
+						region,
 					})
 					const iotData = new IotData({
 						credentials: creds,
-						endpoint: process.env.REACT_APP_MQTT_ENDPOINT,
-						region: process.env.REACT_APP_REGION,
+						endpoint: mqttEndpoint,
+						region,
 					})
 					setCredentials(c)
 					setIot({
 						iot,
 						iotData,
 					})
-
+					setAthenaContext({
+						athena: new Athena({ region, credentials: c }),
+						...athenaConfig,
+					})
 					// Attach Iot Policy to user
 					await attachIotPolicyToIdentity({
 						iot,
-						policyName:
-							`${process.env.REACT_APP_USER_IOT_POLICY_ARN}`.split('/')[1] ||
-							'',
+						policyName: `${userIotPolicyArn}`.split('/')[1] || '',
 					})(c.identityId)
 				})
 				.catch(error => {
@@ -89,17 +121,32 @@ export const boot = ({
 						}}
 					/>
 					<Route exact path="/" render={() => <Redirect to="/cats" />} />
-					{credentials && iot && (
-						<CredentialsContext.Provider value={credentials}>
-							<IdentityIdContext.Provider value={credentials.identityId}>
-								<IotContext.Provider value={iot}>
-									<Route exact path="/about" component={AboutPage} />
-									<Route exact path="/cats" component={CatsPage} />
-									<Route exact path="/cats-on-map" component={CatsMapPage} />
-									<Route exact path="/cat/:catId" component={CatPage} />
-								</IotContext.Provider>
-							</IdentityIdContext.Provider>
-						</CredentialsContext.Provider>
+					{credentials && iot && athenaContext && (
+						<StackConfigContext.Provider
+							value={{
+								region,
+								avatarBucketName,
+								fotaBucketName,
+								cellGeoLocationCacheTable,
+							}}
+						>
+							<CredentialsContext.Provider value={credentials}>
+								<IdentityIdContext.Provider value={credentials.identityId}>
+									<IotContext.Provider value={iot}>
+										<AthenaContext.Provider value={athenaContext}>
+											<Route exact path="/about" component={AboutPage} />
+											<Route exact path="/cats" component={CatsPage} />
+											<Route
+												exact
+												path="/cats-on-map"
+												component={CatsMapPage}
+											/>
+											<Route exact path="/cat/:catId" component={CatPage} />
+										</AthenaContext.Provider>
+									</IotContext.Provider>
+								</IdentityIdContext.Provider>
+							</CredentialsContext.Provider>
+						</StackConfigContext.Provider>
 					)}
 				</NavbarBrandContextProvider>
 			</Router>
@@ -129,5 +176,20 @@ const IotContext = React.createContext<{ iot: Iot; iotData: IotData }>({
 	iot: (undefined as unknown) as Iot,
 	iotData: (undefined as unknown) as IotData,
 })
-
 export const IotConsumer = IotContext.Consumer
+
+const AthenaContext = React.createContext<AthenaContext>({
+	athena: new Athena({ region: 'us-east-1' }),
+	workGroup: '',
+	dataBase: '',
+	rawDataTable: '',
+})
+export const AthenaConsumer = AthenaContext.Consumer
+
+const StackConfigContext = React.createContext<StackConfigContext>({
+	region: 'us-east-1',
+	avatarBucketName: '',
+	fotaBucketName: '',
+	cellGeoLocationCacheTable: '',
+})
+export const StackConfigConsumer = StackConfigContext.Consumer
