@@ -181,15 +181,6 @@ const ListCats = ({
 			)
 		}
 	}, [])
-	useEffect(() => {
-		return () => {
-			console.log(`Storing`, JSON.stringify(buttonSnoozes))
-			window.localStorage.setItem(
-				`bifravst:catlist:snoozes`,
-				JSON.stringify(buttonSnoozes),
-			)
-		}
-	}, [buttonSnoozes])
 
 	const showButtonWarning = (deviceId: string): boolean => {
 		if (!buttonPresses[deviceId]) return false
@@ -224,10 +215,18 @@ const ListCats = ({
 											<ClearButton
 												title="Click to snooze alarm"
 												onClick={() => {
-													setButtonSnoozes(snoozes => ({
-														...snoozes,
-														[id]: new Date(),
-													}))
+													setButtonSnoozes(snoozes => {
+														const u = {
+															...snoozes,
+															[id]: new Date(),
+														}
+														console.log(`Storing`, JSON.stringify(u))
+														window.localStorage.setItem(
+															`bifravst:catlist:snoozes`,
+															JSON.stringify(u),
+														)
+														return u
+													})
 												}}
 											>
 												{emojify('🔴')}
