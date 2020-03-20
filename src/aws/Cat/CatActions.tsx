@@ -27,6 +27,7 @@ import { Cat } from '../../Cat/Cat'
 import { CatLoader } from './CatLoader'
 import { CatMap } from './CatMap'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb-v2-node'
+import { HistoricalButtonPresses } from '../../HistoricalButtonPresses/HistoricalButtonPresses'
 
 export const CatActions = ({ catId }: { catId: string }) => {
 	const [deleted, setDeleted] = useState(false)
@@ -241,6 +242,33 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		data={data}
 																		type={'column'}
 																	/>
+																)}
+															</HistoricalDataLoader>
+														</Collapsable>
+														<hr />
+														<Collapsable
+															id={'cat:button'}
+															title={<h3>{emojify('🚨 Button')}</h3>}
+														>
+															<HistoricalDataLoader
+																athenaContext={athenaContext}
+																deviceId={catId}
+																formatFields={{
+																	date: v => new Date(v),
+																}}
+																QueryString={`		
+																SELECT message.btn.v AS value,
+																	message.btn.ts AS date,
+																	timestamp
+																FROM ${athenaContext.dataBase}.${athenaContext.rawDataTable}
+																WHERE deviceid = '${catId}'
+																AND message.btn IS NOT NULL
+																ORDER BY timestamp DESC
+																LIMIT 10
+																`}
+															>
+																{({ data }) => (
+																	<HistoricalButtonPresses data={data} />
 																)}
 															</HistoricalDataLoader>
 														</Collapsable>
