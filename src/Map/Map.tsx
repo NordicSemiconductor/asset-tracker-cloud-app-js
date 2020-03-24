@@ -22,6 +22,11 @@ export type Location = {
 	ts: Date
 }
 
+export type CellLocation = {
+	position: Position & { accuracy: number }
+	ts: Date
+}
+
 export const Map = ({
 	deviceLocation,
 	cellLocation,
@@ -31,7 +36,7 @@ export const Map = ({
 	history,
 }: {
 	deviceLocation?: Location
-	cellLocation?: Location
+	cellLocation?: CellLocation
 	accuracy?: number
 	heading?: number
 	label: string
@@ -50,8 +55,10 @@ export const Map = ({
 	// Hide the cell location circle if the GPS location exists and is not older than 5 minutes
 	const cellLocationIsMoreUpToDate =
 		cellLocation &&
-		deviceLocation &&
-		cellLocation.ts.getTime() - 10 * 60 * 1000 > deviceLocation.ts.getTime()
+		((deviceLocation &&
+			cellLocation.ts.getTime() - 10 * 60 * 1000 >
+				deviceLocation.ts.getTime()) ||
+			!deviceLocation)
 
 	let center: Location = cellLocation || (deviceLocation as Location)
 	if (
@@ -95,7 +102,7 @@ export const Map = ({
 			{cellLocation && cellLocationIsMoreUpToDate && (
 				<Circle
 					center={cellLocation.position}
-					radius={2000}
+					radius={cellLocation.position.accuracy}
 					color={'#F6C270'}
 				/>
 			)}

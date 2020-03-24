@@ -26,7 +26,7 @@ export type StackConfigContext = {
 	region: string
 	avatarBucketName: string
 	fotaBucketName: string
-	cellGeoLocationCacheTable: string
+	geolocationApiEndpoint: string
 }
 
 export const boot = ({
@@ -39,7 +39,7 @@ export const boot = ({
 	mqttEndpoint,
 	avatarBucketName,
 	fotaBucketName,
-	cellGeoLocationCacheTable,
+	geolocationApiEndpoint,
 }: {
 	identityPoolId: string
 	userIotPolicyArn: string
@@ -54,7 +54,7 @@ export const boot = ({
 	mqttEndpoint: string
 	avatarBucketName: string
 	fotaBucketName: string
-	cellGeoLocationCacheTable: string
+	geolocationApiEndpoint: string
 }) => {
 	Amplify.configure({
 		Auth: {
@@ -127,7 +127,7 @@ export const boot = ({
 								region,
 								avatarBucketName,
 								fotaBucketName,
-								cellGeoLocationCacheTable,
+								geolocationApiEndpoint,
 							}}
 						>
 							<CredentialsContext.Provider value={credentials}>
@@ -190,6 +190,6 @@ const StackConfigContext = React.createContext<StackConfigContext>({
 	region: 'us-east-1',
 	avatarBucketName: '',
 	fotaBucketName: '',
-	cellGeoLocationCacheTable: '',
+	geolocationApiEndpoint: '',
 })
 export const StackConfigConsumer = StackConfigContext.Consumer

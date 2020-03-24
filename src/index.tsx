@@ -61,8 +61,9 @@ switch (cloudFlavour) {
 						userIotPolicyArn: process.env.REACT_APP_USER_IOT_POLICY_ARN || '',
 						avatarBucketName: process.env.REACT_APP_AVATAR_BUCKET_NAME || '',
 						fotaBucketName: process.env.REACT_APP_FOTA_BUCKET_NAME || '',
-						cellGeoLocationCacheTable:
-							process.env.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE || '',
+						geolocationApiEndpoint: (
+							process.env.REACT_APP_GEOLOCATION_API_URL || ''
+						).replace(/\/+$/, ''),
 					}),
 				)
 			})

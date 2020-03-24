@@ -27,7 +27,6 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@amcharts/amcharts4": "^4.9.10",
-    "@aws-sdk/client-dynamodb-v2-node": "0.1.0-preview.2",
     "@bifravst/athena-helpers": "^6.0.5",
     "@bifravst/cell-geolocation-helpers": "^1.2.1",
     "@bifravst/rsrp-bar": "^2.0.2",

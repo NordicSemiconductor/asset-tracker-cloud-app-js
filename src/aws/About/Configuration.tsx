@@ -69,22 +69,6 @@ export const Configuration = () => (
 						<code>{process.env.REACT_APP_FOTA_BUCKET_NAME}</code>
 					</a>
 				</dd>
-				<dt>Cell Geolocation</dt>
-				<dd>
-					<a
-						href={`https://${process.env.REACT_APP_REGION}.console.aws.amazon.com/dynamodb/home?region=${process.env.REACT_APP_REGION}#tables:selected=${process.env.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE};tab=overview`}
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						<code>
-							{process.env.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE}/
-							{
-								process.env
-									.REACT_APP_CELL_GEO_LOCATIONS_CACHE_TABLE_CELL_ID_INDEX
-							}
-						</code>
-					</a>
-				</dd>
 			</dl>
 		</CardBody>
 	</Card>

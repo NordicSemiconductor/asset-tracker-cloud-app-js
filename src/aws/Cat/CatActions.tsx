@@ -26,7 +26,6 @@ import { updateThingConfig } from '../updateThingConfig'
 import { Cat } from '../../Cat/Cat'
 import { CatLoader } from './CatLoader'
 import { CatMap } from './CatMap'
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb-v2-node'
 import { HistoricalButtonPresses } from '../../HistoricalButtonPresses/HistoricalButtonPresses'
 
 export const CatActions = ({ catId }: { catId: string }) => {
@@ -50,7 +49,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 				region,
 				avatarBucketName,
 				fotaBucketName,
-				cellGeoLocationCacheTable,
+				geolocationApiEndpoint,
 			}) => (
 				<AthenaConsumer>
 					{athenaContext => (
@@ -188,15 +187,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																athenaContext={athenaContext}
 																cat={cat}
 																state={state}
-																dynamoDBClient={
-																	new DynamoDBClient({
-																		credentials,
-																		region,
-																	})
-																}
-																cellGeoLocationCacheTable={
-																	cellGeoLocationCacheTable
-																}
+																geolocationApiEndpoint={geolocationApiEndpoint}
 															/>
 														)}
 													>

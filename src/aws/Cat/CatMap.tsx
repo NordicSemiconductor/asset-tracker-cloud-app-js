@@ -1,18 +1,15 @@
 import { CatInfo } from './CatLoader'
 import { HistoricalDataLoader } from '../../HistoricalData/HistoricalDataLoader'
-import { Map, Location } from '../../Map/Map'
+import { Map, Location, CellLocation } from '../../Map/Map'
 import React, { useState, useEffect } from 'react'
 import { AWSIotThingState } from '../connectAndListenForStateChange'
 import { FormGroup, Label, Input } from 'reactstrap'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../../Styles'
-import {
-	DynamoDBClient,
-	GetItemCommand,
-} from '@aws-sdk/client-dynamodb-v2-node'
-import { cellId } from '@bifravst/cell-geolocation-helpers'
 import { RoamingInformation } from '../../@types/DeviceShadow'
 import { AthenaContext } from '../App'
+import { geolocateCell } from '../geolocateCell'
+import { isRight } from 'fp-ts/lib/Either'
 
 const SettingsFormGroup = styled(FormGroup)`
 	position: absolute;
@@ -36,15 +33,13 @@ const CatMapContainer = styled.div`
 export const CatMap = ({
 	athenaContext,
 	cat,
-	cellGeoLocationCacheTable,
 	state,
-	dynamoDBClient,
+	geolocationApiEndpoint,
 }: {
 	athenaContext: AthenaContext
 	cat: CatInfo
 	state: AWSIotThingState
-	dynamoDBClient: DynamoDBClient
-	cellGeoLocationCacheTable: string
+	geolocationApiEndpoint: string
 }) => {
 	let initialState = true
 
@@ -54,47 +49,36 @@ export const CatMap = ({
 		initialState = false
 	}
 	const [fetchHistoricalData, setFetchHistoricalData] = useState(initialState)
-	const [cellLocation, setCellLocation] = useState<Location>()
+	const [cellLocation, setCellLocation] = useState<CellLocation>()
 
 	const { reported } = state
 
 	useEffect(() => {
+		let isCancelled = false
 		if (reported && reported.roam) {
-			dynamoDBClient
-				.send(
-					new GetItemCommand({
-						TableName: cellGeoLocationCacheTable,
-						Key: {
-							cellId: {
-								S: cellId({
-									area: reported.roam.v.area.value,
-									cell: reported.roam.v.cell.value,
-									mccmnc: reported.roam.v.mccmnc.value,
-								}),
-							},
-						},
-						ProjectionExpression: 'lat,lng',
-					}),
-				)
-				.then(({ Item }) => {
-					if (Item) {
-						const l: Location = {
+			geolocateCell(geolocationApiEndpoint)({
+				area: reported.roam.v.area.value,
+				cell: reported.roam.v.cell.value,
+				mccmnc: reported.roam.v.mccmnc.value,
+			})
+				.then(geolocation => {
+					if (isCancelled) return
+					if (isRight(geolocation)) {
+						const l: CellLocation = {
 							ts: new Date((reported.roam as RoamingInformation).ts.value),
-							position: {
-								lat: parseFloat(Item.lat.N as string),
-								lng: parseFloat(Item.lng.N as string),
-							},
+							position: geolocation.right,
 						}
-						console.log('cell geolocation', l)
 						setCellLocation(l)
 					}
 				})
 				.catch(err => {
-					console.error(`Cell Geolocation query failed!`)
-					console.error(err)
+					console.error('[geolocateCell]', err)
 				})
 		}
-	}, [reported, cellGeoLocationCacheTable, dynamoDBClient, setCellLocation])
+		return () => {
+			isCancelled = true
+		}
+	}, [reported, geolocationApiEndpoint])
 
 	const toggle = () => {
 		const state = !fetchHistoricalData
