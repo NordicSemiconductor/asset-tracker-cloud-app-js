@@ -27,7 +27,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@amcharts/amcharts4": "^4.9.11",
-    "@bifravst/athena-helpers": "^6.0.5",
+    "@bifravst/athena-helpers": "^6.1.0",
     "@bifravst/cell-geolocation-helpers": "^1.2.1",
     "@bifravst/rsrp-bar": "^2.0.2",
     "@react-firebase/auth": "^0.2.10",
