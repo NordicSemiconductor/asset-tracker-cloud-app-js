@@ -4,10 +4,13 @@ import { Configuration } from './Configuration'
 import { Main } from '../../Styles'
 import { User } from './User'
 import { SolutionConfigConsumer } from '../App'
+import { ReactAppConfigConsumer } from '../..'
 
 export const AboutPage = () => (
 	<Main>
-		<About />
+		<ReactAppConfigConsumer>
+			{config => <About config={config} />}
+		</ReactAppConfigConsumer>
 		<SolutionConfigConsumer>
 			{config => <Configuration config={config} />}
 		</SolutionConfigConsumer>

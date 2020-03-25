@@ -1,10 +1,31 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-const cloudFlavour = process.env.REACT_APP_CLOUD_FLAVOUR
+const cloudFlavour = process.env.REACT_APP_CLOUD_FLAVOUR || 'AWS'
+
+export type ReactAppConfig = {
+	cloudFlavour: string
+	version: string
+}
+
+const ReactAppConfig = React.createContext<ReactAppConfig>({
+	cloudFlavour: '',
+	version: '',
+})
+export const ReactAppConfigConsumer = ReactAppConfig.Consumer
 
 const launch = (App: any) => {
-	ReactDOM.render(<App />, document.getElementById('root'))
+	ReactDOM.render(
+		<ReactAppConfig.Provider
+			value={{
+				cloudFlavour,
+				version: process.env.REACT_APP_VERSION || '0.0.0-development',
+			}}
+		>
+			<App />
+		</ReactAppConfig.Provider>,
+		document.getElementById('root'),
+	)
 }
 const onError = (err: Error) => {
 	console.error(err)
@@ -47,8 +68,7 @@ switch (cloudFlavour) {
 						identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID || '',
 						region: process.env.REACT_APP_REGION || '',
 						userPoolId: process.env.REACT_APP_USER_POOL_ID || '',
-						userPoolWebClientId:
-							process.env.REACT_APP_USER_POOL_CLIENT_ID || '',
+						userPoolClientId: process.env.REACT_APP_USER_POOL_CLIENT_ID || '',
 						athenaConfig: {
 							workGroup:
 								process.env.REACT_APP_HISTORICALDATA_WORKGROUP_NAME || '',
@@ -56,6 +76,7 @@ switch (cloudFlavour) {
 								process.env.REACT_APP_HISTORICALDATA_DATABASE_NAME || '',
 							rawDataTable:
 								process.env.REACT_APP_HISTORICALDATA_TABLE_NAME || '',
+							bucketName: process.env.HISTORICAL_DATA_BUCKET_NAME || '',
 						},
 						mqttEndpoint: process.env.REACT_APP_MQTT_ENDPOINT || '',
 						userIotPolicyArn: process.env.REACT_APP_USER_IOT_POLICY_ARN || '',

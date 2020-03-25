@@ -1,8 +1,8 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { IdentityIdConsumer } from '../App'
+import { IdentityIdConsumer, StackConfigContext } from '../App'
 
-export const Configuration = () => (
+export const Configuration = ({ config }: { config: StackConfigContext }) => (
 	<Card data-intro="This card lists the apps configuration.">
 		<CardHeader>Environment</CardHeader>
 		<CardBody>
@@ -16,57 +16,57 @@ export const Configuration = () => (
 				<dt>User Pool</dt>
 				<dd>
 					<a
-						href={`https://${process.env.REACT_APP_REGION}.console.aws.amazon.com/cognito/users/?region=${process.env.REACT_APP_REGION}#/pool/${process.env.REACT_APP_USER_POOL_ID}`}
+						href={`https://${config.region}.console.aws.amazon.com/cognito/users/?region=${config.region}#/pool/${config.userPoolId}`}
 					>
-						<code>{process.env.REACT_APP_USER_POOL_ID}</code>
+						<code>{config.userPoolId}</code>
 					</a>{' '}
 				</dd>
 				<dt>User Pool Client ID</dt>
 				<dd>
-					<code>{process.env.REACT_APP_USER_POOL_CLIENT_ID}</code>
+					<code>{config.userPoolClientId}</code>
 				</dd>
 				<dt>MQTT Endpoint</dt>
 				<dd>
-					<code>{process.env.REACT_APP_MQTT_ENDPOINT}</code>
+					<code>{config.mqttEndpoint}</code>
 				</dd>
 				<dt>Historical Data Storage</dt>
 				<dd>
 					<a
-						href={`https://s3.console.aws.amazon.com/s3/buckets/${process.env.REACT_APP_HISTORICAL_DATA_BUCKET_NAME}/?region=${process.env.REACT_APP_REGION}&tab=overview`}
+						href={`https://s3.console.aws.amazon.com/s3/buckets/${config.athenaConfig.bucketName}/?region=${config.region}&tab=overview`}
 					>
-						<code>{process.env.REACT_APP_HISTORICAL_DATA_BUCKET_NAME}</code>
+						<code>{config.athenaConfig.bucketName}</code>
 					</a>
 				</dd>
 				<dt>Athena Work Group</dt>
 				<dd>
-					<code>{process.env.REACT_APP_HISTORICALDATA_WORKGROUP_NAME}</code>
+					<code>{config.athenaConfig.workGroup}</code>
 				</dd>
 				<dt>Athena Database</dt>
 				<dd>
-					<code>{process.env.REACT_APP_HISTORICALDATA_DATABASE_NAME}</code>
+					<code>{config.athenaConfig.dataBase}</code>
 				</dd>
 				<dt>Athena Table</dt>
 				<dd>
-					<code>{process.env.REACT_APP_HISTORICALDATA_TABLE_NAME}</code>
+					<code>{config.athenaConfig.rawDataTable}</code>
 				</dd>
 				<dt>Avatar Storage</dt>
 				<dd>
 					<a
-						href={`https://s3.console.aws.amazon.com/s3/buckets/${process.env.REACT_APP_AVATAR_BUCKET_NAME}/?region=${process.env.REACT_APP_REGION}&tab=overview`}
+						href={`https://s3.console.aws.amazon.com/s3/buckets/${config.avatarBucketName}/?region=${config.region}&tab=overview`}
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						<code>{process.env.REACT_APP_AVATAR_BUCKET_NAME}</code>
+						<code>{config.avatarBucketName}</code>
 					</a>
 				</dd>
 				<dt>FOTA Storage</dt>
 				<dd>
 					<a
-						href={`https://s3.console.aws.amazon.com/s3/buckets/${process.env.REACT_APP_FOTA_BUCKET_NAME}/?region=${process.env.REACT_APP_REGION}&tab=overview`}
+						href={`https://s3.console.aws.amazon.com/s3/buckets/${config.fotaBucketName}/?region=${config.region}&tab=overview`}
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						<code>{process.env.REACT_APP_FOTA_BUCKET_NAME}</code>
+						<code>{config.fotaBucketName}</code>
 					</a>
 				</dd>
 			</dl>

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { NavbarBrand } from 'reactstrap'
 import logo from '../logo.svg'
 import styled from 'styled-components'
+import { ReactAppConfigConsumer } from '..'
 
 export const LogoImg = styled.img`
 	margin-right: 0.25rem;
@@ -20,19 +21,21 @@ const Flavour = styled.small`
 	}
 `
 
-const cloudFlavour = process.env.REACT_APP_CLOUD_FLAVOUR || 'AWS'
-
 const defaultNavbarBrand: React.ReactElement<any> = (
-	<NavbarBrand href="/">
-		<LogoImg
-			src={logo}
-			width="30"
-			height="30"
-			className="d-inline-block align-top"
-			alt={`Cat Tracker (${cloudFlavour})`}
-		/>
-		Cat Tracker <Flavour>{cloudFlavour}</Flavour>
-	</NavbarBrand>
+	<ReactAppConfigConsumer>
+		{({ cloudFlavour }) => (
+			<NavbarBrand href="/">
+				<LogoImg
+					src={logo}
+					width="30"
+					height="30"
+					className="d-inline-block align-top"
+					alt={`Cat Tracker (${cloudFlavour})`}
+				/>
+				Cat Tracker <Flavour>{cloudFlavour}</Flavour>
+			</NavbarBrand>
+		)}
+	</ReactAppConfigConsumer>
 )
 
 export type NavbarBrandState = {

@@ -49,10 +49,14 @@ const ListCats = ({
 	iot,
 	credentials,
 	athenaContext,
+	mqttEndpoint,
+	region,
 }: {
 	iot: Iot
 	credentials: ICredentials
 	athenaContext: AthenaContext
+	region: string
+	mqttEndpoint: string
 }) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
@@ -98,6 +102,8 @@ const ListCats = ({
 					}))
 				}
 			},
+			region,
+			mqttEndpoint,
 		})
 			.then(c => {
 				connection = c
@@ -110,7 +116,7 @@ const ListCats = ({
 				connection.end()
 			}
 		}
-	}, [iot, credentials])
+	}, [iot, credentials, region, mqttEndpoint])
 
 	// Fetch historical button presses
 	useEffect(() => {
@@ -263,7 +269,11 @@ export const List = () => (
 			<CredentialsConsumer>
 				{credentials => (
 					<IotConsumer>
-						{({ iot }) => <ListCats {...{ athenaContext, iot, credentials }} />}
+						{({ iot, mqttEndpoint, region }) => (
+							<ListCats
+								{...{ athenaContext, iot, credentials, mqttEndpoint, region }}
+							/>
+						)}
 					</IotConsumer>
 				)}
 			</CredentialsConsumer>

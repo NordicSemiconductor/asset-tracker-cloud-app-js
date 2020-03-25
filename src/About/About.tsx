@@ -1,7 +1,8 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
+import { ReactAppConfig } from '..'
 
-export const About = () => (
+export const About = ({ config }: { config: ReactAppConfig }) => (
 	<Card data-intro="Did you know that this application is open source? Check out the links!">
 		<CardHeader>About</CardHeader>
 		<CardBody>
@@ -32,7 +33,7 @@ export const About = () => (
 			<dl>
 				<dt>Version</dt>
 				<dd>
-					<code>{process.env.REACT_APP_VERSION || '0.0.0-development'}</code>
+					<code>{config.version}</code>
 				</dd>
 			</dl>
 		</CardBody>

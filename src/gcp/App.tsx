@@ -12,6 +12,10 @@ import { FirebaseUserPanel } from './FirebaseUserPanel'
 import { VerifyUserEmail } from './VerifyUserEmail'
 import { AboutPage } from './About/Page'
 
+export type CloudConfigContext = {
+	firebaseAuthDomain: string
+}
+
 export const boot = ({
 	apiKey,
 	authDomain,
@@ -38,36 +42,47 @@ export const boot = ({
 		})
 
 		return (
-			<Router history={history}>
-				<GlobalStyle />
-				<ToggleNavigation
-					loggedIn={user !== undefined}
-					onLogout={() => {
-						auth
-							.signOut()
-							.then(() => {
-								window.location.reload()
-							})
-							.catch(error => {
-								// Woot?!
-								console.error(error)
-							})
-					}}
-				/>
-				{!user && <FirebaseUserPanel />}
-				{user && (
-					<NavbarBrandContextProvider>
-						<IdentityIdContext.Provider value={user.uid}>
-							<VerifyUserEmail user={user} />
-							<Route exact path="/" render={() => <Redirect to="/cats" />} />
-							<Route exact path="/about" component={AboutPage} />
-						</IdentityIdContext.Provider>
-					</NavbarBrandContextProvider>
-				)}
-			</Router>
+			<CloudConfigContext.Provider
+				value={{
+					firebaseAuthDomain: authDomain,
+				}}
+			>
+				<Router history={history}>
+					<GlobalStyle />
+					<ToggleNavigation
+						loggedIn={user !== undefined}
+						onLogout={() => {
+							auth
+								.signOut()
+								.then(() => {
+									window.location.reload()
+								})
+								.catch(error => {
+									// Woot?!
+									console.error(error)
+								})
+						}}
+					/>
+					{!user && <FirebaseUserPanel />}
+					{user && (
+						<NavbarBrandContextProvider>
+							<IdentityIdContext.Provider value={user.uid}>
+								<VerifyUserEmail user={user} />
+								<Route exact path="/" render={() => <Redirect to="/cats" />} />
+								<Route exact path="/about" component={AboutPage} />
+							</IdentityIdContext.Provider>
+						</NavbarBrandContextProvider>
+					)}
+				</Router>
+			</CloudConfigContext.Provider>
 		)
 	}
 }
 
 const IdentityIdContext = React.createContext<string>('unauthorized')
 export const IdentityIdConsumer = IdentityIdContext.Consumer
+
+const CloudConfigContext = React.createContext<CloudConfigContext>({
+	firebaseAuthDomain: '',
+})
+export const CloudConfigConsumer = CloudConfigContext.Consumer

@@ -56,7 +56,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 						<CredentialsConsumer>
 							{credentials => (
 								<IotConsumer>
-									{({ iot, iotData }) => {
+									{({ iot, iotData, mqttEndpoint }) => {
 										const s3 = new S3({
 											credentials,
 											region,
@@ -115,6 +115,8 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																deviceId: catId,
 																onNewState,
 																onMessage,
+																region,
+																mqttEndpoint,
 															}).then(connection => () => connection.end())
 														}
 														updateDeviceConfig={async cfg =>

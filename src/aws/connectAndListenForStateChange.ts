@@ -22,18 +22,22 @@ export const connectAndListenForStateChange = async ({
 	credentials,
 	onNewState,
 	onMessage,
+	region,
+	mqttEndpoint,
 }: {
 	clientId: string
 	credentials: ICredentials
 	deviceId: string
 	onNewState: (newState: AWSIotThingState) => void
 	onMessage: (message: Message) => void
+	region: string
+	mqttEndpoint: string
 }): Promise<device> =>
 	new Promise(resolve => {
 		const connectArgs = {
 			clientId,
-			region: process.env.REACT_APP_REGION,
-			host: process.env.REACT_APP_MQTT_ENDPOINT,
+			region,
+			host: mqttEndpoint,
 			protocol: 'wss',
 			accessKeyId: credentials.accessKeyId,
 			sessionToken: credentials.sessionToken,

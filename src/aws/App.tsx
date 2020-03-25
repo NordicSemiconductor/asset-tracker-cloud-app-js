@@ -27,6 +27,15 @@ export type StackConfigContext = {
 	avatarBucketName: string
 	fotaBucketName: string
 	geolocationApiEndpoint: string
+	userPoolId: string
+	userPoolClientId: string
+	mqttEndpoint: string
+	athenaConfig: {
+		workGroup: string
+		dataBase: string
+		rawDataTable: string
+		bucketName: string
+	}
 }
 
 export const boot = ({
@@ -34,7 +43,7 @@ export const boot = ({
 	userIotPolicyArn,
 	region,
 	userPoolId,
-	userPoolWebClientId,
+	userPoolClientId,
 	athenaConfig,
 	mqttEndpoint,
 	avatarBucketName,
@@ -45,11 +54,12 @@ export const boot = ({
 	userIotPolicyArn: string
 	region: string
 	userPoolId: string
-	userPoolWebClientId: string
+	userPoolClientId: string
 	athenaConfig: {
 		workGroup: string
 		dataBase: string
 		rawDataTable: string
+		bucketName: string
 	}
 	mqttEndpoint: string
 	avatarBucketName: string
@@ -61,14 +71,19 @@ export const boot = ({
 			identityPoolId,
 			region,
 			userPoolId,
-			userPoolWebClientId,
+			userPoolClientId,
 			mandatorySignIn: true,
 		},
 	})
 
 	const App = ({ authData }: { authData: CognitoUser }) => {
 		const [credentials, setCredentials] = useState<ICredentials>()
-		const [iot, setIot] = useState<{ iot: Iot; iotData: IotData }>()
+		const [iot, setIot] = useState<{
+			iot: Iot
+			iotData: IotData
+			mqttEndpoint: string
+			region: string
+		}>()
 		const [athenaContext, setAthenaContext] = useState<AthenaContext>()
 		useEffect(() => {
 			Auth.currentCredentials()
@@ -87,6 +102,8 @@ export const boot = ({
 					setIot({
 						iot,
 						iotData,
+						mqttEndpoint,
+						region,
 					})
 					setAthenaContext({
 						athena: new Athena({ region, credentials: c }),
@@ -128,6 +145,10 @@ export const boot = ({
 								avatarBucketName,
 								fotaBucketName,
 								geolocationApiEndpoint,
+								userPoolId,
+								userPoolClientId,
+								mqttEndpoint,
+								athenaConfig,
 							}}
 						>
 							<CredentialsContext.Provider value={credentials}>
@@ -172,9 +193,16 @@ const CredentialsContext = React.createContext<ICredentials>({
 })
 export const CredentialsConsumer = CredentialsContext.Consumer
 
-const IotContext = React.createContext<{ iot: Iot; iotData: IotData }>({
+const IotContext = React.createContext<{
+	iot: Iot
+	iotData: IotData
+	mqttEndpoint: string
+	region: string
+}>({
 	iot: (undefined as unknown) as Iot,
 	iotData: (undefined as unknown) as IotData,
+	mqttEndpoint: '',
+	region: '',
 })
 export const IotConsumer = IotContext.Consumer
 
@@ -191,5 +219,14 @@ const StackConfigContext = React.createContext<StackConfigContext>({
 	avatarBucketName: '',
 	fotaBucketName: '',
 	geolocationApiEndpoint: '',
+	userPoolId: '',
+	userPoolClientId: '',
+	mqttEndpoint: '',
+	athenaConfig: {
+		workGroup: '',
+		dataBase: '',
+		rawDataTable: '',
+		bucketName: '',
+	},
 })
 export const StackConfigConsumer = StackConfigContext.Consumer
