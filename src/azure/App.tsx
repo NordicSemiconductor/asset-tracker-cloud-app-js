@@ -14,6 +14,11 @@ import { Twin } from 'azure-iothub'
 const ACCESS_TOKEN = 'azure:accessToken'
 const ID_TOKEN = 'azure:idToken'
 
+export type SolutionConfigContext = {
+	apiEndpoint: string
+	clientId: string
+}
+
 export const boot = ({
 	clientId,
 	redirectUri,
@@ -98,43 +103,54 @@ export const boot = ({
 		}, [idToken, accessToken])
 
 		return (
-			<Router history={history}>
-				<GlobalStyle />
-				<ToggleNavigation
-					loggedIn={accessToken !== undefined}
-					onLogout={() => {
-						window.localStorage.clear()
-						setIdToken(undefined as any)
-						setAccessToken(undefined as any)
-						setError(undefined)
-						userAgentApplication.logout()
-					}}
-				/>
-				{!accessToken && (
-					<Login
-						onLogin={() => {
-							userAgentApplication.loginRedirect(tokenRequest)
+			<SolutionConfigContext.Provider
+				value={{
+					apiEndpoint,
+					clientId,
+				}}
+			>
+				<Router history={history}>
+					<GlobalStyle />
+					<ToggleNavigation
+						loggedIn={accessToken !== undefined}
+						onLogout={() => {
+							window.localStorage.clear()
+							setIdToken(undefined as any)
+							setAccessToken(undefined as any)
+							setError(undefined)
+							userAgentApplication.logout()
 						}}
 					/>
-				)}
-				{error && <ErrorComponent error={error} />}
-				{accessToken && (
-					<NavbarBrandContextProvider>
-						<AccessTokenContext.Provider value={accessToken}>
-							<ApiClientContext.Provider
-								value={fetchApiClient({
-									endpoint: apiEndpoint,
-									token: accessToken.accessToken,
-								})}
-							>
-								<Route exact path="/" render={() => <Redirect to="/cats" />} />
-								<Route exact path="/about" component={AboutPage} />
-								<Route exact path="/cats" component={CatsPage} />
-							</ApiClientContext.Provider>
-						</AccessTokenContext.Provider>
-					</NavbarBrandContextProvider>
-				)}
-			</Router>
+					{!accessToken && (
+						<Login
+							onLogin={() => {
+								userAgentApplication.loginRedirect(tokenRequest)
+							}}
+						/>
+					)}
+					{error && <ErrorComponent error={error} />}
+					{accessToken && (
+						<NavbarBrandContextProvider>
+							<AccessTokenContext.Provider value={accessToken}>
+								<ApiClientContext.Provider
+									value={fetchApiClient({
+										endpoint: apiEndpoint,
+										token: accessToken.accessToken,
+									})}
+								>
+									<Route
+										exact
+										path="/"
+										render={() => <Redirect to="/cats" />}
+									/>
+									<Route exact path="/about" component={AboutPage} />
+									<Route exact path="/cats" component={CatsPage} />
+								</ApiClientContext.Provider>
+							</AccessTokenContext.Provider>
+						</NavbarBrandContextProvider>
+					)}
+				</Router>
+			</SolutionConfigContext.Provider>
 		)
 	}
 }
@@ -175,3 +191,9 @@ const fetchApiClient = ({
 		listDevices: get<Twin[]>('listdevices'),
 	}
 }
+
+const SolutionConfigContext = React.createContext<SolutionConfigContext>({
+	apiEndpoint: '',
+	clientId: '',
+})
+export const SolutionConfigConsumer = SolutionConfigContext.Consumer
