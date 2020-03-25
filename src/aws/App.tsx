@@ -71,7 +71,7 @@ export const boot = ({
 			identityPoolId,
 			region,
 			userPoolId,
-			userPoolClientId,
+			userPoolWebClientId: userPoolClientId,
 			mandatorySignIn: true,
 		},
 	})
