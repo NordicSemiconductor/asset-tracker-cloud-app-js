@@ -10,16 +10,23 @@ const ListCats = ({ apiClient }: { apiClient: ApiClient }) => {
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState<Error>()
 	useEffect(() => {
+		let isCancelled = false
 		apiClient
 			.listDevices()
 			.then(res => {
+				if (isCancelled) return
 				setCats(res.map(({ deviceId }) => ({ id: deviceId, name: deviceId })))
 				setLoading(false)
 			})
 			.catch(err => {
+				console.error(err)
+				if (isCancelled) return
 				setLoading(false)
 				setError(err)
 			})
+		return () => {
+			isCancelled = true
+		}
 	}, [apiClient])
 	if (loading || error)
 		return (
