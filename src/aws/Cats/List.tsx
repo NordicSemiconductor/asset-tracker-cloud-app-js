@@ -66,10 +66,12 @@ const ListCats = ({
 
 	// Fetch list of devices
 	useEffect(() => {
+		let isCancelled = false
 		iot
 			.listThings()
 			.promise()
 			.then(({ things }) => {
+				if (isCancelled) return
 				setCats(
 					(things || []).map(({ thingName, attributes }) => ({
 						id: thingName || 'unknown',
@@ -79,18 +81,24 @@ const ListCats = ({
 				setLoading(false)
 			})
 			.catch(err => {
+				if (isCancelled) return
 				setError(err)
 				setLoading(false)
 			})
+		return () => {
+			isCancelled = true
+		}
 	}, [iot])
 
 	// Set up IoT subscription to listen for button presses
 	useEffect(() => {
 		let connection: device
+		let isCancelled = false
 		connectAndListenForMessages({
 			clientId: `user-${credentials.identityId}-${Date.now()}`,
 			credentials,
 			onMessage: ({ deviceId, message: { btn } }) => {
+				if (isCancelled) return
 				console.log({
 					deviceId,
 					btn,
@@ -112,6 +120,7 @@ const ListCats = ({
 				console.error(err)
 			})
 		return () => {
+			isCancelled = true
 			if (connection) {
 				connection.end()
 			}
@@ -120,6 +129,7 @@ const ListCats = ({
 
 	// Fetch historical button presses
 	useEffect(() => {
+		let isCancelled = false
 		const { athena, workGroup, dataBase, rawDataTable } = athenaContext
 		athenaQuery({
 			WorkGroup: workGroup,
@@ -146,6 +156,7 @@ const ListCats = ({
 				`,
 		})
 			.then(async ResultSet => {
+				if (isCancelled) return
 				const data = parseAthenaResult({
 					ResultSet,
 					skip: 1,
@@ -168,6 +179,9 @@ const ListCats = ({
 			.catch(error => {
 				console.error(error)
 			})
+		return () => {
+			isCancelled = true
+		}
 	}, [athenaContext])
 
 	// Read/Set localstorage of button snoozes
