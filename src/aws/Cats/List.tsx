@@ -161,7 +161,6 @@ const ListCats = ({
 			})
 			.catch(error => {
 				console.error(error)
-				setError(error)
 			})
 	}, [athenaContext])
 
