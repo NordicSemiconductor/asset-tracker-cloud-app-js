@@ -19,6 +19,21 @@ export type SolutionConfigContext = {
 	clientId: string
 }
 
+const isExpiredToken = (token: AuthResponse) =>
+	new Date(token.expiresOn).getTime() < Date.now()
+
+const getTokenFromLocalStorage = (storename: string) => {
+	const stored = window.localStorage.getItem(storename)
+	if (!stored) return
+	const t = JSON.parse(stored)
+	if (isExpiredToken(t)) {
+		console.debug(`${storename} token expired`)
+		window.localStorage.removeItem(storename)
+		return
+	}
+	return t
+}
+
 export const boot = ({
 	clientId,
 	redirectUri,
@@ -39,7 +54,7 @@ export const boot = ({
 		},
 		cache: {
 			cacheLocation: 'localStorage',
-			storeAuthStateInCookie: true,
+			storeAuthStateInCookie: true, // See https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/435
 		},
 	})
 
@@ -50,56 +65,71 @@ export const boot = ({
 	const history = createBrowserHistory()
 
 	return () => {
-		const storedAccessToken = window.localStorage.getItem(ACCESS_TOKEN)
 		const [accessToken, setAccessToken] = useState<AuthResponse>(
-			(storedAccessToken && JSON.parse(storedAccessToken)) || undefined,
+			getTokenFromLocalStorage(ACCESS_TOKEN),
 		)
-		const storedUser = window.localStorage.getItem(ID_TOKEN)
 		const [idToken, setIdToken] = useState<AuthResponse>(
-			(storedUser && JSON.parse(storedUser)) || undefined,
+			getTokenFromLocalStorage(ID_TOKEN),
 		)
 		const [error, setError] = useState<Error>()
 
-		userAgentApplication.handleRedirectCallback((error, response) => {
-			if (error) {
-				setError(error)
-				if (error.message.includes('AADB2C90118')) {
-					// FIXME: Implement lost password flow
-					console.log('Go to this link, to change your password')
-					console.log(
-						`https://bifravstonazure.b2clogin.com/bifravstonazure.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_pw_reset&client_id=${clientId}&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fbifravstwebsite.azurewebsites.net%2F.auth%2Flogin%2Faad%2Fcallback&scope=openid&response_type=id_token&prompt=login`,
-					)
+		useEffect(() => {
+			let isCancelled = false
+			userAgentApplication.handleRedirectCallback((error, response) => {
+				if (error) {
+					if (!isCancelled) setError(error)
+					if (error.message.includes('AADB2C90118')) {
+						// FIXME: Implement lost password flow
+						console.log('Go to this link, to change your password')
+						console.log(
+							`https://bifravstonazure.b2clogin.com/bifravstonazure.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_pw_reset&client_id=${clientId}&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fbifravstwebsite.azurewebsites.net%2F.auth%2Flogin%2Faad%2Fcallback&scope=openid&response_type=id_token&prompt=login`,
+						)
+					}
+				} else if (response) {
+					const { tokenType } = response
+					switch (tokenType) {
+						case 'id_token':
+							window.localStorage.setItem(ID_TOKEN, JSON.stringify(response))
+							if (!isCancelled) {
+								setIdToken(response)
+							}
+							break
+						case 'access_token':
+							window.localStorage.setItem(
+								ACCESS_TOKEN,
+								JSON.stringify(response),
+							)
+							if (!isCancelled) {
+								setAccessToken(response)
+							}
+							break
+					}
 				}
-			} else if (response) {
-				const { tokenType } = response
-				switch (tokenType) {
-					case 'id_token':
-						setIdToken(response)
-						window.localStorage.setItem(ID_TOKEN, JSON.stringify(response))
-						break
-					case 'access_token':
-						setAccessToken(response)
-						window.localStorage.setItem(ACCESS_TOKEN, JSON.stringify(response))
-						break
-				}
+			})
+
+			return () => {
+				isCancelled = true
 			}
-		})
+		}, [])
 
 		useEffect(() => {
-			if (!idToken) {
-				return
-			}
-			if (
-				accessToken &&
-				new Date(accessToken.expiresOn).getTime() > Date.now()
-			) {
+			if (!idToken || !accessToken) {
 				return
 			}
 			console.log({
 				idToken,
 				accessToken,
 			})
-			userAgentApplication.acquireTokenRedirect(tokenRequest)
+			console.log(new Date(accessToken.expiresOn).getTime())
+			const i = setTimeout(() => {
+				console.log('Token timeout')
+				window.localStorage.removeItem(ACCESS_TOKEN)
+				userAgentApplication.acquireTokenRedirect(tokenRequest)
+			}, new Date(accessToken.expiresOn).getTime() - Date.now())
+
+			return () => {
+				clearInterval(i)
+			}
 		}, [idToken, accessToken])
 
 		return (
