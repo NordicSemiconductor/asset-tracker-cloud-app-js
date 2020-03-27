@@ -1,15 +1,22 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-const cloudFlavour = process.env.REACT_APP_CLOUD_FLAVOUR || 'AWS'
+export enum CloudFlavour {
+	GCP = 'GCP',
+	Azure = 'AZURE',
+	AWS = 'AWS',
+}
+
+const cloudFlavour =
+	(process.env.REACT_APP_CLOUD_FLAVOUR as CloudFlavour) || CloudFlavour.AWS
 
 export type ReactAppConfig = {
-	cloudFlavour: string
+	cloudFlavour: CloudFlavour
 	version: string
 }
 
 const ReactAppConfig = React.createContext<ReactAppConfig>({
-	cloudFlavour: '',
+	cloudFlavour: CloudFlavour.AWS,
 	version: '',
 })
 export const ReactAppConfigConsumer = ReactAppConfig.Consumer
@@ -31,7 +38,7 @@ const onError = (err: Error) => {
 	console.error(err)
 }
 switch (cloudFlavour) {
-	case 'GCP':
+	case CloudFlavour.GCP:
 		console.log(`Launching Google Cloud Platform app ...`)
 		import('./gcp/App')
 			.then(gcpApp => {
@@ -44,7 +51,7 @@ switch (cloudFlavour) {
 			})
 			.catch(onError)
 		break
-	case 'AZURE':
+	case CloudFlavour.Azure:
 		console.log(`Launching Microsoft Azure app ...`)
 		import('./azure/App')
 			.then(azureApp => {
@@ -59,6 +66,7 @@ switch (cloudFlavour) {
 			})
 			.catch(onError)
 		break
+	case CloudFlavour.AWS:
 	default:
 		console.log(`Launching Amazon Webservices app ...`)
 		import('./aws/App')
