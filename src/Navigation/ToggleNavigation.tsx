@@ -29,7 +29,7 @@ const MobileNavbar = hideOnDesktop(styled.div`
 	}
 `)
 
-const AzureNavbar = styled(StyledNavbar)`
+const AzureHeader = styled.header`
 	background-color: #106ebe;
 	button,
 	a,
@@ -48,18 +48,18 @@ const AzureNavbar = styled(StyledNavbar)`
 	}
 `
 
-const GCPNavbar = styled(AzureNavbar)`
+const GCPHeader = styled(AzureHeader)`
 	background-color: #1a73e8;
 `
 
-const AWSNavbar = styled(AzureNavbar)`
+const AWSHeader = styled(AzureHeader)`
 	background-color: #f90;
 `
 
-const flavouredNavBars = {
-	[CloudFlavour.Azure]: AzureNavbar,
-	[CloudFlavour.GCP]: GCPNavbar,
-	[CloudFlavour.AWS]: AWSNavbar,
+const flavouredHeaders = {
+	[CloudFlavour.Azure]: AzureHeader,
+	[CloudFlavour.GCP]: GCPHeader,
+	[CloudFlavour.AWS]: AWSHeader,
 }
 
 const MobileOnlyCollapse = hideOnDesktop(Collapse)
@@ -90,10 +90,10 @@ export const ToggleNavigation = ({
 	return (
 		<ReactAppConfigConsumer>
 			{({ cloudFlavour }) => {
-				const FlavouredNavbar = flavouredNavBars[cloudFlavour]
+				const FlavouredHeader = flavouredHeaders[cloudFlavour]
 				return (
-					<header>
-						<FlavouredNavbar>
+					<FlavouredHeader>
+						<StyledNavbar>
 							<MobileNavbar>
 								<NavbarBrandConsumer>
 									{({ navbar }) => navbar}
@@ -122,8 +122,8 @@ export const ToggleNavigation = ({
 									</DesktopOnlyNavigation>
 								</>
 							)}
-						</FlavouredNavbar>
-					</header>
+						</StyledNavbar>
+					</FlavouredHeader>
 				)
 			}}
 		</ReactAppConfigConsumer>
