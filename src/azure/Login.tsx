@@ -22,7 +22,7 @@ export const Login = ({ onLogin }: { onLogin: () => void }) => {
 								onLogin()
 							}}
 						>
-							{loggingIn ? 'Logging in ...' : 'Proceed to login'}
+							{loggingIn ? 'Logging in ...' : 'Log in (opens in a pop-up)'}
 						</Button>
 					</FormFooter>
 				</Card>

@@ -10,9 +10,9 @@ import { Login } from './Login'
 import { CatsPage } from './Cats/Page'
 import { UserAgentApplication, AuthResponse } from 'msal'
 import { Twin } from 'azure-iothub'
+import { v4 } from 'uuid'
 
 const ACCESS_TOKEN = 'azure:accessToken'
-const ID_TOKEN = 'azure:idToken'
 
 export type SolutionConfigContext = {
 	apiEndpoint: string
@@ -60,7 +60,29 @@ export const boot = ({
 
 	const tokenRequest = {
 		scopes: ['https://bifravstonazure.onmicrosoft.com/api/user_impersonation'],
+		sid: v4(),
 	}
+
+	const acquireAccessToken = async () =>
+		new Promise<AuthResponse>((resolve, reject) => {
+			userAgentApplication
+				.acquireTokenSilent(tokenRequest)
+				.then(resolve)
+				.catch(error => {
+					//Acquire token silent failure, and send an interactive request
+					if (
+						error?.errorMessage?.includes('interaction_required') ||
+						error?.message?.includes('User login is required') ||
+						error?.message?.includes('AADB2C90077')
+					) {
+						return userAgentApplication
+							.acquireTokenPopup(tokenRequest)
+							.then(resolve)
+							.catch(reject)
+					}
+					reject(error)
+				})
+		})
 
 	const history = createBrowserHistory()
 
@@ -68,69 +90,26 @@ export const boot = ({
 		const [accessToken, setAccessToken] = useState<AuthResponse>(
 			getTokenFromLocalStorage(ACCESS_TOKEN),
 		)
-		const [idToken, setIdToken] = useState<AuthResponse>(
-			getTokenFromLocalStorage(ID_TOKEN),
-		)
 		const [error, setError] = useState<Error>()
 
 		useEffect(() => {
 			let isCancelled = false
-			userAgentApplication.handleRedirectCallback((error, response) => {
-				if (error) {
-					if (!isCancelled) setError(error)
-					if (error.message.includes('AADB2C90118')) {
-						// FIXME: Implement lost password flow
-						console.log('Go to this link, to change your password')
-						console.log(
-							`https://bifravstonazure.b2clogin.com/bifravstonazure.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_pw_reset&client_id=${clientId}&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fbifravstwebsite.azurewebsites.net%2F.auth%2Flogin%2Faad%2Fcallback&scope=openid&response_type=id_token&prompt=login`,
-						)
-					}
-				} else if (response) {
-					const { tokenType } = response
-					switch (tokenType) {
-						case 'id_token':
-							window.localStorage.setItem(ID_TOKEN, JSON.stringify(response))
-							if (!isCancelled) {
-								setIdToken(response)
-							}
-							break
-						case 'access_token':
-							window.localStorage.setItem(
-								ACCESS_TOKEN,
-								JSON.stringify(response),
-							)
-							if (!isCancelled) {
-								setAccessToken(response)
-							}
-							break
-					}
-				}
-			})
-
-			return () => {
-				isCancelled = true
-			}
-		}, [])
-
-		useEffect(() => {
-			if (!idToken || !accessToken) {
+			if (!accessToken) {
 				return
 			}
-			console.log({
-				idToken,
-				accessToken,
-			})
-			console.log(new Date(accessToken.expiresOn).getTime())
-			const i = setTimeout(() => {
+			const i = setTimeout(async () => {
 				console.log('Token timeout')
 				window.localStorage.removeItem(ACCESS_TOKEN)
-				userAgentApplication.acquireTokenRedirect(tokenRequest)
+				const token = await acquireAccessToken()
+				window.localStorage.setItem(ACCESS_TOKEN, JSON.stringify(token))
+				if (!isCancelled) setAccessToken(token)
 			}, new Date(accessToken.expiresOn).getTime() - Date.now())
 
 			return () => {
+				isCancelled = true
 				clearInterval(i)
 			}
-		}, [idToken, accessToken])
+		}, [accessToken])
 
 		return (
 			<SolutionConfigContext.Provider
@@ -145,7 +124,6 @@ export const boot = ({
 						loggedIn={accessToken !== undefined}
 						onLogout={() => {
 							window.localStorage.clear()
-							setIdToken(undefined as any)
 							setAccessToken(undefined as any)
 							setError(undefined)
 							userAgentApplication.logout()
@@ -154,7 +132,15 @@ export const boot = ({
 					{!accessToken && (
 						<Login
 							onLogin={() => {
-								userAgentApplication.loginRedirect(tokenRequest)
+								acquireAccessToken()
+									.then(token => {
+										setAccessToken(token)
+										window.localStorage.setItem(
+											ACCESS_TOKEN,
+											JSON.stringify(token),
+										)
+									})
+									.catch(setError)
 							}}
 						/>
 					)}
