@@ -7,6 +7,10 @@ export const Configuration = ({ config }: { config: StackConfigContext }) => (
 		<CardHeader>Environment</CardHeader>
 		<CardBody>
 			<dl>
+				<dt>Region</dt>
+				<dd>
+					<code>{config.region}</code>
+				</dd>
 				<dt>User</dt>
 				<dd>
 					<IdentityIdConsumer>
