@@ -84,7 +84,8 @@ switch (cloudFlavour) {
 								process.env.REACT_APP_HISTORICALDATA_DATABASE_NAME || '',
 							rawDataTable:
 								process.env.REACT_APP_HISTORICALDATA_TABLE_NAME || '',
-							bucketName: process.env.HISTORICAL_DATA_BUCKET_NAME || '',
+							bucketName:
+								process.env.REACT_APP_HISTORICAL_DATA_BUCKET_NAME || '',
 						},
 						mqttEndpoint: process.env.REACT_APP_MQTT_ENDPOINT || '',
 						userIotPolicyArn: process.env.REACT_APP_USER_IOT_POLICY_ARN || '',
