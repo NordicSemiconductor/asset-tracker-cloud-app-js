@@ -1,4 +1,3 @@
-import { CatInfo } from './CatLoader'
 import { HistoricalDataLoader } from '../../HistoricalData/HistoricalDataLoader'
 import { Map, Location, CellLocation } from '../../Map/Map'
 import React, { useState, useEffect } from 'react'
@@ -10,6 +9,7 @@ import { RoamingInformation } from '../../@types/DeviceShadow'
 import { AthenaContext } from '../App'
 import { geolocateCell } from '../geolocateCell'
 import { isRight } from 'fp-ts/lib/Either'
+import { CatInfo } from './Cat'
 
 const SettingsFormGroup = styled(FormGroup)`
 	position: absolute;

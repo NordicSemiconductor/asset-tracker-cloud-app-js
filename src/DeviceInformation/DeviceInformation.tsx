@@ -1,5 +1,5 @@
 import React from 'react'
-import { ReportedTime } from './ReportedTime'
+import { ReportedTime } from '../ReportedTime/ReportedTime'
 import styled from 'styled-components'
 
 import { DeviceInformation, RoamingInformation } from '../@types/DeviceShadow'

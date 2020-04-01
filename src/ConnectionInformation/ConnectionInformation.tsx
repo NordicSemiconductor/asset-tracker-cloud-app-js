@@ -1,6 +1,6 @@
 import React from 'react'
 import { filter as filterOperator, Operator as Op } from 'mcc-mnc-list'
-import { ReportedTime } from './ReportedTime'
+import { ReportedTime } from '../ReportedTime/ReportedTime'
 import { DeviceInformation, RoamingInformation } from '../@types/DeviceShadow'
 import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
 import { emojify } from '../Emojify/Emojify'

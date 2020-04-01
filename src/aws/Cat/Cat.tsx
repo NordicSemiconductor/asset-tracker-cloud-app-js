@@ -1,25 +1,24 @@
-import { hideOnDesktop, mobileBreakpoint } from '../Styles'
-import { AvatarPicker } from '../Avatar/AvatarPicker'
+import { hideOnDesktop, mobileBreakpoint } from '../../Styles'
+import { AvatarPicker } from '../../Avatar/AvatarPicker'
 import styled from 'styled-components'
 import { default as introJs } from 'intro.js'
-import { FOTA, OnCreateUpgradeJob } from '../FOTA/FOTA'
-import { DeviceUpgradeFirmwareJob } from '../aws/listUpgradeFirmwareJobs'
-import { AWSIotThingState } from '../aws/connectAndListenForStateChange'
-import { DesiredConfig, Settings } from '../Settings/Settings'
+import { FOTA, OnCreateUpgradeJob } from '../../FOTA/FOTA'
+import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
+import { AWSIotThingState } from '../connectAndListenForStateChange'
+import { DesiredConfig, Settings } from '../../Settings/Settings'
 import { ICredentials } from '@aws-amplify/core'
 import React, { useEffect, useState } from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { Error } from '../Error/Error'
-import { Editable } from '../Editable/Editable'
-import { Toggle } from '../Toggle/Toggle'
-import { ConnectionInformation } from './ConnectionInformation'
-import { emojify } from '../Emojify/Emojify'
-import { ReportedTime } from './ReportedTime'
-import { Collapsable } from '../Collapsable/Collapsable'
-import { DeviceInfo } from './DeviceInformation'
-import { AccelerometerDiagram } from '../AccelerometerDiagram/AccelerometerDiagram'
-import { CatInfo } from '../aws/Cat/CatLoader'
-import { Message } from '../@types/Message'
+import { Error } from '../../Error/Error'
+import { Editable } from '../../Editable/Editable'
+import { Toggle } from '../../Toggle/Toggle'
+import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
+import { emojify } from '../../Emojify/Emojify'
+import { ReportedTime } from '../../ReportedTime/ReportedTime'
+import { Collapsable } from '../../Collapsable/Collapsable'
+import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
+import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDiagram'
+import { Message } from '../../@types/Message'
 
 const intro = introJs()
 const MobileOnlyAvatarPicker = hideOnDesktop(AvatarPicker)
@@ -113,6 +112,14 @@ const CatCard = styled(Card)`
 		}
 	}
 `
+
+export type CatInfo = {
+	id: string
+	name: string
+	avatar: string
+	version: number
+}
+
 export const Cat = ({
 	cat,
 	onCreateUpgradeJob,

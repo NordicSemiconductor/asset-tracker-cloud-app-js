@@ -11,11 +11,11 @@ export const CatNavbar = ({
 	avatar,
 }: {
 	name: string
-	avatar?: string
+	avatar: string
 }) => (
 	<div className={'navbar-brand'}>
 		<LogoImg
-			src={avatar || 'https://placekitten.com/30/30'}
+			src={avatar}
 			width="30"
 			height="30"
 			className="d-inline-block align-top avatar"

@@ -9,8 +9,9 @@ import { Error as ErrorComponent } from '../Error/Error'
 import { Login } from './Login'
 import { CatsPage } from './Cats/Page'
 import { UserAgentApplication, AuthResponse } from 'msal'
-import { Twin } from 'azure-iothub'
 import { v4 } from 'uuid'
+import { CatPage } from './Cat/Page'
+import { ApiClient, fetchApiClient } from './api'
 
 const ACCESS_TOKEN = 'azure:accessToken'
 
@@ -161,6 +162,7 @@ export const boot = ({
 									/>
 									<Route exact path="/about" component={AboutPage} />
 									<Route exact path="/cats" component={CatsPage} />
+									<Route exact path="/cat/:catId" component={CatPage} />
 								</ApiClientContext.Provider>
 							</AccessTokenContext.Provider>
 						</NavbarBrandContextProvider>
@@ -180,33 +182,6 @@ const ApiClientContext = React.createContext<ApiClient>(
 	(undefined as unknown) as ApiClient,
 )
 export const ApiClientConsumer = ApiClientContext.Consumer
-
-export type ApiClient = {
-	listDevices: () => Promise<Twin[]>
-}
-
-const fetchApiClient = ({
-	endpoint,
-	token,
-}: {
-	endpoint: string
-	token: string
-}): ApiClient => {
-	const iotHubRequestHeaders = new Headers()
-	iotHubRequestHeaders.append('Authorization', 'Bearer ' + token)
-	iotHubRequestHeaders.append('Content-Type', 'application/json')
-	const get = <A extends object>(resource: string) => async (): Promise<A> => {
-		const res = await fetch(`${endpoint}/api/${resource}`, {
-			method: 'GET',
-			headers: iotHubRequestHeaders,
-		})
-		return res.json()
-	}
-
-	return {
-		listDevices: get<Twin[]>('listdevices'),
-	}
-}
 
 const SolutionConfigContext = React.createContext<SolutionConfigContext>({
 	apiEndpoint: '',

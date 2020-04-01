@@ -3,9 +3,9 @@ import { Card, CardBody, CardHeader, Table } from 'reactstrap'
 import { Loading } from '../../Loading/Loading'
 import { Error as ErrorComponent } from '../../Error/Error'
 import { Link } from 'react-router-dom'
-import { ApiClientConsumer, ApiClient } from '../App'
+import { ApiClient } from '../api'
 
-const ListCats = ({ apiClient }: { apiClient: ApiClient }) => {
+export const List = ({ apiClient }: { apiClient: ApiClient }) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState<Error>()
@@ -70,9 +70,3 @@ const ListCats = ({ apiClient }: { apiClient: ApiClient }) => {
 		</Card>
 	)
 }
-
-export const List = () => (
-	<ApiClientConsumer>
-		{apiClient => <ListCats apiClient={apiClient} />}
-	</ApiClientConsumer>
-)

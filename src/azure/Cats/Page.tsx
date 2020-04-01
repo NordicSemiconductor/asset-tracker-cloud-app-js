@@ -1,9 +1,12 @@
 import React from 'react'
-import { List } from './List'
 import { Main } from '../../Styles'
+import { ApiClientConsumer } from '../App'
+import { List } from './List'
 
 export const CatsPage = () => (
 	<Main>
-		<List />
+		<ApiClientConsumer>
+			{apiClient => <List apiClient={apiClient} />}
+		</ApiClientConsumer>
 	</Main>
 )
