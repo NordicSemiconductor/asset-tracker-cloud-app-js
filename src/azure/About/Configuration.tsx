@@ -7,7 +7,7 @@ export const Configuration = ({
 }: {
 	config: SolutionConfigContext
 }) => (
-	<Card data-intro="This card lists the apps configuration.">
+	<Card data-intro="This card shows the apps' configuration.">
 		<CardHeader>Environment</CardHeader>
 		<CardBody>
 			<dl>

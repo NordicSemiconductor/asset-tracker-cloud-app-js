@@ -1,21 +1,15 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { IdentityIdConsumer, StackConfigContext } from '../App'
+import { StackConfigContext } from '../App'
 
 export const Configuration = ({ config }: { config: StackConfigContext }) => (
-	<Card data-intro="This card lists the apps configuration.">
+	<Card data-intro="This card shows the apps' configuration.">
 		<CardHeader>Environment</CardHeader>
 		<CardBody>
 			<dl>
 				<dt>Region</dt>
 				<dd>
 					<code>{config.region}</code>
-				</dd>
-				<dt>User</dt>
-				<dd>
-					<IdentityIdConsumer>
-						{identityId => <code>{identityId}</code>}
-					</IdentityIdConsumer>
 				</dd>
 				<dt>User Pool</dt>
 				<dd>

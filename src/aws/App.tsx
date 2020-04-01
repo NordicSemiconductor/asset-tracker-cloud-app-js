@@ -152,20 +152,14 @@ export const boot = ({
 							}}
 						>
 							<CredentialsContext.Provider value={credentials}>
-								<IdentityIdContext.Provider value={credentials.identityId}>
-									<IotContext.Provider value={iot}>
-										<AthenaContext.Provider value={athenaContext}>
-											<Route exact path="/about" component={AboutPage} />
-											<Route exact path="/cats" component={CatsPage} />
-											<Route
-												exact
-												path="/cats-on-map"
-												component={CatsMapPage}
-											/>
-											<Route exact path="/cat/:catId" component={CatPage} />
-										</AthenaContext.Provider>
-									</IotContext.Provider>
-								</IdentityIdContext.Provider>
+								<IotContext.Provider value={iot}>
+									<AthenaContext.Provider value={athenaContext}>
+										<Route exact path="/about" component={AboutPage} />
+										<Route exact path="/cats" component={CatsPage} />
+										<Route exact path="/cats-on-map" component={CatsMapPage} />
+										<Route exact path="/cat/:catId" component={CatPage} />
+									</AthenaContext.Provider>
+								</IotContext.Provider>
 							</CredentialsContext.Provider>
 						</StackConfigContext.Provider>
 					)}
@@ -182,8 +176,6 @@ export const boot = ({
 	})
 }
 
-const IdentityIdContext = React.createContext<string>('unauthorized')
-export const IdentityIdConsumer = IdentityIdContext.Consumer
 const CredentialsContext = React.createContext<ICredentials>({
 	accessKeyId: '',
 	sessionToken: '',

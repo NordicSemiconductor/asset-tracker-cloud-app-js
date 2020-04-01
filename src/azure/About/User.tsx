@@ -1,9 +1,8 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { AccessTokenConsumer } from '../App'
 import { AuthResponse } from 'msal'
 
-const UserInfo = ({ accessToken }: { accessToken: AuthResponse }) => (
+export const User = ({ accessToken }: { accessToken: AuthResponse }) => (
 	<Card data-intro="This card shows info about the current user.">
 		<CardHeader>User</CardHeader>
 		<CardBody>
@@ -19,10 +18,4 @@ const UserInfo = ({ accessToken }: { accessToken: AuthResponse }) => (
 			</dl>
 		</CardBody>
 	</Card>
-)
-
-export const User = () => (
-	<AccessTokenConsumer>
-		{credentials => <UserInfo accessToken={credentials} />}
-	</AccessTokenConsumer>
 )
