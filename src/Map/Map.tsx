@@ -96,7 +96,7 @@ export const Map = ({
 			<Marker position={center.position}>
 				<Popup>{label}</Popup>
 			</Marker>
-			{deviceLocation && accuracy && (
+			{deviceLocation && accuracy && !cellLocationIsMoreUpToDate && (
 				<Circle center={deviceLocation.position} radius={accuracy} />
 			)}
 			{cellLocation && cellLocationIsMoreUpToDate && (
