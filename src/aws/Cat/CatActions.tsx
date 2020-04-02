@@ -5,7 +5,7 @@ import {
 	AthenaConsumer,
 	StackConfigConsumer,
 } from '../App'
-import { Alert, Card, CardBody } from 'reactstrap'
+import { Alert } from 'reactstrap'
 import { S3 } from 'aws-sdk'
 import { uploadAvatar } from '../uploadAvatar'
 import { updateThingAttributes } from '../updateThingAttributes'
@@ -34,13 +34,9 @@ export const CatActions = ({ catId }: { catId: string }) => {
 
 	if (deleted) {
 		return (
-			<Card>
-				<CardBody>
-					<Alert color={'success'}>
-						The cat <code>{catId}</code> has been deleted.
-					</Alert>
-				</CardBody>
-			</Card>
+			<Alert color={'success'}>
+				The cat <code>{catId}</code> has been deleted.
+			</Alert>
 		)
 	}
 

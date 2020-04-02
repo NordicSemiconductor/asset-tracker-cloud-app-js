@@ -1,6 +1,3 @@
-import { hideOnDesktop, mobileBreakpoint } from '../../Styles'
-import { AvatarPicker } from '../../Avatar/AvatarPicker'
-import styled from 'styled-components'
 import { default as introJs } from 'intro.js'
 import { FOTA, OnCreateUpgradeJob } from '../../FOTA/FOTA'
 import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
@@ -10,7 +7,6 @@ import { ICredentials } from '@aws-amplify/core'
 import React, { useEffect, useState } from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
 import { DisplayError } from '../../Error/Error'
-import { Editable } from '../../Editable/Editable'
 import { Toggle } from '../../Toggle/Toggle'
 import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
 import { emojify } from '../../Emojify/Emojify'
@@ -19,99 +15,10 @@ import { Collapsable } from '../../Collapsable/Collapsable'
 import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
 import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDiagram'
 import { Message } from '../../@types/Message'
+import { CatCard } from '../../Cat/CatCard'
+import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
 
 const intro = introJs()
-const MobileOnlyAvatarPicker = hideOnDesktop(AvatarPicker)
-const MobileOnlyH2 = hideOnDesktop(styled.h2``)
-const CatCard = styled(Card)`
-	img.avatar {
-		width: 75px;
-		border-radius: 100%;
-		border: 2px solid #000000b5;
-		box-shadow: 0 2px 4px #00000057;
-		background-color: #fff;
-	}
-
-	.card-header {
-		position: relative;
-		text-align: center;
-		img.avatar {
-			position: absolute;
-			top: 0;
-			left: 50%;
-			margin-left: -38.5px;
-			margin-top: -53.5px;
-			z-index: 9000;
-		}
-		h2 {
-			margin: 10px;
-		}
-		div.info {
-			text-align: left;
-			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
-			@media (min-width: ${mobileBreakpoint}) {
-				display: grid;
-				grid-template: auto / 1fr 1fr 2fr;
-			}
-			font-size: 85%;
-			opacity: 0.75;
-			span.reportedTime {
-				font-size: 85%;
-				opacity: 0.75;
-				text-align: right;
-				span.textWithIcon {
-					width: auto;
-					display: inline-block;
-				}
-			}
-			padding-top: 0.5rem;
-		}
-		div.toggle + div.toggle {
-			margin-top: 0.5rem;
-			border-top: 1px solid #dcdcdc;
-		}
-		@media (max-width: ${mobileBreakpoint}) {
-			div.info {
-				.reportedTime {
-					time {
-						display: none;
-					}
-				}
-			}
-			.toggle.toggle-on {
-				div.info {
-					.reportedTime {
-						time {
-							display: inline;
-						}
-					}
-				}
-			}
-		}
-	}
-	.card-body {
-		h3 {
-			font-size: 100%;
-			@media (min-width: ${mobileBreakpoint}) {
-				font-size: 115%;
-			}
-			margin: 0;
-		}
-		h4 {
-			font-size: 105%;
-		}
-		.collapsable {
-			&.personalization {
-				.content {
-					display: flex;
-					justify-content: space-between;
-				}
-			}
-		}
-	}
-`
 
 export type CatInfo = {
 	id: string
@@ -119,6 +26,8 @@ export type CatInfo = {
 	avatar: string
 	version: number
 }
+
+const isNameValid = (name: string) => /^[0-9a-z_.,@/:#-]{1,800}$/i.test(name)
 
 export const Cat = ({
 	cat,
@@ -219,27 +128,16 @@ export const Cat = ({
 			</Card>
 		)
 
-	const isCatNameValid = (name: string): boolean =>
-		/^[0-9a-z_.,@/:#-]{1,800}$/i.test(name)
-
 	return (
 		<CatCard>
 			{state && catMap(state)}
 			<CardHeader>
-				<MobileOnlyAvatarPicker
-					key={`${cat.version}`}
-					onChange={onAvatarChange}
-				>
-					<img src={cat.avatar} alt={cat.name} className={'avatar'} />
-				</MobileOnlyAvatarPicker>
-				<MobileOnlyH2>
-					<Editable
-						key={`${cat.version}`}
-						text={cat.name}
-						onChange={onNameChange}
-						isValid={isCatNameValid}
-					/>
-				</MobileOnlyH2>
+				<CatHeader
+					cat={cat}
+					isNameValid={isNameValid}
+					onAvatarChange={onAvatarChange}
+					onNameChange={onNameChange}
+				/>
 				{reported && (
 					<>
 						{reported.roam && (
@@ -284,25 +182,12 @@ export const Cat = ({
 					id={'cat:personalization'}
 					title={<h3>{emojify('⭐ Personalization')}</h3>}
 				>
-					<dl>
-						<dt>Name</dt>
-						<dd data-intro="Click here to edit the name of your cat.">
-							<Editable
-								key={`${cat.version}`}
-								text={cat.name}
-								onChange={onNameChange}
-								isValid={isCatNameValid}
-							/>
-						</dd>
-					</dl>
-					<AvatarPicker key={`${cat.version}`} onChange={onAvatarChange}>
-						<img
-							src={cat.avatar}
-							alt={cat.name}
-							className={'avatar'}
-							data-intro="Click here to upload a new image for your cat."
-						/>
-					</AvatarPicker>
+					<CatPersonalization
+						cat={cat}
+						isNameValid={isNameValid}
+						onAvatarChange={onAvatarChange}
+						onNameChange={onNameChange}
+					/>
 				</Collapsable>
 				{state && (
 					<>

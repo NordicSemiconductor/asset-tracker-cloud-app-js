@@ -7,12 +7,18 @@ import { NavbarBrandContext } from '../Navigation/NavbarBrand'
 import { isRight, Either } from 'fp-ts/lib/Either'
 import { ErrorInfo } from '../Error/ErrorInfo'
 
-type LoadedCat = { id: string; name: string; avatar: string }
+export type LoadedCat = {
+	id: string
+	name: string
+	avatar: string
+	version: number
+}
 
 export function CatLoader<
 	T extends {
 		name?: string
 		avatar?: string
+		version: number
 	}
 >({
 	catId,

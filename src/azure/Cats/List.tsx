@@ -22,7 +22,10 @@ export const List = ({ apiClient }: { apiClient: ApiClient }) => {
 					setError(res.left)
 				} else {
 					setCats(
-						res.right.map(({ deviceId }) => ({ id: deviceId, name: deviceId })),
+						res.right.map(({ deviceId, name }) => ({
+							id: deviceId,
+							name: name || deviceId,
+						})),
 					)
 				}
 			})
