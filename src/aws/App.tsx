@@ -15,6 +15,8 @@ import { GlobalStyle } from '../Styles'
 import { AboutPage } from './About/Page'
 import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
 
+import '@aws-amplify/ui/dist/style.css'
+
 export type AthenaContext = {
 	athena: Athena
 	workGroup: string
