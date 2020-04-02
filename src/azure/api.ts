@@ -44,7 +44,7 @@ export const fetchApiClient = ({
 	}
 
 	return {
-		listDevices: get<Twin[]>('listdevices'),
+		listDevices: get<Twin[]>('devices'),
 		getDevice: async (id: string) => get<Twin>(`device`, { id })(),
 	}
 }
