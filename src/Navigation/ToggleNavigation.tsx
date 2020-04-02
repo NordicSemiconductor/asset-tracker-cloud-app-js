@@ -33,10 +33,9 @@ const AzureHeader = styled.header`
 	background-color: #106ebe;
 	button,
 	a,
-	a:visited {
-		color: #fff;
-	}
-	button.btn-link:hover {
+	a:visited,
+	button.btn-link:hover,
+	.navbar-brand {
 		color: #fff;
 	}
 	button.btn-outline-danger {

@@ -8,7 +8,7 @@ import {
 import { Card, CardBody, CardHeader, Table } from 'reactstrap'
 import { Iot } from 'aws-sdk'
 import { Loading } from '../../Loading/Loading'
-import { Error } from '../../Error/Error'
+import { DisplayError } from '../../Error/Error'
 import { Link } from 'react-router-dom'
 import { connectAndListenForMessages } from '../connectAndListenForMessages'
 import { ICredentials } from '@aws-amplify/core'
@@ -213,7 +213,7 @@ const ListCats = ({
 			<Card>
 				<CardBody>
 					{loading && <Loading text={'Herding cats...'} />}
-					{error && <Error error={error} />}
+					{error && <DisplayError error={error} />}
 				</CardBody>
 			</Card>
 		)

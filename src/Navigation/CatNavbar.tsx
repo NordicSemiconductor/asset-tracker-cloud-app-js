@@ -1,5 +1,5 @@
 import React from 'react'
-import { LogoImg } from '../Navigation/NavbarBrand'
+import { LogoImg } from './NavbarBrand'
 import styled from 'styled-components'
 
 const CatName = styled.span`

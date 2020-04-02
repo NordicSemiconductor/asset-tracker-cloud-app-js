@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Alert, Button } from 'reactstrap'
 import styled from 'styled-components'
 import { Success } from '../Success/Success'
-import { Error as ErrorComponent } from '../Error/Error'
+import { DisplayError as ErrorComponent } from '../Error/Error'
 
 const Info = styled(Alert)`
 	display: flex;

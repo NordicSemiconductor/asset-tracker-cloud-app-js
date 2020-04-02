@@ -112,11 +112,10 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	version: version || 0,
 																})
 															}
-															return left(
-																new Error(
-																	`Failed to describe IoT Thing for cat ${catId}`,
-																),
-															)
+															return left({
+																type: 'EntityNotFound',
+																message: `Failed to describe IoT Thing for cat ${catId}`,
+															})
 														},
 													)
 												}

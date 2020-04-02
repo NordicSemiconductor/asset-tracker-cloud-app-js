@@ -5,7 +5,7 @@ import { NavbarBrandContextProvider } from '../Navigation/NavbarBrand'
 import { ToggleNavigation } from '../Navigation/ToggleNavigation'
 import { GlobalStyle } from '../Styles'
 import { AboutPage } from './About/Page'
-import { Error as ErrorComponent } from '../Error/Error'
+import { DisplayError as ErrorComponent } from '../Error/Error'
 import { Login } from './Login'
 import { CatsPage } from './Cats/Page'
 import { UserAgentApplication, AuthResponse } from 'msal'
@@ -121,33 +121,33 @@ export const boot = ({
 			>
 				<Router history={history}>
 					<GlobalStyle />
-					<ToggleNavigation
-						loggedIn={accessToken !== undefined}
-						onLogout={() => {
-							window.localStorage.clear()
-							setAccessToken(undefined as any)
-							setError(undefined)
-							userAgentApplication.logout()
-						}}
-					/>
-					{!accessToken && (
-						<Login
-							onLogin={() => {
-								acquireAccessToken()
-									.then(token => {
-										setAccessToken(token)
-										window.localStorage.setItem(
-											ACCESS_TOKEN,
-											JSON.stringify(token),
-										)
-									})
-									.catch(setError)
+					<NavbarBrandContextProvider>
+						<ToggleNavigation
+							loggedIn={accessToken !== undefined}
+							onLogout={() => {
+								window.localStorage.clear()
+								setAccessToken(undefined as any)
+								setError(undefined)
+								userAgentApplication.logout()
 							}}
 						/>
-					)}
-					{error && <ErrorComponent error={error} />}
-					{accessToken && (
-						<NavbarBrandContextProvider>
+						{!accessToken && (
+							<Login
+								onLogin={() => {
+									acquireAccessToken()
+										.then(token => {
+											setAccessToken(token)
+											window.localStorage.setItem(
+												ACCESS_TOKEN,
+												JSON.stringify(token),
+											)
+										})
+										.catch(setError)
+								}}
+							/>
+						)}
+						{error && <ErrorComponent error={error} />}
+						{accessToken && (
 							<AccessTokenContext.Provider value={accessToken}>
 								<ApiClientContext.Provider
 									value={fetchApiClient({
@@ -165,8 +165,8 @@ export const boot = ({
 									<Route exact path="/cat/:catId" component={CatPage} />
 								</ApiClientContext.Provider>
 							</AccessTokenContext.Provider>
-						</NavbarBrandContextProvider>
-					)}
+						)}
+					</NavbarBrandContextProvider>
 				</Router>
 			</SolutionConfigContext.Provider>
 		)

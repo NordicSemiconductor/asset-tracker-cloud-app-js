@@ -1,5 +1,7 @@
 import * as querystring from 'querystring'
 import { Twin } from 'azure-iothub'
+import { Either, right, left } from 'fp-ts/lib/Either'
+import { ErrorInfo } from '../Error/ErrorInfo'
 
 const toQueryString = (obj: any): string => {
 	if (!Object.keys(obj).length) {
@@ -9,8 +11,8 @@ const toQueryString = (obj: any): string => {
 }
 
 export type ApiClient = {
-	listDevices: () => Promise<Twin[]>
-	getDevice: (id: string) => Promise<Twin>
+	listDevices: () => Promise<Either<ErrorInfo, Pick<Twin, 'deviceId'>[]>>
+	getDevice: (id: string) => Promise<Either<ErrorInfo, Twin>>
 }
 
 export const fetchApiClient = ({
@@ -26,7 +28,7 @@ export const fetchApiClient = ({
 	const get = <A extends object>(
 		resource: string,
 		query?: object,
-	) => async (): Promise<A> => {
+	) => async (): Promise<Either<ErrorInfo, A>> => {
 		const res = await fetch(
 			`${endpoint}/api/${resource}${query ? toQueryString(query) : ''}`,
 			{
@@ -34,17 +36,15 @@ export const fetchApiClient = ({
 				headers: iotHubRequestHeaders,
 			},
 		)
+		const json = await res.json()
 		if (res.status >= 400) {
-			const body = await res.text()
-			throw new Error(
-				`Failed to fetch: ${res.status}${body ? ` (${body})` : ''}`,
-			)
+			return left(json)
 		}
-		return res.json()
+		return right(json)
 	}
 
 	return {
-		listDevices: get<Twin[]>('devices'),
-		getDevice: async (id: string) => get<Twin>(`device`, { id })(),
+		listDevices: get<Pick<Twin, 'deviceId'>[]>('devices'),
+		getDevice: async (id: string) => get<Twin>(`device/${id}`)(),
 	}
 }

@@ -5,7 +5,7 @@ import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString'
 import React, { useState } from 'react'
 import { Button, CardBody, FormGroup, Input, Label } from 'reactstrap'
 
-import { Error as ErrorComponent } from '../Error/Error'
+import { DisplayError as ErrorComponent } from '../Error/Error'
 import { FormFooter } from './FormFooter'
 import { Email } from './validation/Email'
 import { StringEquals } from './validation/StringEquals'

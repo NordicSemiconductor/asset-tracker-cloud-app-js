@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { DeviceInformation } from '../@types/DeviceShadow'
 import { Alert } from 'reactstrap'
-import { Error as ShowError } from '../Error/Error'
+import { DisplayError as ShowError } from '../Error/Error'
 import { DeviceUpgradeFirmwareJob } from '../aws/listUpgradeFirmwareJobs'
 import { useDebouncedCallback } from 'use-debounce'
 import { Jobs } from './FOTAJob'

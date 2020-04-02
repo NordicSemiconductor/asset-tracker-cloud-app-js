@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Error } from '../Error/Error'
+import { DisplayError } from '../Error/Error'
 import { Card, CardBody } from 'reactstrap'
 import { Loading } from '../Loading/Loading'
-import { CatNavbar } from '../Cat/CatNavbar'
+import { CatNavbar } from '../Navigation/CatNavbar'
 import { NavbarBrandContext } from '../Navigation/NavbarBrand'
 import { isRight, Either } from 'fp-ts/lib/Either'
+import { ErrorInfo } from '../Error/ErrorInfo'
 
 type LoadedCat = { id: string; name: string; avatar: string }
 
@@ -19,14 +20,14 @@ export function CatLoader<
 	loader,
 }: {
 	catId: string
-	loader: (catId: string) => Promise<Either<Error, T>>
+	loader: (catId: string) => Promise<Either<ErrorInfo, T>>
 	children: (
 		cat: LoadedCat & T,
 		update: (cat: LoadedCat & T) => void,
 	) => React.ReactElement<any>
 }) {
 	const [cat, setCat] = useState<LoadedCat & T>()
-	const [error, setError] = useState<Error>()
+	const [error, setError] = useState<ErrorInfo>()
 
 	const navbarBrandState = useContext(NavbarBrandContext)
 	const resetNavbar = navbarBrandState.reset
@@ -65,7 +66,7 @@ export function CatLoader<
 		setNavbar(<CatNavbar name={cat.name} avatar={cat.avatar} />)
 	}
 
-	if (error) return <Error error={error} />
+	if (error) return <DisplayError error={error} />
 
 	if (!cat)
 		return (

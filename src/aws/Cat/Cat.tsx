@@ -9,7 +9,7 @@ import { DesiredConfig, Settings } from '../../Settings/Settings'
 import { ICredentials } from '@aws-amplify/core'
 import React, { useEffect, useState } from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { Error } from '../../Error/Error'
+import { DisplayError } from '../../Error/Error'
 import { Editable } from '../../Editable/Editable'
 import { Toggle } from '../../Toggle/Toggle'
 import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
@@ -215,7 +215,7 @@ export const Cat = ({
 	if (error)
 		return (
 			<Card>
-				<CardBody>{error && <Error error={error} />}</CardBody>
+				<CardBody>{error && <DisplayError error={error} />}</CardBody>
 			</Card>
 		)
 

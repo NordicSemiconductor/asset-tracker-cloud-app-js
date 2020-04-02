@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from 'react'
 import { Card, CardBody, CardHeader, Table } from 'reactstrap'
 import { Loading } from '../../Loading/Loading'
-import { Error as ErrorComponent } from '../../Error/Error'
+import { DisplayError as ErrorComponent } from '../../Error/Error'
 import { Link } from 'react-router-dom'
 import { ApiClient } from '../api'
+import { isLeft } from 'fp-ts/lib/Either'
+import { ErrorInfo } from '../../Error/ErrorInfo'
 
 export const List = ({ apiClient }: { apiClient: ApiClient }) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
-	const [error, setError] = useState<Error>()
+	const [error, setError] = useState<ErrorInfo>()
 	useEffect(() => {
 		let isCancelled = false
 		apiClient
 			.listDevices()
 			.then(res => {
 				if (isCancelled) return
-				setCats(res.map(({ deviceId }) => ({ id: deviceId, name: deviceId })))
 				setLoading(false)
+				if (isLeft(res)) {
+					setError(res.left)
+				} else {
+					setCats(
+						res.right.map(({ deviceId }) => ({ id: deviceId, name: deviceId })),
+					)
+				}
 			})
 			.catch(err => {
 				console.error(err)

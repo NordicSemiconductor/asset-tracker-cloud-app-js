@@ -57,7 +57,9 @@ switch (cloudFlavour) {
 			.then(azureApp => {
 				launch(
 					azureApp.boot({
-						apiEndpoint: process.env.REACT_APP_AZURE_API_ENDPOINT || '',
+						apiEndpoint: (
+							process.env.REACT_APP_AZURE_API_ENDPOINT || ''
+						).replace(/\/+$/, ''),
 						clientId: process.env.REACT_APP_AZURE_CLIENT_ID || '',
 						redirectUri: process.env.REACT_APP_AZURE_REDIRECT_URI || '',
 						authority: process.env.REACT_APP_AZURE_AD_B2C_AUTHORITY || '',

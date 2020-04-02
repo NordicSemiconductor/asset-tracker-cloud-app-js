@@ -5,7 +5,7 @@ import {
 	FieldFormatters,
 } from '@bifravst/athena-helpers'
 import { Loading } from '../Loading/Loading'
-import { Error as ShowError } from '../Error/Error'
+import { DisplayError as ShowError } from '../Error/Error'
 import PQueue from 'p-queue'
 import { AthenaContext } from '../aws/App'
 
