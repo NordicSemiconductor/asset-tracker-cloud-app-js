@@ -51,6 +51,24 @@ export const Cat = ({
 					}
 					reader.readAsDataURL(avatar)
 
+					apiClient
+						.storeImage(avatar)
+						.then(maybeUrl => {
+							if (isLeft(maybeUrl)) {
+								setError(maybeUrl.left)
+							} else {
+								apiClient
+									.setDeviceAvatar(catId, maybeUrl.right.url)
+									.then(res => {
+										if (isLeft(res)) {
+											setError(res.left)
+										}
+									})
+									.catch(setError)
+							}
+						})
+						.catch(setError)
+
 					// FIXME: Implement avatar upload and change
 				}
 				const onNameChange = (name: string) => {

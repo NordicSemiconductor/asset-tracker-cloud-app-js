@@ -12,6 +12,7 @@ const toQueryString = (obj: any): string => {
 
 export type Device = {
 	name?: string
+	avatar?: string
 	version: number
 }
 
@@ -24,6 +25,11 @@ export type ApiClient = {
 		id: string,
 		name: string,
 	) => Promise<Either<ErrorInfo, { success: boolean }>>
+	setDeviceAvatar: (
+		id: string,
+		url: string,
+	) => Promise<Either<ErrorInfo, { success: boolean }>>
+	storeImage: (image: Blob) => Promise<Either<ErrorInfo, { url: string }>>
 }
 
 export type IotHubDevice = Twin & {
@@ -50,13 +56,16 @@ export type IotHubDevice = Twin & {
 	}
 	tags: {
 		name?: string
+		avatar?: string
 	}
 	capabilities: {
 		iotEdge: boolean
 	}
 }
 
-const handleResponse = async (r: Promise<Response>) => {
+const handleResponse = async <A extends { [key: string]: any }>(
+	r: Promise<Response>,
+): Promise<Either<ErrorInfo, A>> => {
 	const res = await r
 	if (res.status >= 400) {
 		if (
@@ -84,7 +93,7 @@ export const fetchApiClient = ({
 	const iotHubRequestHeaders = new Headers()
 	iotHubRequestHeaders.append('Authorization', 'Bearer ' + token)
 	iotHubRequestHeaders.append('Content-Type', 'application/json')
-	const get = <A extends object>(
+	const get = <A extends { [key: string]: any }>(
 		resource: string,
 		query?: object,
 	) => async (): Promise<Either<ErrorInfo, A>> =>
@@ -95,7 +104,7 @@ export const fetchApiClient = ({
 			}),
 		)
 
-	const patch = <A extends object>(
+	const patch = <A extends { [key: string]: any }>(
 		resource: string,
 		properties: object,
 	) => async (): Promise<Either<ErrorInfo, A>> =>
@@ -106,6 +115,22 @@ export const fetchApiClient = ({
 				body: JSON.stringify(properties),
 			}),
 		)
+
+	const postRaw = <A extends { [key: string]: any }>(
+		resource: string,
+		body: any,
+	) => async (): Promise<Either<ErrorInfo, A>> => {
+		const iotHubRequestHeaders = new Headers()
+		iotHubRequestHeaders.append('Authorization', 'Bearer ' + token)
+		console.log(body)
+		return handleResponse(
+			fetch(`${endpoint}/api/${resource}`, {
+				method: 'POST',
+				headers: iotHubRequestHeaders,
+				body,
+			}),
+		)
+	}
 	return {
 		listDevices: get<{ deviceId: string; name?: string }[]>('devices'),
 		getDevice: async (id: string) => {
@@ -113,10 +138,26 @@ export const fetchApiClient = ({
 			if (isLeft(d)) return d
 			return right({
 				name: d.right.tags?.name,
+				avatar: d.right.tags?.avatar,
 				version: d.right.version,
 			})
 		},
 		setDeviceName: async (id: string, name: string) =>
 			patch<{ success: boolean }>(`device/${id}`, { name })(),
+		setDeviceAvatar: async (id: string, url: string) =>
+			patch<{ success: boolean }>(`device/${id}`, { avatar: url })(),
+		storeImage: async (image: Blob) =>
+			new Promise((resolve, reject) => {
+				const reader = new FileReader()
+				reader.onload = async () => {
+					postRaw<{ url: string }>(
+						`images`,
+						(reader.result as string).split(',')[1],
+					)()
+						.then(resolve)
+						.catch(reject)
+				}
+				reader.readAsDataURL(image)
+			}),
 	}
 }
