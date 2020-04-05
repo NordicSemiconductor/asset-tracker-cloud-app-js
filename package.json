@@ -32,7 +32,7 @@
     "@bifravst/rsrp-bar": "^2.0.2",
     "@react-firebase/auth": "^0.2.10",
     "aws-amplify": "^3.0.5",
-    "aws-amplify-react": "^4.1.3",
+    "aws-amplify-react": "^4.1.4",
     "aws-iot-device-sdk": "^2.2.3",
     "aws-sdk": "^2.652.0",
     "azure-iothub": "^1.12.0",
