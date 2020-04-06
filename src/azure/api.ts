@@ -21,6 +21,7 @@ export type ApiClient = {
 		Either<ErrorInfo, { deviceId: string; name?: string }[]>
 	>
 	getDevice: (id: string) => Promise<Either<ErrorInfo, Device>>
+	deleteDevice: (id: string) => Promise<Either<ErrorInfo, { success: boolean }>>
 	setDeviceName: (
 		id: string,
 		name: string,
@@ -69,7 +70,7 @@ const handleResponse = async <A extends { [key: string]: any }>(
 	const res = await r
 	if (res.status >= 400) {
 		if (
-			res.headers?.get('content-length') &&
+			parseInt(res.headers?.get('content-length') ?? '0') > 2 &&
 			res.headers?.get('content-type')?.includes('application/json')
 		) {
 			const json = await res.json()
@@ -116,6 +117,16 @@ export const fetchApiClient = ({
 			}),
 		)
 
+	const del️ = <A extends { [key: string]: any }>(
+		resource: string,
+	) => async (): Promise<Either<ErrorInfo, A>> =>
+		handleResponse(
+			fetch(`${endpoint}/api/${resource}`, {
+				method: 'DELETE',
+				headers: iotHubRequestHeaders,
+			}),
+		)
+
 	const postRaw = <A extends { [key: string]: any }>(
 		resource: string,
 		body: any,
@@ -142,6 +153,8 @@ export const fetchApiClient = ({
 				version: d.right.version,
 			})
 		},
+		deleteDevice: async (id: string) =>
+			del️<{ success: boolean }>(`device/${id}`)(),
 		setDeviceName: async (id: string, name: string) =>
 			patch<{ success: boolean }>(`device/${id}`, { name })(),
 		setDeviceAvatar: async (id: string, url: string) =>
