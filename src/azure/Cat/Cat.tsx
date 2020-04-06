@@ -131,7 +131,6 @@ export const Cat = ({
 					<DeleteCat
 						catId={cat.id}
 						onDelete={() => {
-							// FIXME: Implement deletion
 							setDeleting(true)
 							apiClient
 								.deleteDevice(cat.id)
