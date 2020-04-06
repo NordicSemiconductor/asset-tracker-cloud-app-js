@@ -1,8 +1,6 @@
 import { default as introJs } from 'intro.js'
 import { FOTA, OnCreateUpgradeJob } from '../../FOTA/FOTA'
 import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
-import { AWSIotThingState } from '../connectAndListenForStateChange'
-import { DesiredConfig, Settings } from '../../Settings/Settings'
 import { ICredentials } from '@aws-amplify/core'
 import React, { useEffect, useState } from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
@@ -17,6 +15,9 @@ import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDi
 import { Message } from '../../@types/Message'
 import { CatCard } from '../../Cat/CatCard'
 import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
+import { ThingState, ThingReportedState } from '../../@types/aws-device'
+import { DeviceConfig } from '../../@types/device-state'
+import { Settings, ReportedConfigState } from '../../Settings/Settings'
 
 const intro = introJs()
 
@@ -28,6 +29,26 @@ export type CatInfo = {
 }
 
 const isNameValid = (name: string) => /^[0-9a-z_.,@/:#-]{1,800}$/i.test(name)
+
+const toReportedConfig = (
+	reported: Partial<ThingReportedState>,
+): Partial<ReportedConfigState> => {
+	let c = {} as Partial<ReportedConfigState>
+	if (reported.cfg) {
+		Object.keys(reported.cfg).forEach(k => {
+			c = {
+				...c,
+				[k as keyof ReportedConfigState]: {
+					value: reported?.cfg?.[k as keyof ReportedConfigState]?.value,
+					receivedAt:
+						reported?.cfg?.[k as keyof ReportedConfigState]?.receivedAt,
+				},
+			}
+		})
+	}
+
+	return c
+}
 
 export const Cat = ({
 	cat,
@@ -53,18 +74,18 @@ export const Cat = ({
 		jobId: string
 		executionNumber: number
 	}) => Promise<void>
-	getThingState: () => Promise<AWSIotThingState>
-	updateDeviceConfig: (cfg: Partial<DesiredConfig>) => Promise<void>
+	getThingState: () => Promise<ThingState>
+	updateDeviceConfig: (cfg: Partial<DeviceConfig>) => Promise<void>
 	cat: CatInfo
 	credentials: ICredentials
 	children: React.ReactElement<any> | React.ReactElement<any>[]
 	listenForStateChange: (listeners: {
-		onNewState: (newState: AWSIotThingState) => void
+		onNewState: (newState: ThingState) => void
 		onMessage: (message: Message) => void
 	}) => Promise<() => void>
-	catMap: (state: AWSIotThingState) => React.ReactElement<any>
+	catMap: (state: ThingState) => React.ReactElement<any>
 }) => {
-	const [state, setState] = useState<AWSIotThingState>()
+	const [state, setState] = useState<ThingState>()
 	const [error, setError] = useState<Error>()
 	const reported = state && state.reported
 	const desired = state && state.desired
@@ -73,7 +94,7 @@ export const Cat = ({
 		let didCancel = false
 		let stopListening: () => void
 
-		const setStateIfNotCanceled = (state: AWSIotThingState) =>
+		const setStateIfNotCanceled = (state: ThingState) =>
 			!didCancel && setState(state)
 		const setErrorIfNotCanceled = (error: Error) =>
 			!didCancel && setError(error)
@@ -143,8 +164,10 @@ export const Cat = ({
 						{reported.roam && (
 							<Toggle>
 								<ConnectionInformation
-									device={reported.dev}
-									roaming={reported.roam}
+									mccmnc={reported.roam.v.mccmnc.value}
+									rsrp={reported.roam.v.rsrp.value}
+									receivedAt={reported.roam.v.rsrp.receivedAt}
+									reportedAt={new Date(reported.roam.ts.value)}
 								/>
 							</Toggle>
 						)}
@@ -197,7 +220,8 @@ export const Cat = ({
 							title={<h3>{emojify('⚙️ Settings')}</h3>}
 						>
 							<Settings
-								state={state}
+								reported={toReportedConfig(state.reported || {})}
+								desired={state.desired?.cfg}
 								onSave={config => {
 									updateDeviceConfig(config)
 										.catch(setError)

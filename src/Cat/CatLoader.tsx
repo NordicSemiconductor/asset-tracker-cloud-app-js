@@ -28,11 +28,11 @@ export function CatLoader<
 	catId: string
 	loader: (catId: string) => Promise<Either<ErrorInfo, T>>
 	children: (
-		cat: LoadedCat & T,
-		update: (cat: LoadedCat & T) => void,
+		cat: T & LoadedCat,
+		update: (cat: T & LoadedCat) => void,
 	) => React.ReactElement<any>
 }) {
-	const [cat, setCat] = useState<LoadedCat & T>()
+	const [cat, setCat] = useState<T & LoadedCat>()
 	const [error, setError] = useState<ErrorInfo>()
 
 	const navbarBrandState = useContext(NavbarBrandContext)
@@ -67,7 +67,7 @@ export function CatLoader<
 		}
 	}, [catId, loader, resetNavbar, setNavbar])
 
-	const update = (cat: LoadedCat & T) => {
+	const update = (cat: T & LoadedCat) => {
 		setCat(cat)
 		setNavbar(<CatNavbar name={cat.name} avatar={cat.avatar} />)
 	}

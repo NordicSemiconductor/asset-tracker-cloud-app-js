@@ -2,6 +2,7 @@ import * as querystring from 'querystring'
 import { Twin } from 'azure-iothub'
 import { Either, right, left, isLeft } from 'fp-ts/lib/Either'
 import { ErrorInfo } from '../Error/ErrorInfo'
+import { DeviceState } from '../@types/azure-device'
 
 const toQueryString = (obj: any): string => {
 	if (!Object.keys(obj).length) {
@@ -14,6 +15,7 @@ export type Device = {
 	name?: string
 	avatar?: string
 	version: number
+	state: DeviceState
 }
 
 export type ApiClient = {
@@ -41,20 +43,7 @@ export type IotHubDevice = Twin & {
 	lastActivityTime: string
 	cloudToDeviceMessageCount: number
 	version: number
-	properties: {
-		desired: {
-			$metadata: {
-				$lastUpdated: string
-			}
-			$version: number
-		}
-		reported: {
-			$metadata: {
-				$lastUpdated: string
-			}
-			$version: number
-		}
-	}
+	properties: DeviceState
 	tags: {
 		name?: string
 		avatar?: string
@@ -151,6 +140,7 @@ export const fetchApiClient = ({
 				name: d.right.tags?.name,
 				avatar: d.right.tags?.avatar,
 				version: d.right.version,
+				state: d.right.properties,
 			})
 		},
 		deleteDevice: async (id: string) =>

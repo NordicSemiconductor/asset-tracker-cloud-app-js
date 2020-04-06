@@ -1,7 +1,22 @@
+import { ThingStateMetadataProperty } from '../@types/aws-device'
+
+type MakeReadOnly<Type> = {
+	readonly [Key in keyof Type]: MakeReadOnly<Type[Key]>
+}
+
+type M = {
+	value: any
+	receivedAt: Date
+}
+export type MergedReportedState =
+	| MakeReadOnly<M>
+	| MakeReadOnly<{ [key: string]: M }>
+	| MergedReportedState[]
+
 const merge = (
 	reported: { [key: string]: any },
 	metadata: { [key: string]: any },
-): { [key: string]: any } => {
+): MergedReportedState => {
 	if (Array.isArray(reported)) {
 		return reported.map((v, k) => merge(v, metadata[k]))
 	} else if (typeof reported === 'object') {
@@ -25,10 +40,15 @@ const merge = (
  * This merges the reported state and the metadata into one object
  */
 export const mergeReportedAndMetadata = ({
-	shadow,
+	reported,
+	metadata,
 }: {
-	shadow: { [key: string]: any }
-}): { [key: string]: any } =>
-	!shadow.state.reported
-		? {}
-		: merge(shadow.state.reported, shadow.metadata.reported)
+	reported: { [key: string]: any }
+	metadata: ThingStateMetadataProperty
+}) => {
+	console.log({
+		reported,
+		metadata,
+	})
+	return merge(reported, metadata)
+}

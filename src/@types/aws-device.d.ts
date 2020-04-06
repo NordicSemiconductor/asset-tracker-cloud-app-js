@@ -1,3 +1,6 @@
+import { MergedReportedState } from '../aws/mergeReportedAndMetadata'
+import { DeviceConfig } from './device-state'
+
 export type Gps = {
 	v: {
 		lat: {
@@ -115,42 +118,37 @@ export type RoamingInformation = {
 	}
 }
 
-export type DeviceConfig = {
-	act: {
-		value: boolean
-		receivedAt: Date
-	}
-	actwt: {
-		value: number
-		receivedAt: Date
-	}
-	mvres: {
-		value: number
-		receivedAt: Date
-	}
-	mvt: {
-		value: number
-		receivedAt: Date
-	}
-	gpst: {
-		value: number
-		receivedAt: Date
-	}
-	celt: {
-		value: number
-		receivedAt: Date
-	}
-	acct: {
-		value: number
-		receivedAt: Date
-	}
+type MergedProperty<A> = {
+	value: A
+	receivedAt: Date
 }
 
-export type DeviceShadow = {
+export type ThingReportedState = {
 	bat: Battery
 	acc: Accelerometor
 	gps: Gps
 	dev: DeviceInformation
 	roam: RoamingInformation
-	cfg: DeviceConfig
+	cfg: Partial<{
+		act: MergedProperty<boolean>
+		actwt: MergedProperty<number>
+		mvres: MergedProperty<number>
+		mvt: MergedProperty<number>
+		gpst: MergedProperty<number>
+		celt: MergedProperty<number>
+		acct: MergedProperty<number>
+	}>
+}
+
+export type ThingState = {
+	reported?: Partial<ThingReportedState>
+	desired?: {
+		cfg?: Partial<DeviceConfig>
+	}
+}
+
+export type ThingStateMetadataProperty = {
+	timestamp: number
+} & {
+	[key: string]: ThingStateMetadataProperty
 }

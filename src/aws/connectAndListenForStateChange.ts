@@ -1,15 +1,9 @@
-import { DesiredConfig } from '../Settings/Settings'
-import { DeviceShadow } from '../@types/DeviceShadow'
 import { ICredentials } from '@aws-amplify/core'
 import { device } from 'aws-iot-device-sdk'
-import { mergeReportedAndMetadata } from '../util/mergeReportedAndMetadata'
+import { mergeReportedAndMetadata } from './mergeReportedAndMetadata'
 import { parseMessage } from '../util/parseMessage'
 import { Message } from '../@types/Message'
-
-export type AWSIotThingState = {
-	desired?: { cfg?: Partial<DesiredConfig> }
-	reported?: Partial<DeviceShadow>
-}
+import { ThingState } from '../@types/aws-device'
 
 const topics = (deviceId: string) => ({
 	stateUpdates: `$aws/things/${deviceId}/shadow/update/documents`,
@@ -28,7 +22,7 @@ export const connectAndListenForStateChange = async ({
 	clientId: string
 	credentials: ICredentials
 	deviceId: string
-	onNewState: (newState: AWSIotThingState) => void
+	onNewState: (newState: ThingState) => void
 	onMessage: (message: Message) => void
 	region: string
 	mqttEndpoint: string
@@ -63,10 +57,11 @@ export const connectAndListenForStateChange = async ({
 				const shadow = JSON.parse(payload.toString()).current
 				const newState = {
 					reported: mergeReportedAndMetadata({
-						shadow,
+						reported: shadow.reported,
+						metadata: shadow.metadata,
 					}),
 					desired: shadow.state.desired,
-				} as AWSIotThingState
+				} as ThingState
 				onNewState(newState)
 				console.log('Updated state', deviceId, newState)
 			} else {

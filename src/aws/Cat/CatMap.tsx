@@ -1,11 +1,10 @@
 import { HistoricalDataLoader } from '../../HistoricalData/HistoricalDataLoader'
 import { Map, Location, CellLocation } from '../../Map/Map'
 import React, { useState, useEffect } from 'react'
-import { AWSIotThingState } from '../connectAndListenForStateChange'
 import { FormGroup, Label, Input } from 'reactstrap'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../../Styles'
-import { RoamingInformation } from '../../@types/DeviceShadow'
+import { RoamingInformation, ThingState } from '../../@types/aws-device'
 import { AthenaContext } from '../App'
 import { geolocateCell } from '../geolocateCell'
 import { isRight } from 'fp-ts/lib/Either'
@@ -38,7 +37,7 @@ export const CatMap = ({
 }: {
 	athenaContext: AthenaContext
 	cat: CatInfo
-	state: AWSIotThingState
+	state: ThingState
 	geolocationApiEndpoint: string
 }) => {
 	let initialState = true

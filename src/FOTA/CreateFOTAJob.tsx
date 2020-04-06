@@ -1,4 +1,4 @@
-import { DeviceInformation } from '../@types/DeviceShadow'
+import { DeviceInformation } from '../@types/aws-device'
 import semver from 'semver'
 import React, { useState } from 'react'
 import { Button, Form, FormGroup, Input, Label } from 'reactstrap'

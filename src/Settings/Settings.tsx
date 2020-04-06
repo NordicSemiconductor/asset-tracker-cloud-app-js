@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
 import { Button, ButtonGroup, Form, FormGroup } from 'reactstrap'
 import equal from 'fast-deep-equal'
-import { DeviceConfig } from '../@types/DeviceShadow'
 import { OutDatedWarning } from './OutDatedWarning'
 import { NumberConfigSetting } from './NumberConfigSetting'
 import { formatDistanceToNow } from 'date-fns'
 import { emojify } from '../Emojify/Emojify'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
-import { AWSIotThingState } from '../aws/connectAndListenForStateChange'
+import { DeviceConfig } from '../@types/device-state'
 
 const SettingsForm = styled(Form)`
 	@media (min-width: ${mobileBreakpoint}) {
@@ -65,7 +64,12 @@ export const FooterWithFullWidthButton = styled.footer`
 	flex-direction: column;
 `
 
-export type DesiredConfig = {
+type ConfigProperty<A> = {
+	value: A
+	receivedAt: Date
+}
+
+export type DesiredConfigState = {
 	act: boolean
 	actwt: number
 	mvres: number
@@ -75,25 +79,36 @@ export type DesiredConfig = {
 	acct: number
 }
 
+type MakeConfigProperty<Type> = {
+	readonly [Key in keyof Type]: ConfigProperty<Type[Key]>
+}
+
+export type ReportedConfigState = MakeConfigProperty<DesiredConfigState>
+
 export const Settings = ({
 	onSave,
-	state,
+	reported,
+	desired,
 }: {
-	state: AWSIotThingState
-	onSave: (config: Partial<DesiredConfig>) => void
+	reported?: Partial<ReportedConfigState>
+	desired?: Partial<DesiredConfigState>
+	onSave: (config: Partial<DeviceConfig>) => void
 }) => {
-	const desired = state.desired && state.desired.cfg
-	const reported = state.reported && state.reported.cfg
-	const r: Partial<DeviceConfig> = reported || {}
+	const r: Partial<ReportedConfigState> = reported || {}
 
-	const [newDesired, setNewDesired] = useState<Partial<DesiredConfig>>(
+	console.log({
+		desired,
+		reported,
+	})
+
+	const [newDesired, setNewDesired] = useState<Partial<DesiredConfigState>>(
 		desired || {},
 	)
 
 	const hasInitial = desired === undefined
 	const [changed, setChanged] = useState(hasInitial)
 
-	const updateConfig = (cfg: Partial<DesiredConfig>) => {
+	const updateConfig = (cfg: Partial<DeviceConfig>) => {
 		const updated = {
 			...newDesired,
 			...cfg,

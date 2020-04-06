@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ApiClient } from '../api'
+import { ApiClient, Device } from '../api'
 import { CatCard } from '../../Cat/CatCard'
 import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
 import { CardHeader, CardBody, Alert, Card } from 'reactstrap'
@@ -11,6 +11,7 @@ import { ErrorInfo } from '../../Error/ErrorInfo'
 import { isLeft } from 'fp-ts/lib/Either'
 import { Loading } from '../../Loading/Loading'
 import { LoadedCat } from '../../Cat/CatLoader'
+import { Settings } from '../../Settings/Settings'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -20,8 +21,8 @@ export const Cat = ({
 	update,
 }: {
 	apiClient: ApiClient
-	cat: LoadedCat
-	update: (cat: LoadedCat) => void
+	cat: Device & LoadedCat
+	update: (cat: Device & LoadedCat) => void
 }) => {
 	const [deleted, setDeleted] = useState(false)
 	const [deleting, setDeleting] = useState(false)
@@ -124,6 +125,23 @@ export const Cat = ({
 					/>
 				</Collapsable>
 				<hr />
+				{/*
+				<Collapsable
+					id={'cat:settings'}
+					title={<h3>{emojify('⚙️ Settings')}</h3>}
+				>
+					<Settings
+						reported={cat.state.reported}
+						desired={cat.state.desired}
+						onSave={(config) => {
+							console.log({
+								updatedConfig: config,
+							})
+						}}
+					/>
+				</Collapsable>
+				<hr />
+				*/}
 				<Collapsable
 					id={'cat:dangerzone'}
 					title={<h3>{emojify('☠️ Danger Zone')}</h3>}

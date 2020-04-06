@@ -1,7 +1,6 @@
 import React from 'react'
 import { filter as filterOperator, Operator as Op } from 'mcc-mnc-list'
 import { ReportedTime } from '../ReportedTime/ReportedTime'
-import { DeviceInformation, RoamingInformation } from '../@types/DeviceShadow'
 import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
 import { emojify } from '../Emojify/Emojify'
 import styled from 'styled-components'
@@ -40,32 +39,26 @@ export const Operator = ({ op }: { op?: Op }) => (
 )
 
 export const ConnectionInformation = ({
-	device,
-	roaming,
+	networkOperator,
+	rsrp,
+	mccmnc,
+	receivedAt,
+	reportedAt,
 }: {
-	device?: DeviceInformation
-	roaming: RoamingInformation
-}) => {
-	const {
-		v: {
-			rsrp,
-			mccmnc: { value: mccmnc },
-		},
-	} = roaming
-	const nw = device && device.v.nw.value
-	return (
-		<div className={'info connection-information'}>
-			<TextWithIcon icon={signalQuality(rsrp.value)}>
-				<>
-					&nbsp;
-					<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
-				</>
-			</TextWithIcon>
-			{emojify(`📱 ${nw || '?'}`)}
-			<ReportedTime
-				receivedAt={roaming.v.rsrp.receivedAt}
-				reportedAt={new Date(roaming.ts.value)}
-			/>
-		</div>
-	)
-}
+	networkOperator?: string
+	rsrp: number
+	mccmnc: number
+	receivedAt: Date
+	reportedAt: Date
+}) => (
+	<div className={'info connection-information'}>
+		<TextWithIcon icon={signalQuality(rsrp)}>
+			<>
+				&nbsp;
+				<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
+			</>
+		</TextWithIcon>
+		{emojify(`📱 ${networkOperator || '?'}`)}
+		<ReportedTime receivedAt={receivedAt} reportedAt={reportedAt} />
+	</div>
+)

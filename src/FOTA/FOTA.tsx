@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { DeviceInformation } from '../@types/DeviceShadow'
+import { DeviceInformation } from '../@types/aws-device'
 import { Alert } from 'reactstrap'
 import { DisplayError as ShowError } from '../Error/Error'
 import { DeviceUpgradeFirmwareJob } from '../aws/listUpgradeFirmwareJobs'
