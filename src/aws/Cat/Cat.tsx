@@ -168,6 +168,7 @@ export const Cat = ({
 									rsrp={reported.roam.v.rsrp.value}
 									receivedAt={reported.roam.v.rsrp.receivedAt}
 									reportedAt={new Date(reported.roam.ts.value)}
+									networkOperator={reported.dev?.v.nw.value}
 								/>
 							</Toggle>
 						)}
