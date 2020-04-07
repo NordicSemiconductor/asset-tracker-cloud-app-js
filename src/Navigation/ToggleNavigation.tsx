@@ -36,7 +36,7 @@ const AzureHeader = styled.header`
 	a:visited,
 	button.btn-link:hover,
 	.navbar-brand {
-		color: #fff;
+		color: #fff !important;
 	}
 	button.btn-outline-danger {
 		background-color: #00000020;
@@ -59,6 +59,12 @@ const flavouredHeaders = {
 	[CloudFlavour.Azure]: AzureHeader,
 	[CloudFlavour.GCP]: GCPHeader,
 	[CloudFlavour.AWS]: AWSHeader,
+}
+
+const navbarClassname = {
+	[CloudFlavour.Azure]: 'navbar-dark',
+	[CloudFlavour.GCP]: 'navbar-dark',
+	[CloudFlavour.AWS]: 'navbar-light',
 }
 
 const MobileOnlyCollapse = hideOnDesktop(Collapse)
@@ -92,7 +98,7 @@ export const ToggleNavigation = ({
 				const FlavouredHeader = flavouredHeaders[cloudFlavour]
 				return (
 					<FlavouredHeader>
-						<StyledNavbar>
+						<StyledNavbar className={navbarClassname[cloudFlavour]}>
 							<MobileNavbar>
 								<NavbarBrandConsumer>
 									{({ navbar }) => navbar}
