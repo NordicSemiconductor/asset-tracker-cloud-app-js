@@ -45,10 +45,4 @@ export const mergeReportedAndMetadata = ({
 }: {
 	reported: { [key: string]: any }
 	metadata: ThingStateMetadataProperty
-}) => {
-	console.log({
-		reported,
-		metadata,
-	})
-	return merge(reported, metadata)
-}
+}) => merge(reported, metadata)

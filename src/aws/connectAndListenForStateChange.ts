@@ -23,7 +23,7 @@ export const connectAndListenForStateChange = async ({
 	credentials: ICredentials
 	deviceId: string
 	onNewState: (newState: ThingState) => void
-	onMessage: (message: Message) => void
+	onMessage?: (message: Message) => void
 	region: string
 	mqttEndpoint: string
 }): Promise<device> =>
@@ -66,8 +66,7 @@ export const connectAndListenForStateChange = async ({
 				console.log('Updated state', deviceId, newState)
 			} else {
 				try {
-					const msg = JSON.parse(payload.toString())
-					onMessage(parseMessage(msg))
+					onMessage && onMessage(parseMessage(JSON.parse(payload.toString())))
 				} catch (error) {
 					console.error(
 						`Failed to parse message as JSON: "${payload.toString()}"!`,

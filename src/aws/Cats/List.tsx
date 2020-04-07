@@ -99,10 +99,6 @@ const ListCats = ({
 			credentials,
 			onMessage: ({ deviceId, message: { btn } }) => {
 				if (isCancelled) return
-				console.log({
-					deviceId,
-					btn,
-				})
 				if (btn) {
 					setButtonPresses(presses => ({
 						...presses,

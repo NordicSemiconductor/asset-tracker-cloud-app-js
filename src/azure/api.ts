@@ -122,7 +122,6 @@ export const fetchApiClient = ({
 	) => async (): Promise<Either<ErrorInfo, A>> => {
 		const iotHubRequestHeaders = new Headers()
 		iotHubRequestHeaders.append('Authorization', 'Bearer ' + token)
-		console.log(body)
 		return handleResponse(
 			fetch(`${endpoint}/api/${resource}`, {
 				method: 'POST',

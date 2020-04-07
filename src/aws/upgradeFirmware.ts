@@ -24,13 +24,6 @@ export const upgradeFirmware = ({
 	targetBoard: string
 }): Promise<DeviceUpgradeFirmwareJob> => {
 	const jobId = v4()
-	console.log({
-		Bucket: bucketName,
-		Key: jobId,
-		Body: data,
-		ContentLength: file.size,
-		ContentType: 'text/octet-stream',
-	})
 	await s3
 		.putObject({
 			Bucket: bucketName,

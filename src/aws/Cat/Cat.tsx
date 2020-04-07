@@ -81,7 +81,6 @@ export const Cat = ({
 	children: React.ReactElement<any> | React.ReactElement<any>[]
 	listenForStateChange: (listeners: {
 		onNewState: (newState: ThingState) => void
-		onMessage: (message: Message) => void
 	}) => Promise<() => void>
 	catMap: (state: ThingState) => React.ReactElement<any>
 }) => {
@@ -105,9 +104,6 @@ export const Cat = ({
 
 		listenForStateChange({
 			onNewState: setState,
-			onMessage: m => {
-				console.log(m)
-			},
 		})
 			.then(s => {
 				if (didCancel) {

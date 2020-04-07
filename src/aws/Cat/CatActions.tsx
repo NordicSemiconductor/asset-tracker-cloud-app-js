@@ -124,10 +124,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 															getThingState={async () =>
 																getThingState(iotData)(catId)
 															}
-															listenForStateChange={async ({
-																onNewState,
-																onMessage,
-															}) =>
+															listenForStateChange={async ({ onNewState }) =>
 																connectAndListenForStateChange({
 																	clientId: `user-${
 																		credentials.identityId
@@ -135,7 +132,6 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	credentials,
 																	deviceId: catId,
 																	onNewState,
-																	onMessage,
 																	region,
 																	mqttEndpoint,
 																}).then(connection => () => connection.end())

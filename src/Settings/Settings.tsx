@@ -96,11 +96,6 @@ export const Settings = ({
 }) => {
 	const r: Partial<ReportedConfigState> = reported || {}
 
-	console.log({
-		desired,
-		reported,
-	})
-
 	const [newDesired, setNewDesired] = useState<Partial<DesiredConfigState>>(
 		desired || {},
 	)
@@ -156,7 +151,7 @@ export const Settings = ({
 									disabled={true}
 									title={`Device has last synced this setting ${formatDistanceToNow(
 										r.receivedAt,
-									)}. Current value: ${JSON.stringify(r.value)}.`}
+									)} ago. Current value: ${JSON.stringify(r.value)}.`}
 								>
 									{emojify('⭕')}
 								</Button>
