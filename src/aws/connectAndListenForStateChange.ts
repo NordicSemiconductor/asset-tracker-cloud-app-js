@@ -57,8 +57,8 @@ export const connectAndListenForStateChange = async ({
 				const shadow = JSON.parse(payload.toString()).current
 				const newState = {
 					reported: mergeReportedAndMetadata({
-						reported: shadow.reported,
-						metadata: shadow.metadata,
+						reported: shadow.state.reported,
+						metadata: shadow.metadata.reported,
 					}),
 					desired: shadow.state.desired,
 				} as ThingState
