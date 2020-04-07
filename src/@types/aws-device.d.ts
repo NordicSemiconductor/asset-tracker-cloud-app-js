@@ -123,21 +123,23 @@ type MergedProperty<A> = {
 	receivedAt: Date
 }
 
+export type ThingReportedConfig = Partial<{
+	act: MergedProperty<boolean>
+	actwt: MergedProperty<number>
+	mvres: MergedProperty<number>
+	mvt: MergedProperty<number>
+	gpst: MergedProperty<number>
+	celt: MergedProperty<number>
+	acct: MergedProperty<number>
+}>
+
 export type ThingReportedState = {
 	bat: Battery
 	acc: Accelerometor
 	gps: Gps
 	dev: DeviceInformation
 	roam: RoamingInformation
-	cfg: Partial<{
-		act: MergedProperty<boolean>
-		actwt: MergedProperty<number>
-		mvres: MergedProperty<number>
-		mvt: MergedProperty<number>
-		gpst: MergedProperty<number>
-		celt: MergedProperty<number>
-		acct: MergedProperty<number>
-	}>
+	cfg: ThingReportedConfig
 }
 
 export type ThingState = {

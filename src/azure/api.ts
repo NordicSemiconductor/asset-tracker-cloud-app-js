@@ -2,7 +2,8 @@ import * as querystring from 'querystring'
 import { Twin } from 'azure-iothub'
 import { Either, right, left, isLeft } from 'fp-ts/lib/Either'
 import { ErrorInfo } from '../Error/ErrorInfo'
-import { DeviceState } from '../@types/azure-device'
+import { DeviceTwin } from '../@types/azure-device'
+import { DeviceConfig } from '../@types/device-state'
 
 const toQueryString = (obj: any): string => {
 	if (!Object.keys(obj).length) {
@@ -15,7 +16,7 @@ export type Device = {
 	name?: string
 	avatar?: string
 	version: number
-	state: DeviceState
+	state: DeviceTwin
 }
 
 export type ApiClient = {
@@ -24,6 +25,10 @@ export type ApiClient = {
 	>
 	getDevice: (id: string) => Promise<Either<ErrorInfo, Device>>
 	deleteDevice: (id: string) => Promise<Either<ErrorInfo, { success: boolean }>>
+	setDeviceConfig: (
+		id: string,
+		config: Partial<DeviceConfig>,
+	) => Promise<Either<ErrorInfo, { success: boolean }>>
 	setDeviceName: (
 		id: string,
 		name: string,
@@ -43,7 +48,7 @@ export type IotHubDevice = Twin & {
 	lastActivityTime: string
 	cloudToDeviceMessageCount: number
 	version: number
-	properties: DeviceState
+	properties: DeviceTwin
 	tags: {
 		name?: string
 		avatar?: string
@@ -148,6 +153,8 @@ export const fetchApiClient = ({
 			patch<{ success: boolean }>(`device/${id}`, { name })(),
 		setDeviceAvatar: async (id: string, url: string) =>
 			patch<{ success: boolean }>(`device/${id}`, { avatar: url })(),
+		setDeviceConfig: async (id: string, config: Partial<DeviceConfig>) =>
+			patch<{ success: boolean }>(`device/${id}`, { config })(),
 		storeImage: async (image: Blob) =>
 			new Promise((resolve, reject) => {
 				const reader = new FileReader()

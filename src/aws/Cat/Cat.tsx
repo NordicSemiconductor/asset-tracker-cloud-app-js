@@ -14,7 +14,7 @@ import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
 import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDiagram'
 import { CatCard } from '../../Cat/CatCard'
 import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
-import { ThingState, ThingReportedState } from '../../@types/aws-device'
+import { ThingState, ThingReportedConfig } from '../../@types/aws-device'
 import { DeviceConfig } from '../../@types/device-state'
 import { Settings, ReportedConfigState } from '../../Settings/Settings'
 
@@ -30,21 +30,18 @@ export type CatInfo = {
 const isNameValid = (name: string) => /^[0-9a-z_.,@/:#-]{1,800}$/i.test(name)
 
 const toReportedConfig = (
-	reported: Partial<ThingReportedState>,
+	cfg: ThingReportedConfig,
 ): Partial<ReportedConfigState> => {
 	let c = {} as Partial<ReportedConfigState>
-	if (reported.cfg) {
-		Object.keys(reported.cfg).forEach(k => {
-			c = {
-				...c,
-				[k as keyof ReportedConfigState]: {
-					value: reported?.cfg?.[k as keyof ReportedConfigState]?.value,
-					receivedAt:
-						reported?.cfg?.[k as keyof ReportedConfigState]?.receivedAt,
-				},
-			}
-		})
-	}
+	Object.keys(cfg).forEach(k => {
+		c = {
+			...c,
+			[k as keyof ReportedConfigState]: {
+				value: cfg?.[k as keyof ReportedConfigState]?.value,
+				receivedAt: cfg?.[k as keyof ReportedConfigState]?.receivedAt,
+			},
+		}
+	})
 
 	return c
 }
@@ -216,7 +213,11 @@ export const Cat = ({
 							title={<h3>{emojify('⚙️ Settings')}</h3>}
 						>
 							<Settings
-								reported={toReportedConfig(state.reported || {})}
+								reported={
+									state.reported?.cfg
+										? toReportedConfig(state.reported.cfg)
+										: {}
+								}
 								desired={state.desired?.cfg}
 								onSave={config => {
 									updateDeviceConfig(config)

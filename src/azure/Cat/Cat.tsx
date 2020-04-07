@@ -11,9 +11,29 @@ import { ErrorInfo } from '../../Error/ErrorInfo'
 import { isLeft } from 'fp-ts/lib/Either'
 import { Loading } from '../../Loading/Loading'
 import { LoadedCat } from '../../Cat/CatLoader'
-import { Settings } from '../../Settings/Settings'
+import { Settings, ReportedConfigState } from '../../Settings/Settings'
+import { DeviceTwinState } from '../../@types/azure-device'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
+
+const toReportedConfig = ({
+	cfg,
+	$metadata,
+}: DeviceTwinState): Partial<ReportedConfigState> => {
+	let c = {} as Partial<ReportedConfigState>
+	Object.keys(cfg).forEach(k => {
+		c = {
+			...c,
+			[k as keyof ReportedConfigState]: {
+				value: cfg?.[k as keyof ReportedConfigState],
+				receivedAt: new Date(
+					$metadata?.cfg?.[k as keyof ReportedConfigState].$lastUpdated,
+				),
+			},
+		}
+	})
+	return c
+}
 
 export const Cat = ({
 	apiClient,
@@ -49,7 +69,6 @@ export const Cat = ({
 	if (error) return <DisplayError error={error} />
 
 	const onAvatarChange = (avatar: Blob) => {
-		console.log(`Avatar changed for ${cat.id}.`)
 		// Display image directly
 		const reader = new FileReader()
 		reader.onload = (e: any) => {
@@ -77,12 +96,8 @@ export const Cat = ({
 				}
 			})
 			.catch(setError)
-
-		// FIXME: Implement avatar upload and change
 	}
 	const onNameChange = (name: string) => {
-		console.log(`Name change to ${name}`)
-		// FIXME: Implement name change
 		update({
 			...cat,
 			name,
@@ -125,23 +140,21 @@ export const Cat = ({
 					/>
 				</Collapsable>
 				<hr />
-				{/*
 				<Collapsable
 					id={'cat:settings'}
 					title={<h3>{emojify('⚙️ Settings')}</h3>}
 				>
 					<Settings
-						reported={cat.state.reported}
-						desired={cat.state.desired}
-						onSave={(config) => {
-							console.log({
-								updatedConfig: config,
+						reported={toReportedConfig(cat.state.reported)}
+						desired={cat.state.desired?.cfg}
+						onSave={config => {
+							apiClient.setDeviceConfig(cat.id, config).catch(error => {
+								setError(error)
 							})
 						}}
 					/>
 				</Collapsable>
 				<hr />
-				*/}
 				<Collapsable
 					id={'cat:dangerzone'}
 					title={<h3>{emojify('☠️ Danger Zone')}</h3>}

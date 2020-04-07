@@ -1,22 +1,25 @@
+import { DeviceConfig } from './device-state'
+
 type PropertyMetadata = {
 	[key: string]: {
 		$lastUpdated: string
+		$lastUpdatedVersion?: number
 	}
 }
 
-export type DeviceState = {
-	desired: {
-		[key: string]: any
-		$metadata: PropertyMetadata & {
-			$lastUpdated: string
-		}
-		$version: number
+export type DeviceTwinState = {
+	[key: string]: any
+	$metadata: PropertyMetadata & {
+		[key: string]: PropertyMetadata
 	}
-	reported: {
-		[key: string]: any
-		$metadata: PropertyMetadata & {
-			$lastUpdated: string
-		}
-		$version: number
+	$version: number
+}
+
+export type DeviceTwin = {
+	desired: DeviceTwinState & {
+		cfg?: Partial<DeviceConfig>
+	}
+	reported: DeviceTwinState & {
+		cfg?: Partial<DeviceConfig>
 	}
 }
