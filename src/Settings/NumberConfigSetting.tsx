@@ -58,7 +58,7 @@ export const NumberConfigSetting = ({
 								<abbr
 									title={`Device has last synced this setting ${formatDistanceToNow(
 										r.receivedAt,
-									)}. Current value: ${JSON.stringify(r.value)}.`}
+									)} ago. Current value: ${JSON.stringify(r.value)}.`}
 								>
 									{emojify('⭕')}
 								</abbr>
