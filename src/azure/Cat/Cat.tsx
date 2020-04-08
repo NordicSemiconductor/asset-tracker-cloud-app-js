@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ApiClient, Device } from '../api'
 import { CatCard } from '../../Cat/CatCard'
 import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
@@ -8,11 +8,12 @@ import { Collapsable } from '../../Collapsable/Collapsable'
 import { DeleteCat } from '../../Cat/DeleteCat'
 import { DisplayError } from '../../Error/Error'
 import { ErrorInfo } from '../../Error/ErrorInfo'
-import { isLeft } from 'fp-ts/lib/Either'
+import { isLeft, isRight } from 'fp-ts/lib/Either'
 import { Loading } from '../../Loading/Loading'
 import { LoadedCat } from '../../Cat/CatLoader'
 import { Settings, ReportedConfigState } from '../../Settings/Settings'
 import { DeviceTwinState } from '../../@types/azure-device'
+import * as signalR from '@microsoft/signalr'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -47,6 +48,30 @@ export const Cat = ({
 	const [deleted, setDeleted] = useState(false)
 	const [deleting, setDeleting] = useState(false)
 	const [error, setError] = useState<ErrorInfo>()
+
+	// Listen for state changes
+	useEffect(() => {
+		apiClient
+			.getSignalRConnectionInfo()
+			.then(maybeConnectionInfo => {
+				if (isRight(maybeConnectionInfo)) {
+					console.log(maybeConnectionInfo.right)
+					const connection = new signalR.HubConnectionBuilder()
+						.withUrl(maybeConnectionInfo.right.url, {
+							accessTokenFactory: () => maybeConnectionInfo.right.accessToken,
+						})
+						.build()
+
+					connection.on('deviceUpdate', data => {
+						console.log('[deviceUpdate]', data)
+					})
+					connection.start().catch(error => {
+						console.error('[SignalR]', error)
+					})
+				}
+			})
+			.catch(setError)
+	}, [cat, apiClient])
 
 	if (deleting) {
 		return (

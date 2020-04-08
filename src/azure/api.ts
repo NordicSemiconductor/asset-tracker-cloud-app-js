@@ -38,6 +38,9 @@ export type ApiClient = {
 		url: string,
 	) => Promise<Either<ErrorInfo, { success: boolean }>>
 	storeImage: (image: Blob) => Promise<Either<ErrorInfo, { url: string }>>
+	getSignalRConnectionInfo: () => Promise<
+		Either<ErrorInfo, { url: string; accessToken: string }>
+	>
 }
 
 export type IotHubDevice = Twin & {
@@ -168,5 +171,8 @@ export const fetchApiClient = ({
 				}
 				reader.readAsDataURL(image)
 			}),
+		getSignalRConnectionInfo: get<{ url: string; accessToken: string }>(
+			'signalRConnectionInfo',
+		),
 	}
 }
