@@ -51,19 +51,27 @@ export const Cat = ({
 
 	// Listen for state changes
 	useEffect(() => {
+		let isCancelled = false
+		let connection: signalR.HubConnection
 		apiClient
 			.getSignalRConnectionInfo()
 			.then((maybeConnectionInfo) => {
-				if (isRight(maybeConnectionInfo)) {
-					console.log(maybeConnectionInfo.right)
-					const connection = new signalR.HubConnectionBuilder()
+				if (!isCancelled && isRight(maybeConnectionInfo)) {
+					connection = new signalR.HubConnectionBuilder()
 						.withUrl(maybeConnectionInfo.right.url, {
 							accessTokenFactory: () => maybeConnectionInfo.right.accessToken,
 						})
 						.build()
 
 					connection.on(`deviceUpdate:${cat.id}`, (data) => {
-						console.log('[deviceUpdate]', data)
+						if (!isCancelled)
+							update({
+								...cat,
+								state: {
+									...cat.state,
+									...data.update,
+								},
+							})
 					})
 					connection.start().catch((error) => {
 						console.error('[SignalR]', error)
@@ -71,7 +79,11 @@ export const Cat = ({
 				}
 			})
 			.catch(setError)
-	}, [cat, apiClient])
+		return () => {
+			isCancelled = true
+			connection?.stop().catch(console.error)
+		}
+	}, [cat, apiClient, update])
 
 	if (deleting) {
 		return (
