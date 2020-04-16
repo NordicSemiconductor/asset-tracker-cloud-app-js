@@ -29,7 +29,7 @@
     "@amcharts/amcharts4": "^4.9.16",
     "@bifravst/athena-helpers": "^6.2.0",
     "@bifravst/cell-geolocation-helpers": "^1.3.0",
-    "@bifravst/rsrp-bar": "^2.0.2",
+    "@bifravst/rsrp-bar": "^2.1.2",
     "@microsoft/signalr": "^3.1.3",
     "@react-firebase/auth": "^0.2.10",
     "aws-amplify": "^3.0.8",
@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.9.0",
-    "@bifravst/code-style": "^7.1.0",
+    "@bifravst/code-style": "^7.1.1",
     "@bifravst/eslint-config-typescript": "^3.2.0",
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-angular": "^8.3.4",
