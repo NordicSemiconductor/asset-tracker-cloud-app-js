@@ -22,7 +22,7 @@ const toReportedConfig = ({
 	$metadata,
 }: DeviceTwinState): Partial<ReportedConfigState> => {
 	let c = {} as Partial<ReportedConfigState>
-	Object.keys(cfg).forEach(k => {
+	Object.keys(cfg).forEach((k) => {
 		c = {
 			...c,
 			[k as keyof ReportedConfigState]: {
@@ -53,7 +53,7 @@ export const Cat = ({
 	useEffect(() => {
 		apiClient
 			.getSignalRConnectionInfo()
-			.then(maybeConnectionInfo => {
+			.then((maybeConnectionInfo) => {
 				if (isRight(maybeConnectionInfo)) {
 					console.log(maybeConnectionInfo.right)
 					const connection = new signalR.HubConnectionBuilder()
@@ -62,10 +62,10 @@ export const Cat = ({
 						})
 						.build()
 
-					connection.on('deviceUpdate', data => {
+					connection.on(`deviceUpdate:${cat.id}`, (data) => {
 						console.log('[deviceUpdate]', data)
 					})
-					connection.start().catch(error => {
+					connection.start().catch((error) => {
 						console.error('[SignalR]', error)
 					})
 				}
@@ -106,13 +106,13 @@ export const Cat = ({
 
 		apiClient
 			.storeImage(avatar)
-			.then(maybeUrl => {
+			.then((maybeUrl) => {
 				if (isLeft(maybeUrl)) {
 					setError(maybeUrl.left)
 				} else {
 					apiClient
 						.setDeviceAvatar(cat.id, maybeUrl.right.url)
-						.then(res => {
+						.then((res) => {
 							if (isLeft(res)) {
 								setError(res.left)
 							}
@@ -129,7 +129,7 @@ export const Cat = ({
 		})
 		apiClient
 			.setDeviceName(cat.id, name)
-			.then(res => {
+			.then((res) => {
 				if (isLeft(res)) {
 					setError(res.left)
 				}
@@ -172,8 +172,8 @@ export const Cat = ({
 					<Settings
 						reported={toReportedConfig(cat.state.reported)}
 						desired={cat.state.desired?.cfg}
-						onSave={config => {
-							apiClient.setDeviceConfig(cat.id, config).catch(error => {
+						onSave={(config) => {
+							apiClient.setDeviceConfig(cat.id, config).catch((error) => {
 								setError(error)
 							})
 						}}
@@ -190,7 +190,7 @@ export const Cat = ({
 							setDeleting(true)
 							apiClient
 								.deleteDevice(cat.id)
-								.then(maybeSuccess => {
+								.then((maybeSuccess) => {
 									setDeleting(false)
 									if (isLeft(maybeSuccess)) {
 										setError(maybeSuccess.left)
@@ -198,7 +198,7 @@ export const Cat = ({
 										setDeleted(maybeSuccess.right.success)
 									}
 								})
-								.catch(error => {
+								.catch((error) => {
 									setDeleting(false)
 									setError(error)
 								})
