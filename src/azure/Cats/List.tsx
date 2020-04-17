@@ -6,16 +6,20 @@ import { Link } from 'react-router-dom'
 import { ApiClient } from '../api'
 import { isLeft } from 'fp-ts/lib/Either'
 import { ErrorInfo } from '../../Error/ErrorInfo'
+import { connect } from '../signalr'
+import * as signalR from '@microsoft/signalr'
 
 export const List = ({ apiClient }: { apiClient: ApiClient }) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState<ErrorInfo>()
+
+	// Fetch cats
 	useEffect(() => {
 		let isCancelled = false
 		apiClient
 			.listDevices()
-			.then(res => {
+			.then((res) => {
 				if (isCancelled) return
 				setLoading(false)
 				if (isLeft(res)) {
@@ -29,7 +33,7 @@ export const List = ({ apiClient }: { apiClient: ApiClient }) => {
 					)
 				}
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.error(err)
 				if (isCancelled) return
 				setLoading(false)
@@ -39,6 +43,25 @@ export const List = ({ apiClient }: { apiClient: ApiClient }) => {
 			isCancelled = true
 		}
 	}, [apiClient])
+
+	// Listen for button presses
+	useEffect(() => {
+		let isCancelled = false
+		let connection: signalR.HubConnection
+		connect(apiClient)
+			.then((c) => {
+				connection = c
+				c.on(`deviceMessage:btn`, (data) => {
+					// FIXME: Implement button state
+					console.log(data)
+				})
+			})
+			.catch(setError)
+		return () => {
+			isCancelled = true
+			connection?.stop().catch(console.error)
+		}
+	}, [])
 	if (loading || error)
 		return (
 			<Card>

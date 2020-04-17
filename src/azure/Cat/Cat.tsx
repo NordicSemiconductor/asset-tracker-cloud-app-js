@@ -14,6 +14,7 @@ import { LoadedCat } from '../../Cat/CatLoader'
 import { Settings, ReportedConfigState } from '../../Settings/Settings'
 import { DeviceTwinState } from '../../@types/azure-device'
 import * as signalR from '@microsoft/signalr'
+import { connect } from '../signalr'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -53,30 +54,21 @@ export const Cat = ({
 	useEffect(() => {
 		let isCancelled = false
 		let connection: signalR.HubConnection
-		apiClient
-			.getSignalRConnectionInfo()
-			.then((maybeConnectionInfo) => {
-				if (!isCancelled && isRight(maybeConnectionInfo)) {
-					connection = new signalR.HubConnectionBuilder()
-						.withUrl(maybeConnectionInfo.right.url, {
-							accessTokenFactory: () => maybeConnectionInfo.right.accessToken,
+		connect(apiClient)
+			.then((c) => {
+				connection = c
+				c.on(`deviceState:${cat.id}`, (data) => {
+					if (!isCancelled) {
+						console.log('state', data.state)
+						update({
+							...cat,
+							state: {
+								...cat.state,
+								...data.state,
+							},
 						})
-						.build()
-
-					connection.on(`deviceUpdate:${cat.id}`, (data) => {
-						if (!isCancelled)
-							update({
-								...cat,
-								state: {
-									...cat.state,
-									...data.update,
-								},
-							})
-					})
-					connection.start().catch((error) => {
-						console.error('[SignalR]', error)
-					})
-				}
+					}
+				})
 			})
 			.catch(setError)
 		return () => {
