@@ -5,45 +5,20 @@ import {
 	AthenaConsumer,
 	AthenaContext,
 } from '../App'
-import { Card, CardBody, CardHeader, Table } from 'reactstrap'
+import { Card, CardBody, CardHeader } from 'reactstrap'
 import { Iot } from 'aws-sdk'
 import { Loading } from '../../Loading/Loading'
 import { DisplayError } from '../../Error/Error'
-import { Link } from 'react-router-dom'
 import { connectAndListenForMessages } from '../connectAndListenForMessages'
 import { ICredentials } from '@aws-amplify/core'
 import { device } from 'aws-iot-device-sdk'
-import { emojify } from '../../Emojify/Emojify'
-import styled from 'styled-components'
-import { RelativeTime } from '../../RelativeTime/RelativeTime'
-import { isAfter } from 'date-fns'
 import { athenaQuery, parseAthenaResult } from '@bifravst/athena-helpers'
-
-const Cat = styled.td`
-	display: flex;
-	justify-content: space-between;
-`
-
-const CatWithWarning = styled(Cat)`
-	background-color: #ffec8e63;
-`
-
-const ClearButton = styled.button`
-	border: 0;
-	background-color: transparent;
-	padding: 0;
-	font-size: 80%;
-	span {
-		margin-right: 0.25rem;
-	}
-	time {
-		opacity: 0.8;
-	}
-`
-
-type DeviceDateMap = {
-	[key: string]: Date
-}
+import {
+	ButtonWarnings,
+	DeviceDateMap,
+	ButtonWarningProps,
+} from '../../ButtonWarnings/ButtonWarnings'
+import { CatList } from '../../CatList/CatList'
 
 const ListCats = ({
 	iot,
@@ -51,18 +26,19 @@ const ListCats = ({
 	athenaContext,
 	mqttEndpoint,
 	region,
+	showButtonWarning,
+	snooze,
+	setButtonPresses,
 }: {
 	iot: Iot
 	credentials: ICredentials
 	athenaContext: AthenaContext
 	region: string
 	mqttEndpoint: string
-}) => {
+} & ButtonWarningProps) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState<Error>()
-	const [buttonSnoozes, setButtonSnoozes] = useState<DeviceDateMap>({})
-	const [buttonPresses, setButtonPresses] = useState<DeviceDateMap>({})
 
 	// Fetch list of devices
 	useEffect(() => {
@@ -80,7 +56,7 @@ const ListCats = ({
 				)
 				setLoading(false)
 			})
-			.catch(err => {
+			.catch((err) => {
 				if (isCancelled) return
 				setError(err)
 				setLoading(false)
@@ -100,7 +76,7 @@ const ListCats = ({
 			onMessage: ({ deviceId, message: { btn } }) => {
 				if (isCancelled) return
 				if (btn) {
-					setButtonPresses(presses => ({
+					setButtonPresses((presses) => ({
 						...presses,
 						[deviceId]: btn.ts,
 					}))
@@ -109,10 +85,10 @@ const ListCats = ({
 			region,
 			mqttEndpoint,
 		})
-			.then(c => {
+			.then((c) => {
 				connection = c
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.error(err)
 			})
 		return () => {
@@ -121,7 +97,7 @@ const ListCats = ({
 				connection.end()
 			}
 		}
-	}, [iot, credentials, region, mqttEndpoint])
+	}, [iot, credentials, region, mqttEndpoint, setButtonPresses])
 
 	// Fetch historical button presses
 	useEffect(() => {
@@ -151,16 +127,16 @@ const ListCats = ({
 					) t JOIN ${dataBase}.${rawDataTable} m ON m.timestamp = t.max_timestamp AND m.deviceid = t.deviceid
 				`,
 		})
-			.then(async ResultSet => {
+			.then(async (ResultSet) => {
 				if (isCancelled) return
 				const data = parseAthenaResult({
 					ResultSet,
 					skip: 1,
 					formatFields: {
-						ts: n => new Date(n),
+						ts: (n) => new Date(n),
 					},
 				})
-				setButtonPresses(presses => ({
+				setButtonPresses((presses) => ({
 					...data.reduce(
 						(p, { deviceid, ts }) => ({
 							...p,
@@ -172,37 +148,13 @@ const ListCats = ({
 				}))
 				console.debug('[Button Presses]', data)
 			})
-			.catch(error => {
+			.catch((error) => {
 				console.error(error)
 			})
 		return () => {
 			isCancelled = true
 		}
-	}, [athenaContext])
-
-	// Read/Set localstorage of button snoozes
-	useEffect(() => {
-		const snoozes = window.localStorage.getItem(`bifravst:catlist:snoozes`)
-		if (snoozes) {
-			console.log(`Restoring`, JSON.parse(snoozes))
-			setButtonSnoozes(
-				Object.entries(JSON.parse(snoozes)).reduce(
-					(snoozes, [deviceId, ts]) => ({
-						...snoozes,
-						[deviceId]: new Date(ts as string),
-					}),
-					{},
-				),
-			)
-		}
-	}, [])
-
-	const showButtonWarning = (deviceId: string): boolean => {
-		if (!buttonPresses[deviceId]) return false
-		if (!buttonSnoozes[deviceId]) return true
-		if (isAfter(buttonPresses[deviceId], buttonSnoozes[deviceId])) return true
-		return false
-	}
+	}, [athenaContext, setButtonPresses])
 
 	if (loading || error)
 		return (
@@ -217,43 +169,7 @@ const ListCats = ({
 		<Card data-intro="This lists your cats. Click on one to see its details.">
 			<CardHeader>Cats</CardHeader>
 			{cats.length > 0 && (
-				<Table>
-					<tbody>
-						{cats.map(({ id, name }) => {
-							const showWarning = showButtonWarning(id)
-							const Widget = showWarning ? CatWithWarning : Cat
-							return (
-								<tr key={id}>
-									<Widget>
-										<Link to={`/cat/${id}`}>{name}</Link>
-										{showWarning && (
-											<ClearButton
-												title="Click to snooze alarm"
-												onClick={() => {
-													setButtonSnoozes(snoozes => {
-														const u = {
-															...snoozes,
-															[id]: new Date(),
-														}
-														console.log(`Storing`, JSON.stringify(u))
-														window.localStorage.setItem(
-															`bifravst:catlist:snoozes`,
-															JSON.stringify(u),
-														)
-														return u
-													})
-												}}
-											>
-												{emojify('🔴')}
-												<RelativeTime ts={buttonPresses[id]} />
-											</ClearButton>
-										)}
-									</Widget>
-								</tr>
-							)
-						})}
-					</tbody>
-				</Table>
+				<CatList {...{ showButtonWarning, snooze, setButtonPresses, cats }} />
 			)}
 			{!cats.length && (
 				<CardBody>
@@ -275,14 +191,25 @@ const ListCats = ({
 
 export const List = () => (
 	<AthenaConsumer>
-		{athenaContext => (
+		{(athenaContext) => (
 			<CredentialsConsumer>
-				{credentials => (
+				{(credentials) => (
 					<IotConsumer>
 						{({ iot, mqttEndpoint, region }) => (
-							<ListCats
-								{...{ athenaContext, iot, credentials, mqttEndpoint, region }}
-							/>
+							<ButtonWarnings>
+								{(buttonWarningProps) => (
+									<ListCats
+										{...{
+											athenaContext,
+											iot,
+											credentials,
+											mqttEndpoint,
+											region,
+											...buttonWarningProps,
+										}}
+									/>
+								)}
+							</ButtonWarnings>
 						)}
 					</IotConsumer>
 				)}
