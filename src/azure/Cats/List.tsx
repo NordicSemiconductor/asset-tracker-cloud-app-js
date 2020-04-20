@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardBody, CardHeader, Table } from 'reactstrap'
+import { Card, CardBody, CardHeader } from 'reactstrap'
 import { Loading } from '../../Loading/Loading'
 import { DisplayError as ErrorComponent } from '../../Error/Error'
-import { Link } from 'react-router-dom'
 import { ApiClient } from '../api'
 import { isLeft } from 'fp-ts/lib/Either'
 import { ErrorInfo } from '../../Error/ErrorInfo'
 import { connect } from '../signalr'
 import * as signalR from '@microsoft/signalr'
+import { DeviceDateMap } from '../../ButtonWarnings/ButtonWarnings'
+import { CatList } from '../../CatList/CatList'
 
-export const List = ({ apiClient }: { apiClient: ApiClient }) => {
+export const List = ({
+	apiClient,
+	showButtonWarning,
+	snooze,
+	setButtonPresses,
+}: {
+	apiClient: ApiClient
+	showButtonWarning: (id: string) => Date | undefined
+	snooze: (id: string) => void
+	setButtonPresses: React.Dispatch<React.SetStateAction<DeviceDateMap>>
+}) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState<ErrorInfo>()
@@ -54,6 +65,12 @@ export const List = ({ apiClient }: { apiClient: ApiClient }) => {
 				c.on(`deviceMessage:btn`, (data) => {
 					// FIXME: Implement button state
 					console.log(data)
+					if (!isCancelled) {
+						setButtonPresses((presses) => ({
+							...presses,
+							[data.deviceId]: new Date(data.message.btn.ts),
+						}))
+					}
 				})
 			})
 			.catch(setError)
@@ -61,7 +78,7 @@ export const List = ({ apiClient }: { apiClient: ApiClient }) => {
 			isCancelled = true
 			connection?.stop().catch(console.error)
 		}
-	}, [])
+	}, [apiClient, setButtonPresses])
 	if (loading || error)
 		return (
 			<Card>
@@ -75,17 +92,7 @@ export const List = ({ apiClient }: { apiClient: ApiClient }) => {
 		<Card data-intro="This lists your cats. Click on one to see its details.">
 			<CardHeader>Cats</CardHeader>
 			{cats.length > 0 && (
-				<Table>
-					<tbody>
-						{cats.map(({ id, name }) => (
-							<tr key={id}>
-								<td>
-									<Link to={`/cat/${id}`}>{name}</Link>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</Table>
+				<CatList {...{ showButtonWarning, snooze, setButtonPresses, cats }} />
 			)}
 			{!cats.length && (
 				<CardBody>
