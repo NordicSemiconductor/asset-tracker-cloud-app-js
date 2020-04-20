@@ -11,31 +11,17 @@ import { ErrorInfo } from '../../Error/ErrorInfo'
 import { isLeft } from 'fp-ts/lib/Either'
 import { Loading } from '../../Loading/Loading'
 import { LoadedCat } from '../../Cat/CatLoader'
-import { Settings, ReportedConfigState } from '../../Settings/Settings'
-import { DeviceTwinState } from '../../@types/azure-device'
+import { Settings } from '../../Settings/Settings'
 import * as signalR from '@microsoft/signalr'
 import { connect } from '../signalr'
+import * as merge from 'deepmerge'
+import { DeviceTwin } from '../../@types/azure-device'
+import { Map, CatMapContainer, Location, CellLocation } from '../../Map/Map'
+import { Toggle } from '../../Toggle/Toggle'
+import { ReportedTime } from '../../ReportedTime/ReportedTime'
+import { toReportedWithTime } from '../toReportedWithTime'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
-
-const toReportedConfig = ({
-	cfg,
-	$metadata,
-}: DeviceTwinState): Partial<ReportedConfigState> => {
-	let c = {} as Partial<ReportedConfigState>
-	Object.keys(cfg).forEach((k) => {
-		c = {
-			...c,
-			[k as keyof ReportedConfigState]: {
-				value: cfg?.[k as keyof ReportedConfigState],
-				receivedAt: new Date(
-					$metadata?.cfg?.[k as keyof ReportedConfigState].$lastUpdated,
-				),
-			},
-		}
-	})
-	return c
-}
 
 export const Cat = ({
 	apiClient,
@@ -46,6 +32,8 @@ export const Cat = ({
 	cat: Device & LoadedCat
 	update: (cat: Device & LoadedCat) => void
 }) => {
+	const reportedWithTime = toReportedWithTime(cat.state.reported)
+
 	const [deleted, setDeleted] = useState(false)
 	const [deleting, setDeleting] = useState(false)
 	const [error, setError] = useState<ErrorInfo>()
@@ -62,10 +50,7 @@ export const Cat = ({
 						console.log('state', data.state)
 						update({
 							...cat,
-							state: {
-								...cat.state,
-								...data.state,
-							},
+							state: merge.all<DeviceTwin>([cat.state, data.state]),
 						})
 					}
 				})
@@ -141,9 +126,31 @@ export const Cat = ({
 			.catch(setError)
 	}
 
+	let deviceLocation: Location | undefined = undefined
+	if (reportedWithTime.gps?.v?.value?.lat) {
+		deviceLocation = {
+			ts: new Date(reportedWithTime.gps?.ts?.value || Date.now()),
+			position: {
+				lat: reportedWithTime.gps.v?.value.lat,
+				lng: reportedWithTime.gps.v?.value.lng,
+			},
+		}
+	}
+
+	// FIXME: Implement cell geolocation
+	const cellLocation: CellLocation | undefined = undefined
+
 	return (
 		<CatCard>
-			{/* FIXME: Map goes here */}
+			<CatMapContainer>
+				<Map
+					deviceLocation={deviceLocation}
+					cellLocation={cellLocation}
+					accuracy={reportedWithTime.gps?.v?.value.acc}
+					heading={reportedWithTime.gps?.v?.value.hdg}
+					label={cat.id}
+				/>
+			</CatMapContainer>
 			<CardHeader>
 				<CatHeader
 					{...{
@@ -153,6 +160,42 @@ export const Cat = ({
 						onNameChange,
 					}}
 				></CatHeader>
+				{cat.state.reported && (
+					<>
+						{reportedWithTime.gps?.v && (
+							<Toggle>
+								<div className={'info'}>
+									{reportedWithTime.gps?.v?.value.spd &&
+										emojify(
+											` 🏃${Math.round(reportedWithTime.gps?.v?.value.spd)}m/s`,
+										)}
+									{reportedWithTime.gps?.v?.value.alt &&
+										emojify(
+											`✈️ ${Math.round(reportedWithTime.gps?.v?.value.alt)}m`,
+										)}
+									<ReportedTime
+										receivedAt={reportedWithTime.gps?.v.receivedAt}
+										reportedAt={
+											new Date(reportedWithTime.gps?.ts?.value || Date.now())
+										}
+									/>
+								</div>
+							</Toggle>
+						)}
+						{cat.state.reported?.bat?.v && (
+							<Toggle>
+								<div className={'info'}>
+									{emojify(`🔋 ${cat.state.reported?.bat / 1000}V`)}
+									<span />
+									<ReportedTime
+										receivedAt={cat.state.reported?.bat?.receivedAt}
+										reportedAt={new Date(cat.state.reported?.bat?.ts)}
+									/>
+								</div>
+							</Toggle>
+						)}
+					</>
+				)}
 			</CardHeader>
 			<CardBody>
 				<Collapsable
@@ -174,7 +217,7 @@ export const Cat = ({
 					title={<h3>{emojify('⚙️ Settings')}</h3>}
 				>
 					<Settings
-						reported={toReportedConfig(cat.state.reported)}
+						reported={reportedWithTime.cfg}
 						desired={cat.state.desired?.cfg}
 						onSave={(config) => {
 							apiClient.setDeviceConfig(cat.id, config).catch((error) => {
