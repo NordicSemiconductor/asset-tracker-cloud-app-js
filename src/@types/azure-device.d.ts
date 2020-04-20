@@ -1,4 +1,4 @@
-import { DeviceConfig } from './device-state'
+import { DeviceConfig, Gps } from './device-state'
 
 type PropertyMetadata = {
 	[key: string]: {
@@ -18,8 +18,10 @@ export type DeviceTwinState = {
 export type DeviceTwin = {
 	desired: DeviceTwinState & {
 		cfg?: Partial<DeviceConfig>
+		gps?: Partial<Gps>
 	}
 	reported: DeviceTwinState & {
 		cfg?: Partial<DeviceConfig>
+		gps?: Partial<Gps>
 	}
 }

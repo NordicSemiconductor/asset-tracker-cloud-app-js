@@ -10,9 +10,30 @@ import {
 } from 'react-leaflet'
 import { NoMap } from './NoMap'
 import styled from 'styled-components'
+import { mobileBreakpoint } from '../Styles'
+import { FormGroup } from 'reactstrap'
 
 const StyledLeafletMap = styled(LeafletMap)`
 	height: 300px;
+`
+
+export const CatMapContainer = styled.div`
+	position: relative;
+`
+
+export const SettingsFormGroup = styled(FormGroup)`
+	position: absolute;
+	padding: 0.5rem 0.5rem 0.5rem 2rem;
+	background-color: #ffffffaf;
+	top: 0;
+	right: 0;
+	z-index: 999;
+	@media (min-width: ${mobileBreakpoint}) {
+		top: auto;
+		right: auto;
+		bottom: 0;
+		z-index: 10000;
+	}
 `
 
 type Position = { lat: number; lng: number }

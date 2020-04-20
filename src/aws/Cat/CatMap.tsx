@@ -1,33 +1,18 @@
 import { HistoricalDataLoader } from '../../HistoricalData/HistoricalDataLoader'
-import { Map, Location, CellLocation } from '../../Map/Map'
+import {
+	Map,
+	Location,
+	CellLocation,
+	SettingsFormGroup,
+	CatMapContainer,
+} from '../../Map/Map'
 import React, { useState, useEffect } from 'react'
-import { FormGroup, Label, Input } from 'reactstrap'
-import styled from 'styled-components'
-import { mobileBreakpoint } from '../../Styles'
+import { Label, Input } from 'reactstrap'
 import { RoamingInformation, ThingState } from '../../@types/aws-device'
 import { AthenaContext } from '../App'
 import { geolocateCell } from '../geolocateCell'
 import { isRight } from 'fp-ts/lib/Either'
 import { CatInfo } from './Cat'
-
-const SettingsFormGroup = styled(FormGroup)`
-	position: absolute;
-	padding: 0.5rem 0.5rem 0.5rem 2rem;
-	background-color: #ffffffaf;
-	top: 0;
-	right: 0;
-	z-index: 999;
-	@media (min-width: ${mobileBreakpoint}) {
-		top: auto;
-		right: auto;
-		bottom: 0;
-		z-index: 10000;
-	}
-`
-
-const CatMapContainer = styled.div`
-	position: relative;
-`
 
 export const CatMap = ({
 	athenaContext,
@@ -60,7 +45,7 @@ export const CatMap = ({
 				cell: reported.roam.v.cell.value,
 				mccmnc: reported.roam.v.mccmnc.value,
 			})
-				.then(geolocation => {
+				.then((geolocation) => {
 					if (isCancelled) return
 					if (isRight(geolocation)) {
 						const l: CellLocation = {
@@ -70,7 +55,7 @@ export const CatMap = ({
 						setCellLocation(l)
 					}
 				})
-				.catch(err => {
+				.catch((err) => {
 					console.error('[geolocateCell]', err)
 				})
 		}
@@ -143,7 +128,7 @@ export const CatMap = ({
 				formatFields={{
 					lat: parseFloat,
 					lng: parseFloat,
-					date: v => new Date(v),
+					date: (v) => new Date(v),
 				}}
 				QueryString={`SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${cat.id}' AND reported.gps IS NOT NULL AND reported.gps.v.lat IS NOT NULL AND reported.gps.v.lng IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT 10`}
 				loading={mapWithoutHistoricalData}

@@ -7,7 +7,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { emojify } from '../Emojify/Emojify'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
-import { DeviceConfig } from '../@types/device-state'
+import { DeviceConfig, ReportedConfigState } from '../@types/device-state'
 
 const SettingsForm = styled(Form)`
 	@media (min-width: ${mobileBreakpoint}) {
@@ -64,39 +64,18 @@ export const FooterWithFullWidthButton = styled.footer`
 	flex-direction: column;
 `
 
-type ConfigProperty<A> = {
-	value: A
-	receivedAt: Date
-}
-
-export type DesiredConfigState = {
-	act: boolean
-	actwt: number
-	mvres: number
-	mvt: number
-	gpst: number
-	celt: number
-	acct: number
-}
-
-type MakeConfigProperty<Type> = {
-	readonly [Key in keyof Type]: ConfigProperty<Type[Key]>
-}
-
-export type ReportedConfigState = MakeConfigProperty<DesiredConfigState>
-
 export const Settings = ({
 	onSave,
 	reported,
 	desired,
 }: {
 	reported?: Partial<ReportedConfigState>
-	desired?: Partial<DesiredConfigState>
+	desired?: Partial<DeviceConfig>
 	onSave: (config: Partial<DeviceConfig>) => void
 }) => {
 	const r: Partial<ReportedConfigState> = reported || {}
 
-	const [newDesired, setNewDesired] = useState<Partial<DesiredConfigState>>(
+	const [newDesired, setNewDesired] = useState<Partial<DeviceConfig>>(
 		desired || {},
 	)
 
@@ -144,7 +123,7 @@ export const Settings = ({
 									{emojify('❓')}
 								</Button>
 							}
-							onOutDated={r => (
+							onOutDated={(r) => (
 								<Button
 									color={'danger'}
 									outline={true}
@@ -236,7 +215,7 @@ export const Settings = ({
 							value: r.acct.value / 10,
 						}
 					}
-					onChange={updateConfigProperty('acct', v =>
+					onChange={updateConfigProperty('acct', (v) =>
 						Math.round(parseFloat(v) * 10),
 					)}
 				/>

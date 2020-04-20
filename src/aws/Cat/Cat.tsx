@@ -15,8 +15,8 @@ import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDi
 import { CatCard } from '../../Cat/CatCard'
 import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
 import { ThingState, ThingReportedConfig } from '../../@types/aws-device'
-import { DeviceConfig } from '../../@types/device-state'
-import { Settings, ReportedConfigState } from '../../Settings/Settings'
+import { DeviceConfig, ReportedConfigState } from '../../@types/device-state'
+import { Settings } from '../../Settings/Settings'
 
 const intro = introJs()
 
@@ -33,7 +33,7 @@ const toReportedConfig = (
 	cfg: ThingReportedConfig,
 ): Partial<ReportedConfigState> => {
 	let c = {} as Partial<ReportedConfigState>
-	Object.keys(cfg).forEach(k => {
+	Object.keys(cfg).forEach((k) => {
 		c = {
 			...c,
 			[k as keyof ReportedConfigState]: {
@@ -94,14 +94,12 @@ export const Cat = ({
 		const setErrorIfNotCanceled = (error: Error) =>
 			!didCancel && setError(error)
 
-		getThingState()
-			.then(setStateIfNotCanceled)
-			.catch(setErrorIfNotCanceled)
+		getThingState().then(setStateIfNotCanceled).catch(setErrorIfNotCanceled)
 
 		listenForStateChange({
 			onNewState: setState,
 		})
-			.then(s => {
+			.then((s) => {
 				if (didCancel) {
 					s()
 				}
@@ -219,7 +217,7 @@ export const Cat = ({
 										: {}
 								}
 								desired={state.desired?.cfg}
-								onSave={config => {
+								onSave={(config) => {
 									updateDeviceConfig(config)
 										.catch(setError)
 										.then(() => {
