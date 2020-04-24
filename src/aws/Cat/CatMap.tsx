@@ -8,7 +8,7 @@ import {
 } from '../../Map/Map'
 import React, { useState, useEffect } from 'react'
 import { Label, Input } from 'reactstrap'
-import { RoamingInformation, ThingState } from '../../@types/aws-device'
+import { ThingState } from '../../@types/aws-device'
 import { AthenaContext } from '../App'
 import { geolocateCell } from '../geolocateCell'
 import { isRight } from 'fp-ts/lib/Either'
@@ -39,17 +39,14 @@ export const CatMap = ({
 
 	useEffect(() => {
 		let isCancelled = false
-		if (reported && reported.roam) {
-			geolocateCell(geolocationApiEndpoint)({
-				area: reported.roam.v.area.value,
-				cell: reported.roam.v.cell.value,
-				mccmnc: reported.roam.v.mccmnc.value,
-			})
+		if (reported.roam) {
+			const { v, ts } = reported.roam
+			geolocateCell(geolocationApiEndpoint)(v)
 				.then((geolocation) => {
 					if (isCancelled) return
 					if (isRight(geolocation)) {
 						const l: CellLocation = {
-							ts: new Date((reported.roam as RoamingInformation).ts.value),
+							ts: new Date(ts),
 							position: geolocation.right,
 						}
 						setCellLocation(l)
@@ -73,16 +70,14 @@ export const CatMap = ({
 		)
 	}
 
-	const gps = reported && reported.gps
-
 	let deviceLocation: Location | undefined = undefined
 
-	if (gps !== undefined) {
+	if (reported.gps !== undefined) {
 		deviceLocation = {
-			ts: new Date(gps.ts.value),
+			ts: new Date(reported.gps.ts),
 			position: {
-				lat: gps.v.lat.value,
-				lng: gps.v.lng.value,
+				lat: reported.gps.v.lat,
+				lng: reported.gps.v.lng,
 			},
 		}
 	}
@@ -91,8 +86,8 @@ export const CatMap = ({
 		<Map
 			deviceLocation={deviceLocation}
 			cellLocation={cellLocation}
-			accuracy={gps && gps.v.acc && gps.v.acc.value}
-			heading={gps && gps.v.hdg && gps.v.hdg.value}
+			accuracy={reported.gps?.v.acc}
+			heading={reported.gps?.v.hdg}
 			label={cat.id}
 		/>
 	)
@@ -137,8 +132,8 @@ export const CatMap = ({
 					<Map
 						deviceLocation={deviceLocation}
 						cellLocation={cellLocation}
-						accuracy={gps && gps.v.acc && gps.v.acc.value}
-						heading={gps && gps.v.hdg && gps.v.hdg.value}
+						accuracy={reported.gps?.v.acc}
+						heading={reported.gps?.v.hdg}
 						label={cat.id}
 						history={((data as unknown) as {
 							date: string

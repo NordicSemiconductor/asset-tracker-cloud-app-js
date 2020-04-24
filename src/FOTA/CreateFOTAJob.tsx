@@ -1,13 +1,13 @@
-import { DeviceInformation } from '../@types/aws-device'
 import semver from 'semver'
 import React, { useState } from 'react'
 import { Button, Form, FormGroup, Input, Label } from 'reactstrap'
 import { FilePicker } from '../FilePicker/FilePicker'
 import { FooterWithFullWidthButton } from '../Settings/Settings'
 import { OnCreateUpgradeJob } from './FOTA'
+import { DeviceInformation } from '../@types/device-state'
 
 const getNextAppVersion = (device: DeviceInformation): string =>
-	semver.inc(device.v.appV.value, 'patch') || device.v.appV.value
+	semver.inc(device.v.appV, 'patch') || device.v.appV
 
 export const CreateFOTAJob = ({
 	device,
@@ -23,7 +23,7 @@ export const CreateFOTAJob = ({
 		data: Blob
 	}>()
 	const [nextVersion, setNextVersion] = useState(getNextAppVersion(device))
-	const [targetBoard, setTargetBoard] = useState(device.v.brdV.value)
+	const [targetBoard, setTargetBoard] = useState(device.v.brdV)
 	const [saving, setSaving] = useState(false)
 	return (
 		<Form>
@@ -36,7 +36,7 @@ export const CreateFOTAJob = ({
 							maxSize={1024 * 1024}
 							onError={onError}
 							disabled={saving}
-							onFile={file => {
+							onFile={(file) => {
 								onError(undefined)
 								setUpdateFile(file)
 								const semverMatch = /v([0-9]+\.[0-9]+\..+)\.[^.]+$/.exec(
@@ -51,7 +51,7 @@ export const CreateFOTAJob = ({
 								if (targetMatch) {
 									setTargetBoard(targetMatch[0])
 								} else {
-									setTargetBoard(device.v.brdV.value)
+									setTargetBoard(device.v.brdV)
 								}
 							}}
 						/>

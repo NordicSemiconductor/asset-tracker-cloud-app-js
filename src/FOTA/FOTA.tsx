@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { DeviceInformation } from '../@types/aws-device'
 import { Alert } from 'reactstrap'
 import { DisplayError as ShowError } from '../Error/Error'
 import { DeviceUpgradeFirmwareJob } from '../aws/listUpgradeFirmwareJobs'
 import { useDebouncedCallback } from 'use-debounce'
 import { Jobs } from './FOTAJob'
 import { CreateFOTAJob } from './CreateFOTAJob'
+import { DeviceInformation } from '../@types/device-state'
 
 export type OnCreateUpgradeJob = (args: {
 	file: File
@@ -37,7 +37,7 @@ export const FOTA = ({
 	const [debouncedListUpgradeJobs] = useDebouncedCallback(() => {
 		listUpgradeJobs()
 			.then(setJobs)
-			.catch(err => {
+			.catch((err) => {
 				console.error(err)
 			})
 	}, 250)
@@ -61,8 +61,8 @@ export const FOTA = ({
 						key={`uploadfile-${addJobKey}`}
 						device={device}
 						onError={setError}
-						onJob={async job =>
-							onCreateUpgradeJob(job).then(createdJob => {
+						onJob={async (job) =>
+							onCreateUpgradeJob(job).then((createdJob) => {
 								setJobs([createdJob, ...jobs])
 								setAddJobKey(addJobKey + 1)
 								return createdJob
@@ -76,21 +76,21 @@ export const FOTA = ({
 					<hr />
 					<Jobs
 						jobs={jobs}
-						cancelUpgradeJob={args => {
+						cancelUpgradeJob={(args) => {
 							cancelUpgradeJob(args)
 								.then(() => {
 									debouncedListUpgradeJobs()
 								})
-								.catch(err => {
+								.catch((err) => {
 									console.error(err)
 								})
 						}}
-						deleteUpgradeJob={args => {
+						deleteUpgradeJob={(args) => {
 							deleteUpgradeJob(args)
 								.then(() => {
 									debouncedListUpgradeJobs()
 								})
-								.catch(err => {
+								.catch((err) => {
 									console.error(err)
 								})
 						}}

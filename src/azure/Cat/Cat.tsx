@@ -19,7 +19,9 @@ import { DeviceTwin } from '../../@types/azure-device'
 import { Map, CatMapContainer, Location, CellLocation } from '../../Map/Map'
 import { Toggle } from '../../Toggle/Toggle'
 import { ReportedTime } from '../../ReportedTime/ReportedTime'
-import { toReportedWithTime } from '../toReportedWithTime'
+import { toReportedWithReceivedAt } from '../toReportedWithReceivedAt'
+import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
+import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -32,7 +34,7 @@ export const Cat = ({
 	cat: Device & LoadedCat
 	update: (cat: Device & LoadedCat) => void
 }) => {
-	const reportedWithTime = toReportedWithTime(cat.state.reported)
+	const reportedWithTime = toReportedWithReceivedAt(cat.state.reported)
 
 	const [deleted, setDeleted] = useState(false)
 	const [deleting, setDeleting] = useState(false)
@@ -160,8 +162,19 @@ export const Cat = ({
 						onNameChange,
 					}}
 				></CatHeader>
-				{cat.state.reported && (
+				{reportedWithTime && (
 					<>
+						{reportedWithTime.roam?.v && reportedWithTime.dev?.v && (
+							<Toggle>
+								<ConnectionInformation
+									mccmnc={reportedWithTime.roam.v.value.mccmnc}
+									rsrp={reportedWithTime.roam.v.value.rsrp}
+									receivedAt={reportedWithTime.roam.v.receivedAt}
+									reportedAt={new Date(reportedWithTime.roam.ts.value)}
+									networkOperator={reportedWithTime.dev.v.value.nw}
+								/>
+							</Toggle>
+						)}
 						{reportedWithTime.gps?.v && (
 							<Toggle>
 								<div className={'info'}>
@@ -182,14 +195,14 @@ export const Cat = ({
 								</div>
 							</Toggle>
 						)}
-						{cat.state.reported?.bat?.v && (
+						{reportedWithTime.bat && (
 							<Toggle>
 								<div className={'info'}>
-									{emojify(`🔋 ${cat.state.reported?.bat / 1000}V`)}
+									{emojify(`🔋 ${reportedWithTime.bat.v.value / 1000}V`)}
 									<span />
 									<ReportedTime
-										receivedAt={cat.state.reported?.bat?.receivedAt}
-										reportedAt={new Date(cat.state.reported?.bat?.ts)}
+										receivedAt={reportedWithTime.bat.v.receivedAt}
+										reportedAt={new Date(reportedWithTime.bat.ts.value)}
 									/>
 								</div>
 							</Toggle>
@@ -226,6 +239,21 @@ export const Cat = ({
 						}}
 					/>
 				</Collapsable>
+				{reportedWithTime?.dev && reportedWithTime?.roam && (
+					<>
+						<hr />
+						<Collapsable
+							id={'cat:information'}
+							title={<h3>{emojify('ℹ️ Device Information')}</h3>}
+						>
+							<DeviceInfo
+								key={`${cat.version}`}
+								device={reportedWithTime.dev}
+								roaming={reportedWithTime.roam}
+							/>
+						</Collapsable>
+					</>
+				)}
 				<hr />
 				<Collapsable
 					id={'cat:dangerzone'}

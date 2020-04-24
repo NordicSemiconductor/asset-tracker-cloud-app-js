@@ -14,9 +14,11 @@ import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
 import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDiagram'
 import { CatCard } from '../../Cat/CatCard'
 import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
-import { ThingState, ThingReportedConfig } from '../../@types/aws-device'
-import { DeviceConfig, ReportedConfigState } from '../../@types/device-state'
+import { ThingState } from '../../@types/aws-device'
+import { DeviceConfig } from '../../@types/device-state'
 import { Settings } from '../../Settings/Settings'
+import { toReportedWithReceivedAt } from '../toReportedWithReceivedAt'
+import { Option, isSome } from 'fp-ts/lib/Option'
 
 const intro = introJs()
 
@@ -28,23 +30,6 @@ export type CatInfo = {
 }
 
 const isNameValid = (name: string) => /^[0-9a-z_.,@/:#-]{1,800}$/i.test(name)
-
-const toReportedConfig = (
-	cfg: ThingReportedConfig,
-): Partial<ReportedConfigState> => {
-	let c = {} as Partial<ReportedConfigState>
-	Object.keys(cfg).forEach((k) => {
-		c = {
-			...c,
-			[k as keyof ReportedConfigState]: {
-				value: cfg?.[k as keyof ReportedConfigState]?.value,
-				receivedAt: cfg?.[k as keyof ReportedConfigState]?.receivedAt,
-			},
-		}
-	})
-
-	return c
-}
 
 export const Cat = ({
 	cat,
@@ -70,7 +55,7 @@ export const Cat = ({
 		jobId: string
 		executionNumber: number
 	}) => Promise<void>
-	getThingState: () => Promise<ThingState>
+	getThingState: () => Promise<Option<ThingState>>
 	updateDeviceConfig: (cfg: Partial<DeviceConfig>) => Promise<void>
 	cat: CatInfo
 	credentials: ICredentials
@@ -83,7 +68,6 @@ export const Cat = ({
 	const [state, setState] = useState<ThingState>()
 	const [error, setError] = useState<Error>()
 	const reported = state && state.reported
-	const desired = state && state.desired
 
 	useEffect(() => {
 		let didCancel = false
@@ -94,10 +78,18 @@ export const Cat = ({
 		const setErrorIfNotCanceled = (error: Error) =>
 			!didCancel && setError(error)
 
-		getThingState().then(setStateIfNotCanceled).catch(setErrorIfNotCanceled)
+		getThingState()
+			.then((maybeState) => {
+				if (isSome(maybeState)) {
+					setStateIfNotCanceled(maybeState.value)
+				}
+			})
+			.catch(setErrorIfNotCanceled)
 
 		listenForStateChange({
-			onNewState: setState,
+			onNewState: (newState) => {
+				setState((state) => ({ ...state, ...newState }))
+			},
 		})
 			.then((s) => {
 				if (didCancel) {
@@ -139,6 +131,13 @@ export const Cat = ({
 			</Card>
 		)
 
+	const reportedWithReceived =
+		state?.reported &&
+		toReportedWithReceivedAt({
+			reported: state.reported,
+			metadata: state.metadata,
+		})
+
 	return (
 		<CatCard>
 			{state && catMap(state)}
@@ -151,39 +150,45 @@ export const Cat = ({
 				/>
 				{reported && (
 					<>
-						{reported.roam && (
+						{reportedWithReceived?.roam && (
 							<Toggle>
 								<ConnectionInformation
-									mccmnc={reported.roam.v.mccmnc.value}
-									rsrp={reported.roam.v.rsrp.value}
-									receivedAt={reported.roam.v.rsrp.receivedAt}
-									reportedAt={new Date(reported.roam.ts.value)}
-									networkOperator={reported.dev?.v.nw.value}
+									mccmnc={reportedWithReceived.roam.v.value.mccmnc}
+									rsrp={reportedWithReceived.roam.v.value.rsrp}
+									receivedAt={reportedWithReceived.roam.v.receivedAt}
+									reportedAt={new Date(reportedWithReceived.roam.ts.value)}
+									networkOperator={reportedWithReceived.dev?.v.value.nw}
 								/>
 							</Toggle>
 						)}
-						{reported.gps && reported.gps.v && (
+						{reportedWithReceived?.gps && (
 							<Toggle>
 								<div className={'info'}>
-									{reported.gps.v.spd &&
-										emojify(` 🏃${Math.round(reported.gps.v.spd.value)}m/s`)}
-									{reported.gps.v.alt &&
-										emojify(`✈️ ${Math.round(reported.gps.v.alt.value)}m`)}
+									{reportedWithReceived.gps.v.value.spd &&
+										emojify(
+											` 🏃${Math.round(
+												reportedWithReceived.gps.v.value.spd,
+											)}m/s`,
+										)}
+									{reportedWithReceived.gps.v.value.alt &&
+										emojify(
+											`✈️ ${Math.round(reportedWithReceived.gps.v.value.alt)}m`,
+										)}
 									<ReportedTime
-										receivedAt={reported.gps.v.lat.receivedAt}
-										reportedAt={new Date(reported.gps.ts.value)}
+										receivedAt={reportedWithReceived.gps.v.receivedAt}
+										reportedAt={new Date(reportedWithReceived.gps.ts.value)}
 									/>
 								</div>
 							</Toggle>
 						)}
-						{reported.bat && reported.bat.v && (
+						{reportedWithReceived?.bat && (
 							<Toggle>
 								<div className={'info'}>
-									{emojify(`🔋 ${reported.bat.v.value / 1000}V`)}
+									{emojify(`🔋 ${reportedWithReceived.bat.v.value / 1000}V`)}
 									<span />
 									<ReportedTime
-										receivedAt={reported.bat.v.receivedAt}
-										reportedAt={new Date(reported.bat.ts.value)}
+										receivedAt={reportedWithReceived.bat.v.receivedAt}
+										reportedAt={new Date(reportedWithReceived.bat.ts.value)}
 									/>
 								</div>
 							</Toggle>
@@ -211,24 +216,22 @@ export const Cat = ({
 							title={<h3>{emojify('⚙️ Settings')}</h3>}
 						>
 							<Settings
-								reported={
-									state.reported?.cfg
-										? toReportedConfig(state.reported.cfg)
-										: {}
-								}
+								reported={reportedWithReceived?.cfg}
 								desired={state.desired?.cfg}
 								onSave={(config) => {
 									updateDeviceConfig(config)
 										.catch(setError)
 										.then(() => {
-											setState({
-												desired: {
-													...(desired ? desired : {}),
-													cfg: config,
-												},
-												reported: {
-													...(reported ? reported : {}),
-												},
+											setState((state) => {
+												if (state) {
+													return {
+														...state,
+														desired: {
+															...state.desired,
+															cfg: config,
+														},
+													}
+												}
 											})
 										})
 										.catch(setError)
@@ -237,7 +240,7 @@ export const Cat = ({
 						</Collapsable>
 					</>
 				)}
-				{reported && reported.dev && (
+				{reportedWithReceived?.dev && (
 					<>
 						<hr />
 						<Collapsable
@@ -246,10 +249,14 @@ export const Cat = ({
 						>
 							<DeviceInfo
 								key={`${cat.version}`}
-								device={reported.dev}
-								roaming={reported.roam}
+								device={reportedWithReceived.dev}
+								roaming={reportedWithReceived.roam}
 							/>
 						</Collapsable>
+					</>
+				)}
+				{reported?.dev && (
+					<>
 						<hr />
 						<Collapsable
 							id={'cat:fota'}
@@ -266,21 +273,17 @@ export const Cat = ({
 						</Collapsable>
 					</>
 				)}
-				{reported && reported.acc && reported.acc.v && (
+				{reported?.acc && reportedWithReceived?.acc && (
 					<>
 						<hr />
 						<Collapsable
 							id={'cat:motion'}
 							title={<h3>{emojify('🏃 Motion')}</h3>}
 						>
-							<AccelerometerDiagram
-								values={reported.acc.v.map(
-									({ value }: { value: number }) => value,
-								)}
-							/>
+							<AccelerometerDiagram values={reported.acc.v} />
 							<ReportedTime
-								reportedAt={new Date(reported.acc.ts.value)}
-								receivedAt={reported.acc.v[0].receivedAt}
+								reportedAt={new Date(reported.acc.ts)}
+								receivedAt={reportedWithReceived.acc.v.receivedAt}
 							/>
 						</Collapsable>
 					</>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { ReceivedProperty } from '../@types/device-state'
 
 export const OutDatedWarning = ({
 	desired,
@@ -7,10 +8,7 @@ export const OutDatedWarning = ({
 	onOutDated,
 }: {
 	desired?: boolean | number
-	reported?: {
-		value: boolean | number
-		receivedAt: Date
-	}
+	reported?: ReceivedProperty<boolean | number>
 	onNotReported: React.ReactElement<any>
 	onOutDated: (reported: {
 		value: boolean | number

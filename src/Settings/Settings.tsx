@@ -69,11 +69,11 @@ export const Settings = ({
 	reported,
 	desired,
 }: {
-	reported?: Partial<ReportedConfigState>
+	reported?: ReportedConfigState
 	desired?: Partial<DeviceConfig>
 	onSave: (config: Partial<DeviceConfig>) => void
 }) => {
-	const r: Partial<ReportedConfigState> = reported || {}
+	const r: ReportedConfigState = reported || {}
 
 	const [newDesired, setNewDesired] = useState<Partial<DeviceConfig>>(
 		desired || {},

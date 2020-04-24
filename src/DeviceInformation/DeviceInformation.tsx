@@ -1,7 +1,10 @@
 import React from 'react'
 import { ReportedTime } from '../ReportedTime/ReportedTime'
 import styled from 'styled-components'
-import { DeviceInformation, RoamingInformation } from '../@types/aws-device'
+import {
+	ReportedRoamingInformation,
+	ReportedDeviceInformation,
+} from '../@types/device-state'
 
 const StyledReportedTime = styled(ReportedTime)`
 	font-size: 85%;
@@ -30,8 +33,8 @@ export const DeviceInfo = ({
 	device,
 	roaming,
 }: {
-	device: DeviceInformation
-	roaming?: RoamingInformation
+	device: ReportedDeviceInformation
+	roaming?: ReportedRoamingInformation
 }) => {
 	return (
 		<div>
@@ -39,53 +42,51 @@ export const DeviceInfo = ({
 			<DeviceInformationDl>
 				<dt>Board</dt>
 				<dd>
-					<code>{device.v.brdV.value}</code>
+					<code>{device.v.value.brdV}</code>
 				</dd>
 				<dt>Modem</dt>
 				<dd>
-					<code>{device.v.modV.value}</code>
+					<code>{device.v.value.modV}</code>
 				</dd>
 				<dt>Application</dt>
 				<dd>
-					<code>{device.v.appV.value}</code>
+					<code>{device.v.value.appV}</code>
 				</dd>
 			</DeviceInformationDl>
 			<h4>Connection</h4>
 			<DeviceInformationDl>
 				<dt>Band</dt>
 				<dd>
-					<code>{device.v.band.value}</code>
+					<code>{device.v.value.band}</code>
 				</dd>
 				<dt>ICCID</dt>
 				<dd>
-					<code>{device.v.iccid.value}</code>
+					<code>{device.v.value.iccid}</code>
 				</dd>
 				{roaming && (
 					<>
 						<dt>MCC/MNC</dt>
 						<dd>
-							<code>{roaming.v.mccmnc.value}</code>
+							<code>{roaming.v.value.mccmnc}</code>
 						</dd>
 						<dt>Area Code</dt>
 						<dd>
-							<code>{roaming.v.area.value}</code>
+							<code>{roaming.v.value.area}</code>
 						</dd>
 						<dt>CellID</dt>
 						<dd>
-							<code>{roaming.v.cell.value}</code>
+							<code>{roaming.v.value.cell}</code>
 						</dd>
 						<dt>IP</dt>
 						<dd>
-							<code>{roaming.v.ip.value}</code>
+							<code>{roaming.v.value.ip}</code>
 						</dd>
 					</>
 				)}
 			</DeviceInformationDl>
 			<StyledReportedTime
-				receivedAt={
-					roaming ? roaming.v.rsrp.receivedAt : device.v.brdV.receivedAt
-				}
-				reportedAt={new Date(roaming ? roaming.ts.value : device.ts.value)}
+				receivedAt={roaming?.v.receivedAt ?? device.v.receivedAt}
+				reportedAt={new Date(roaming?.ts.value ?? device.ts.value)}
 			/>
 		</div>
 	)
