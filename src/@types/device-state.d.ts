@@ -21,7 +21,11 @@ export type Gps = {
 }
 
 export type Accelerometer = {
-	v: [number, number, number]
+	v: {
+		x: number
+		y: number
+		z: number
+	}
 	ts: number
 }
 

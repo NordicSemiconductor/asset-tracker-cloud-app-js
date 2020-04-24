@@ -4,18 +4,16 @@ import React, { useEffect, useRef } from 'react'
 import { v4 } from 'uuid'
 import styled from 'styled-components'
 
-const axes = {
-	Z: 2,
-	Y: 1,
-	X: 0,
-}
-
 const DiagramDiv = styled.div`
 	width: 100%;
 	height: 250px;
 `
 
-export const AccelerometerDiagram = ({ values }: { values: number[] }) => {
+export const AccelerometerDiagram = ({
+	values,
+}: {
+	values: { x: number; y: number; z: number }
+}) => {
 	const chartRef = useRef<am4charts.RadarChart>()
 	const uuid = useRef<string>(v4())
 	useEffect(() => {
@@ -24,16 +22,16 @@ export const AccelerometerDiagram = ({ values }: { values: number[] }) => {
 
 		const data = [] as { direction: string; value: number }[]
 
-		Object.entries(axes).forEach(([dir, k]) => {
-			if (values[k] < 0) {
+		Object.entries(values).forEach(([dir, k]) => {
+			if (k < 0) {
 				data.push({
-					direction: `-${dir}`,
-					value: Math.abs(values[k]),
+					direction: `-${dir.toUpperCase()}`,
+					value: Math.abs(k),
 				})
 			} else {
 				data.push({
-					direction: `+${dir}`,
-					value: values[k],
+					direction: `+${dir.toUpperCase()}`,
+					value: k,
 				})
 			}
 		})
