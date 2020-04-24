@@ -22,6 +22,7 @@ import { ReportedTime } from '../../ReportedTime/ReportedTime'
 import { toReportedWithReceivedAt } from '../toReportedWithReceivedAt'
 import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
 import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
+import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDiagram'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -250,6 +251,21 @@ export const Cat = ({
 								key={`${cat.version}`}
 								device={reportedWithTime.dev}
 								roaming={reportedWithTime.roam}
+							/>
+						</Collapsable>
+					</>
+				)}
+				{reportedWithTime?.acc && (
+					<>
+						<hr />
+						<Collapsable
+							id={'cat:motion'}
+							title={<h3>{emojify('🏃 Motion')}</h3>}
+						>
+							<AccelerometerDiagram values={reportedWithTime.acc.v.value} />
+							<ReportedTime
+								reportedAt={new Date(reportedWithTime.acc.ts.value)}
+								receivedAt={reportedWithTime.acc.v.receivedAt}
 							/>
 						</Collapsable>
 					</>
