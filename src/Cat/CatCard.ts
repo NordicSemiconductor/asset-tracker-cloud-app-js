@@ -33,6 +33,9 @@ export const CatCard = styled(Card)`
 			@media (min-width: ${mobileBreakpoint}) {
 				display: grid;
 				grid-template: auto / 1fr 1fr 2fr;
+				&.connection-information {
+					grid-template: auto / 1fr 1fr 1fr 1fr;
+				}
 			}
 			font-size: 85%;
 			opacity: 0.75;

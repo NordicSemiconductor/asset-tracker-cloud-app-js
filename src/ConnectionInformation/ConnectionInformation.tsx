@@ -5,6 +5,8 @@ import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
 import { emojify } from '../Emojify/Emojify'
 import styled from 'styled-components'
 import { RSRP, RSRPBar } from '@bifravst/rsrp-bar'
+import { identifyIssuer } from 'e118-iin-list'
+import { isSome, none } from 'fp-ts/lib/Option'
 
 const StyledRSRPBar = styled(RSRPBar)`
 	width: 20px;
@@ -44,21 +46,32 @@ export const ConnectionInformation = ({
 	mccmnc,
 	receivedAt,
 	reportedAt,
+	iccid,
 }: {
 	networkOperator?: string
+	iccid?: string
 	rsrp: number
 	mccmnc: number
 	receivedAt: Date
 	reportedAt: Date
-}) => (
-	<div className={'info connection-information'}>
-		<TextWithIcon icon={signalQuality(rsrp)}>
-			<>
-				&nbsp;
-				<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
-			</>
-		</TextWithIcon>
-		{emojify(`📱 ${networkOperator || '?'}`)}
-		<ReportedTime receivedAt={receivedAt} reportedAt={reportedAt} />
-	</div>
-)
+}) => {
+	const maybeSimIssuer = iccid ? identifyIssuer(iccid) : none
+	const simIssuer = isSome(maybeSimIssuer)
+		? maybeSimIssuer.value.companyName
+		: false
+	return (
+		<div className={'info connection-information'}>
+			<TextWithIcon icon={signalQuality(rsrp)}>
+				<>
+					&nbsp;
+					<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
+				</>
+			</TextWithIcon>
+			<abbr title={'Network operator'}>
+				{emojify(`📶 ${networkOperator || '?'}`)}
+			</abbr>
+			<abbr title={'SIM issuer'}>{emojify(`📱 ${simIssuer || '?'}`)}</abbr>
+			<ReportedTime receivedAt={receivedAt} reportedAt={reportedAt} />
+		</div>
+	)
+}
