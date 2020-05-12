@@ -12,7 +12,7 @@ import { DisplayError } from '../../Error/Error'
 import { connectAndListenForMessages } from '../connectAndListenForMessages'
 import { ICredentials } from '@aws-amplify/core'
 import { device } from 'aws-iot-device-sdk'
-import { athenaQuery, parseAthenaResult } from '@bifravst/athena-helpers'
+import { query, parseResult } from '@bifravst/athena-helpers'
 import {
 	ButtonWarnings,
 	DeviceDateMap,
@@ -103,7 +103,7 @@ const ListCats = ({
 	useEffect(() => {
 		let isCancelled = false
 		const { athena, workGroup, dataBase, rawDataTable } = athenaContext
-		athenaQuery({
+		query({
 			WorkGroup: workGroup,
 			athena,
 			debugLog: (...args: any) => {
@@ -129,7 +129,7 @@ const ListCats = ({
 		})
 			.then(async (ResultSet) => {
 				if (isCancelled) return
-				const data = parseAthenaResult({
+				const data = parseResult({
 					ResultSet,
 					skip: 1,
 					formatFields: {

@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-	athenaQuery,
-	parseAthenaResult,
-	FieldFormatters,
-} from '@bifravst/athena-helpers'
+import { query, parseResult, FieldFormatters } from '@bifravst/athena-helpers'
 import { Loading } from '../Loading/Loading'
 import { DisplayError as ShowError } from '../Error/Error'
 import PQueue from 'p-queue'
@@ -34,7 +30,7 @@ export const HistoricalDataLoader = ({
 	useEffect(() => {
 		const { athena, workGroup } = athenaContext
 		let removed = false
-		const q = athenaQuery({
+		const q = query({
 			WorkGroup: workGroup,
 			athena,
 			debugLog: (...args: any) => {
@@ -46,7 +42,7 @@ export const HistoricalDataLoader = ({
 		})
 		queue
 			.add(async () => q({ QueryString }))
-			.then(async ResultSet => {
+			.then(async (ResultSet) => {
 				if (removed) {
 					console.debug(
 						'[Historical Data]',
@@ -54,7 +50,7 @@ export const HistoricalDataLoader = ({
 					)
 					return
 				}
-				const data = parseAthenaResult({
+				const data = parseResult({
 					ResultSet,
 					formatFields,
 					skip: 1,
