@@ -5,6 +5,7 @@ import {
 	DeviceInformation,
 	RoamingInformation,
 	Accelerometer,
+	Environment,
 } from './device-state'
 
 type PropertyMetadata = {
@@ -23,6 +24,7 @@ export type DeviceTwinReported = {
 	dev?: DeviceInformation
 	roam?: RoamingInformation
 	acc?: Accelerometer
+	env?: Environment
 	$metadata: PropertyMetadata & {
 		cfg?: PropertyMetadata & MakePropertyMetadata<DeviceConfig>
 		gps?: PropertyMetadata & MakePropertyMetadata<Gps>
@@ -30,6 +32,7 @@ export type DeviceTwinReported = {
 		dev?: PropertyMetadata & MakePropertyMetadata<DeviceInformation>
 		roam?: PropertyMetadata & MakePropertyMetadata<RoamingInformation>
 		acc?: PropertyMetadata & MakePropertyMetadata<Accelerometer>
+		env?: PropertyMetadata & MakePropertyMetadata<Environment>
 	}
 	$version: number
 }

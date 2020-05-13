@@ -6,6 +6,7 @@ import {
 	DeviceInformation,
 	RoamingInformation,
 	Accelerometer,
+	Environment,
 } from './device-state'
 
 export type ReportedThingState = {
@@ -15,6 +16,7 @@ export type ReportedThingState = {
 	dev?: DeviceInformation
 	roam?: RoamingInformation
 	acc?: Accelerometer
+	env?: Environment
 }
 export type ThingState = {
 	reported: ReportedThingState

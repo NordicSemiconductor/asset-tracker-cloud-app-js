@@ -71,4 +71,8 @@ export const toReportedWithReceivedAt = ({
 		metadata.reported.acc && {
 			acc: toReceivedProps(reported.acc, metadata.reported.acc),
 		}),
+	...(reported.env &&
+		metadata.reported.env && {
+			env: toReceivedProps(reported.env, metadata.reported.env),
+		}),
 })

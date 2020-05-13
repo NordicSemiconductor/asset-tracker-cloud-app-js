@@ -29,6 +29,14 @@ export type Accelerometer = {
 	ts: number
 }
 
+export type Environment = {
+	v: {
+		temp: number
+		hum: number
+	}
+	ts: number
+}
+
 export type Battery = {
 	v: number
 	ts: number
@@ -70,6 +78,7 @@ export type ReportedConfigState = Partial<MakeReceivedProperty<DeviceConfig>>
 export type ReportedGps = MakeReceivedProperty<Gps>
 export type ReportedBattery = MakeReceivedProperty<Battery>
 export type ReportedAccelerometer = MakeReceivedProperty<Accelerometer>
+export type ReportedEnvironment = MakeReceivedProperty<Environment>
 export type ReportedDeviceInformation = MakeReceivedProperty<DeviceInformation>
 export type ReportedRoamingInformation = MakeReceivedProperty<
 	RoamingInformation
@@ -82,4 +91,5 @@ export type ReportedState = {
 	dev?: ReportedDeviceInformation
 	roam?: ReportedRoamingInformation
 	acc?: ReportedAccelerometer
+	env?: ReportedEnvironment
 }

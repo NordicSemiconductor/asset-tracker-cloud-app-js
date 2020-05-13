@@ -194,6 +194,20 @@ export const Cat = ({
 								</div>
 							</Toggle>
 						)}
+						{reportedWithReceived?.env && (
+							<Toggle>
+								<div className={'info'}>
+									{emojify(`🌡️ ${reportedWithReceived.env.v.value.temp}°C`)}
+									{emojify(
+										`💦 ${Math.round(reportedWithReceived.env.v.value.hum)}%`,
+									)}
+									<ReportedTime
+										receivedAt={reportedWithReceived.env.v.receivedAt}
+										reportedAt={new Date(reportedWithReceived.env.ts.value)}
+									/>
+								</div>
+							</Toggle>
+						)}
 					</>
 				)}
 			</CardHeader>

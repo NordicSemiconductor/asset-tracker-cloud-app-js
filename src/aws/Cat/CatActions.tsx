@@ -49,9 +49,9 @@ export const CatActions = ({ catId }: { catId: string }) => {
 				geolocationApiEndpoint,
 			}) => (
 				<AthenaConsumer>
-					{athenaContext => (
+					{(athenaContext) => (
 						<CredentialsConsumer>
-							{credentials => (
+							{(credentials) => (
 								<IotConsumer>
 									{({ iot, iotData, mqttEndpoint }) => {
 										const s3 = new S3({
@@ -98,7 +98,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 												version: number
 											}>
 												catId={catId}
-												loader={async catId =>
+												loader={async (catId) =>
 													describeThing(catId).then(
 														({ thingName, attributes, version }) => {
 															if (thingName) {
@@ -134,9 +134,9 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	onNewState,
 																	region,
 																	mqttEndpoint,
-																}).then(connection => () => connection.end())
+																}).then((connection) => () => connection.end())
 															}
-															updateDeviceConfig={async cfg =>
+															updateDeviceConfig={async (cfg) =>
 																updateThingConfig(iotData)(catId)(cfg).then(
 																	() => {
 																		update({
@@ -175,7 +175,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	executionNumber,
 																})
 															}
-															onCreateUpgradeJob={async args =>
+															onCreateUpgradeJob={async (args) =>
 																describeThing(catId).then(
 																	async ({ thingArn }) =>
 																		createUpgradeJob({
@@ -184,7 +184,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		}),
 																)
 															}
-															onAvatarChange={avatar => {
+															onAvatarChange={(avatar) => {
 																// Display image directly
 																const reader = new FileReader()
 																reader.onload = (e: any) => {
@@ -196,15 +196,15 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																reader.readAsDataURL(avatar)
 
 																avatarUploader(avatar)
-																	.then(async url =>
+																	.then(async (url) =>
 																		attributeUpdater({ avatar: url }),
 																	)
 																	.catch(console.error)
 															}}
-															onNameChange={name => {
+															onNameChange={(name) => {
 																attributeUpdater({ name }).catch(console.error)
 															}}
-															catMap={state => (
+															catMap={(state) => (
 																<CatMap
 																	athenaContext={athenaContext}
 																	cat={cat}
@@ -225,8 +225,32 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	QueryString={`SELECT min(reported.bat.v) as value, CAST(date_format(timestamp, '%Y-%m-%d') AS DATE) AS date FROM 
 			${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.bat IS NOT NULL GROUP BY CAST(date_format(timestamp, '%Y-%m-%d') AS DATE) ORDER BY date LIMIT 100`}
 																	formatFields={{
-																		value: v => parseInt(v, 10) / 1000,
-																		date: v => new Date(`${v}T00:00:00Z`),
+																		value: (v) => parseInt(v, 10) / 1000,
+																		date: (v) => new Date(`${v}T00:00:00Z`),
+																	}}
+																>
+																	{({ data }) => (
+																		<HistoricalDataChart
+																			data={data}
+																			type={'line'}
+																		/>
+																	)}
+																</HistoricalDataLoader>
+															</Collapsable>
+															<hr />
+															<Collapsable
+																id={'cat:environment'}
+																title={<h3>{emojify('⛅ Temperature')}</h3>}
+															>
+																<HistoricalDataLoader
+																	athenaContext={athenaContext}
+																	deviceId={catId}
+																	QueryString={`SELECT reported.env.v.temp AS value,
+																	date_format(timestamp, '%Y-%m-%dT%H:%i:%sZ') AS date FROM 
+			${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.env IS NOT NULL ORDER BY date LIMIT 100`}
+																	formatFields={{
+																		value: parseFloat,
+																		date: (v) => new Date(v),
 																	}}
 																>
 																	{({ data }) => (
@@ -251,7 +275,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																				(sum, v) => sum + Math.abs(v),
 																				0,
 																			),
-																		date: v => new Date(v),
+																		date: (v) => new Date(v),
 																	}}
 																	QueryString={`SELECT reported.acc.ts as date, reported.acc.v as value FROM ${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.acc IS NOT NULL ORDER BY reported.acc.ts DESC LIMIT 100`}
 																>
@@ -272,7 +296,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	athenaContext={athenaContext}
 																	deviceId={catId}
 																	formatFields={{
-																		date: v => new Date(v),
+																		date: (v) => new Date(v),
 																	}}
 																	QueryString={`		
 																	SELECT message.btn.v AS value,
