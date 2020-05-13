@@ -13,8 +13,10 @@ import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
 import { FormGroup } from 'reactstrap'
 
-const StyledLeafletMap = styled(LeafletMap)`
-	height: 300px;
+const LeafletMapContainer = styled.div`
+	> .leaflet-container {
+		height: 300px;
+	}
 `
 
 export const CatMapContainer = styled.div`
@@ -92,91 +94,97 @@ export const Map = ({
 	}
 
 	return (
-		<StyledLeafletMap
-			center={center.position}
-			zoom={zoom}
-			ref={mapRef}
-			onzoomend={(e: object) => {
-				if (
-					mapRef.current &&
-					mapRef.current.viewport &&
-					mapRef.current.viewport.zoom
-				) {
-					window.localStorage.setItem(
-						'bifravst:zoom',
-						`${mapRef.current.viewport.zoom}`,
-					)
-					setMapZoom(mapRef.current.viewport.zoom)
-				}
-			}}
-		>
-			<TileLayer
-				attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-			/>
-			<Marker position={center.position}>
-				<Popup>{label}</Popup>
-			</Marker>
-			{deviceLocation && accuracy && !cellLocationIsMoreUpToDate && (
-				<Circle center={deviceLocation.position} radius={accuracy} />
-			)}
-			{cellLocation && cellLocationIsMoreUpToDate && (
-				<Circle
-					center={cellLocation.position}
-					radius={cellLocation.position.accuracy}
-					color={'#F6C270'}
+		<LeafletMapContainer>
+			<LeafletMap
+				viewport={{
+					center: [center.position.lat, center.position.lng],
+					zoom,
+				}}
+				ref={mapRef}
+				onzoomend={() => {
+					if (
+						mapRef.current &&
+						mapRef.current.viewport &&
+						mapRef.current.viewport.zoom
+					) {
+						window.localStorage.setItem(
+							'bifravst:zoom',
+							`${mapRef.current.viewport.zoom}`,
+						)
+						setMapZoom(mapRef.current.viewport.zoom)
+					}
+				}}
+			>
+				<TileLayer
+					attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 				/>
-			)}
-			{deviceLocation && heading && (
-				<LeafletConsumer key={mapZoom}>
-					{({ map }) => {
-						if (map) {
-							const { x, y } = map.project(deviceLocation.position, mapZoom)
-							const endpoint = map.unproject(
-								[
-									x +
-										mapZoom *
-											3 *
-											Math.cos((((heading - 90) % 360) * Math.PI) / 180),
-									y +
-										mapZoom *
-											3 *
-											Math.sin((((heading - 90) % 360) * Math.PI) / 180),
-								],
-								mapZoom,
-							)
-							return (
-								<Polyline
-									positions={[deviceLocation.position, endpoint]}
-									weight={mapZoom > 16 ? 1 : 2}
-									linecap={'round'}
-									color={'#000000'}
-								/>
-							)
-						}
-					}}
-				</LeafletConsumer>
-			)}
-			{deviceLocation &&
-				history &&
-				history.map(({ position: { lat, lng } }, k) => {
-					const alpha = Math.round((1 - k / history.length) * 255).toString(16)
-					const color = `#1f56d2${alpha}`
-					return (
-						<React.Fragment key={`history-${k}`}>
-							<Circle center={{ lat, lng }} radius={1} color={color} />
-							{k > 0 && (
-								<Polyline
-									positions={[history[k - 1].position, { lat, lng }]}
-									weight={mapZoom > 16 ? 1 : 2}
-									linecap={'round'}
-									color={color}
-									dashArray={'10'}
-								/>
-							)}
-						</React.Fragment>
-					)
-				})}
-		</StyledLeafletMap>
+				<Marker position={center.position}>
+					<Popup>{label}</Popup>
+				</Marker>
+				{deviceLocation && accuracy && !cellLocationIsMoreUpToDate && (
+					<Circle center={deviceLocation.position} radius={accuracy} />
+				)}
+				{cellLocation && cellLocationIsMoreUpToDate && (
+					<Circle
+						center={cellLocation.position}
+						radius={cellLocation.position.accuracy}
+						color={'#F6C270'}
+					/>
+				)}
+				{deviceLocation && heading && (
+					<LeafletConsumer key={mapZoom}>
+						{({ map }) => {
+							if (map) {
+								const { x, y } = map.project(deviceLocation.position, mapZoom)
+								const endpoint = map.unproject(
+									[
+										x +
+											mapZoom *
+												3 *
+												Math.cos((((heading - 90) % 360) * Math.PI) / 180),
+										y +
+											mapZoom *
+												3 *
+												Math.sin((((heading - 90) % 360) * Math.PI) / 180),
+									],
+									mapZoom,
+								)
+								return (
+									<Polyline
+										positions={[deviceLocation.position, endpoint]}
+										weight={mapZoom > 16 ? 1 : 2}
+										linecap={'round'}
+										color={'#000000'}
+									/>
+								)
+							}
+						}}
+					</LeafletConsumer>
+				)}
+				{deviceLocation &&
+					history &&
+					history.map(({ position: { lat, lng } }, k) => {
+						const alpha = Math.round((1 - k / history.length) * 255).toString(
+							16,
+						)
+						const color = `#1f56d2${alpha}`
+						return (
+							<React.Fragment key={`history-${k}`}>
+								<Circle center={{ lat, lng }} radius={1} color={color} />
+								{k > 0 && (
+									<Polyline
+										positions={[history[k - 1].position, { lat, lng }]}
+										weight={mapZoom > 16 ? 1 : 2}
+										linecap={'round'}
+										color={color}
+										dashArray={'10'}
+									/>
+								)}
+							</React.Fragment>
+						)
+					})}
+			</LeafletMap>
+		</LeafletMapContainer>
 	)
 }
