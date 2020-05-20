@@ -1,6 +1,8 @@
 import * as querystring from 'querystring'
 import { Twin } from 'azure-iothub'
 import { Either, right, left, isLeft } from 'fp-ts/lib/Either'
+import * as TE from 'fp-ts/lib/TaskEither'
+import { pipe } from 'fp-ts/lib/pipeable'
 import { ErrorInfo } from '../Error/ErrorInfo'
 import { DeviceTwin } from '../@types/azure-device'
 import { DeviceConfig } from '../@types/device-state'
@@ -17,6 +19,21 @@ export type Device = {
 	avatar?: string
 	version: number
 	state: DeviceTwin
+}
+
+export enum DeviceUpgradeFirmwareJobStatus {
+	IN_PROGRESS = 'IN_PROGRESS',
+	QUEUED = 'QUEUED',
+	FAILED = 'FAILED',
+	SUCCEEDED = 'SUCCEEDED',
+}
+export type DeviceUpgradeFirmwareJob = {
+	jobId: string
+	location: string
+	status: DeviceUpgradeFirmwareJobStatus
+	queuedAt: Date
+	startedAt?: Date
+	lastUpdatedAt?: Date
 }
 
 export type ApiClient = {
@@ -38,6 +55,16 @@ export type ApiClient = {
 		url: string,
 	) => Promise<Either<ErrorInfo, { success: boolean }>>
 	storeImage: (image: Blob) => Promise<Either<ErrorInfo, { url: string }>>
+	storeDeviceUpdate: (
+		firmware: ArrayBuffer,
+	) => Promise<Either<ErrorInfo, { id: string; url: string }>>
+	setPendingDeviceUpdate: (
+		id: string,
+		job: {
+			id: string
+			url: string
+		},
+	) => Promise<Either<ErrorInfo, DeviceUpgradeFirmwareJob>>
 	getSignalRConnectionInfo: () => Promise<
 		Either<ErrorInfo, { url: string; accessToken: string }>
 	>
@@ -171,6 +198,32 @@ export const fetchApiClient = ({
 				}
 				reader.readAsDataURL(image)
 			}),
+		storeDeviceUpdate: async (firmware: ArrayBuffer) =>
+			postRaw<{ id: string; url: string }>(
+				`firmware`,
+				// https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
+				String.fromCharCode.apply(
+					null,
+					(new Uint16Array(firmware) as unknown) as number[],
+				),
+			)(),
+		setPendingDeviceUpdate: async (
+			id: string,
+			update: { id: string; url: string },
+		) => {
+			const job: DeviceUpgradeFirmwareJob = {
+				jobId: update.id,
+				location: update.url,
+				status: DeviceUpgradeFirmwareJobStatus.QUEUED,
+				queuedAt: new Date(),
+			}
+			return pipe(
+				patch<{ success: boolean }>(`device/${id}`, {
+					fota: job,
+				}),
+				TE.map(() => job),
+			)()
+		},
 		getSignalRConnectionInfo: get<{ url: string; accessToken: string }>(
 			'signalRConnectionInfo',
 		),

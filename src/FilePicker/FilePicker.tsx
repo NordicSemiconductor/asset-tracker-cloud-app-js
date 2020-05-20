@@ -11,7 +11,7 @@ export const FilePicker = ({
 	accept: string
 	maxSize: number
 	onError: (result: Error) => void
-	onFile: (result: { file: File; data: Blob }) => void
+	onFile: (result: { file: File; data: ArrayBuffer }) => void
 }) => {
 	const inputRef = createRef<HTMLInputElement>()
 	return (

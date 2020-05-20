@@ -1,5 +1,5 @@
 import { default as introJs } from 'intro.js'
-import { FOTA, OnCreateUpgradeJob } from '../../FOTA/FOTA'
+import { FOTA, OnCreateUpgradeJob } from '../FOTA/FOTA'
 import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
 import { ICredentials } from '@aws-amplify/core'
 import React, { useEffect, useState } from 'react'

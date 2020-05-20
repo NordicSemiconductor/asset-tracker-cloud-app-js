@@ -1,10 +1,10 @@
 import semver from 'semver'
 import React, { useState } from 'react'
 import { Button, Form, FormGroup, Input, Label } from 'reactstrap'
-import { FilePicker } from '../FilePicker/FilePicker'
-import { FooterWithFullWidthButton } from '../Settings/Settings'
+import { FilePicker } from '../../FilePicker/FilePicker'
+import { FooterWithFullWidthButton } from '../../Settings/Settings'
 import { OnCreateUpgradeJob } from './FOTA'
-import { DeviceInformation } from '../@types/device-state'
+import { DeviceInformation } from '../../@types/device-state'
 
 const getNextAppVersion = (device: DeviceInformation): string =>
 	semver.inc(device.v.appV, 'patch') || device.v.appV
@@ -20,7 +20,7 @@ export const CreateFOTAJob = ({
 }) => {
 	const [updateFile, setUpdateFile] = useState<{
 		file: File
-		data: Blob
+		data: ArrayBuffer
 	}>()
 	const [nextVersion, setNextVersion] = useState(getNextAppVersion(device))
 	const [targetBoard, setTargetBoard] = useState(device.v.brdV)

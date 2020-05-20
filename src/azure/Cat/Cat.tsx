@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ApiClient, Device } from '../api'
+import { ApiClient, Device, DeviceUpgradeFirmwareJob } from '../api'
 import { CatCard } from '../../Cat/CatCard'
 import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
 import { CardHeader, CardBody, Alert, Card } from 'reactstrap'
@@ -23,6 +23,8 @@ import { toReportedWithReceivedAt } from '../toReportedWithReceivedAt'
 import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
 import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
 import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDiagram'
+import { FOTA } from '../FOTA/FOTA'
+import { Jobs } from '../FOTA/FOTAJob'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -40,6 +42,7 @@ export const Cat = ({
 	const [deleted, setDeleted] = useState(false)
 	const [deleting, setDeleting] = useState(false)
 	const [error, setError] = useState<ErrorInfo>()
+	const [fotaJobs, setFotaJobs] = useState<DeviceUpgradeFirmwareJob[]>([])
 
 	// Listen for state changes
 	useEffect(() => {
@@ -114,6 +117,7 @@ export const Cat = ({
 			})
 			.catch(setError)
 	}
+
 	const onNameChange = (name: string) => {
 		update({
 			...cat,
@@ -124,6 +128,28 @@ export const Cat = ({
 			.then((res) => {
 				if (isLeft(res)) {
 					setError(res.left)
+				}
+			})
+			.catch(setError)
+	}
+
+	const onDeviceUpgradeFirmwareJobCreate = (data: ArrayBuffer) => {
+		apiClient
+			.storeDeviceUpdate(data)
+			.then((maybeStoredUpdate) => {
+				if (isLeft(maybeStoredUpdate)) {
+					setError(maybeStoredUpdate.left)
+				} else {
+					apiClient
+						.setPendingDeviceUpdate(cat.id, maybeStoredUpdate.right)
+						.then((res) => {
+							if (isLeft(res)) {
+								setError(res.left)
+							} else {
+								setFotaJobs((updates) => [...updates, res.right])
+							}
+						})
+						.catch(setError)
 				}
 			})
 			.catch(setError)
@@ -267,6 +293,24 @@ export const Cat = ({
 								device={reportedWithTime.dev}
 								roaming={reportedWithTime.roam}
 							/>
+						</Collapsable>
+					</>
+				)}
+				{cat.state.reported.dev && (
+					<>
+						<hr />
+						<Collapsable
+							id={'cat:fota'}
+							title={<h3>{emojify('🌩️ Device Firmware Upgrade (FOTA)')}</h3>}
+						>
+							<FOTA
+								key={`${cat.version}`}
+								device={cat.state.reported.dev}
+								onCreateUpgradeJob={({ data }) => {
+									onDeviceUpgradeFirmwareJobCreate(data)
+								}}
+							/>
+							<Jobs jobs={fotaJobs} />
 						</Collapsable>
 					</>
 				)}

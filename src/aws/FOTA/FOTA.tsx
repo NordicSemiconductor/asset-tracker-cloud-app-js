@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Alert } from 'reactstrap'
-import { DisplayError as ShowError } from '../Error/Error'
-import { DeviceUpgradeFirmwareJob } from '../aws/listUpgradeFirmwareJobs'
+import { DisplayError as ShowError } from '../../Error/Error'
+import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
 import { useDebouncedCallback } from 'use-debounce'
 import { Jobs } from './FOTAJob'
 import { CreateFOTAJob } from './CreateFOTAJob'
-import { DeviceInformation } from '../@types/device-state'
+import { DeviceInformation } from '../../@types/device-state'
 
 export type OnCreateUpgradeJob = (args: {
 	file: File
-	data: Blob
+	data: ArrayBuffer
 	targetBoard: string
 	version: string
 }) => Promise<DeviceUpgradeFirmwareJob>

@@ -17,7 +17,7 @@ export const upgradeFirmware = ({
 	version,
 	targetBoard,
 }: {
-	data: Blob
+	data: ArrayBuffer
 	file: File
 	thingArn: string
 	version: string
