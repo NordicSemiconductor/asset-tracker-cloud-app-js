@@ -33,6 +33,13 @@ export const CatMap = ({
 		initialState = false
 	}
 	const [fetchHistoricalData, setFetchHistoricalData] = useState(initialState)
+
+	const storedNumPastPostions = window.localStorage.getItem(
+		'bifravst:catmap:numPastPositions',
+	)
+	const [numPastPositions, updateNumPastPositions] = useState(
+		storedNumPastPostions !== null ? parseInt(storedNumPastPostions, 10) : 10,
+	)
 	const [cellLocation, setCellLocation] = useState<CellLocation>()
 
 	const { reported } = state
@@ -103,6 +110,24 @@ export const CatMap = ({
 				/>{' '}
 				Fetch history?
 			</Label>
+			{fetchHistoricalData && (
+				<Input
+					bsSize={'sm'}
+					type="number"
+					name="numPastPositions"
+					onChange={({ target: { value } }) => {
+						const v = parseInt(value, 10)
+						if (!isNaN(v)) {
+							updateNumPastPositions(v)
+							window.localStorage.setItem(
+								'bifravst:catmap:numPastPositions',
+								`${v}`,
+							)
+						}
+					}}
+					value={numPastPositions}
+				/>
+			)}
 		</SettingsFormGroup>
 	)
 
@@ -125,7 +150,7 @@ export const CatMap = ({
 					lng: parseFloat,
 					date: (v) => new Date(v),
 				}}
-				QueryString={`SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${cat.id}' AND reported.gps IS NOT NULL AND reported.gps.v.lat IS NOT NULL AND reported.gps.v.lng IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT 10`}
+				QueryString={`SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${cat.id}' AND reported.gps IS NOT NULL AND reported.gps.v.lat IS NOT NULL AND reported.gps.v.lng IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT ${numPastPositions}`}
 				loading={mapWithoutHistoricalData}
 			>
 				{({ data }) => (

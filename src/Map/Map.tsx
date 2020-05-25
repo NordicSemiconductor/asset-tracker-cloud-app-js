@@ -30,11 +30,17 @@ export const SettingsFormGroup = styled(FormGroup)`
 	top: 0;
 	right: 0;
 	z-index: 999;
+	display: flex;
+	align-items: center;
 	@media (min-width: ${mobileBreakpoint}) {
 		top: auto;
 		right: auto;
 		bottom: 0;
 		z-index: 10000;
+	}
+	input[type='number'] {
+		width: 70px;
+		margin-left: 0.5rem;
 	}
 `
 
@@ -67,7 +73,7 @@ export const Map = ({
 }) => {
 	let zoom = 13
 	const userZoom = window.localStorage.getItem('bifravst:zoom')
-	if (userZoom) {
+	if (userZoom !== null) {
 		zoom = parseInt(userZoom, 10)
 	}
 	const [mapZoom, setMapZoom] = useState(zoom)
@@ -83,12 +89,14 @@ export const Map = ({
 				deviceLocation.ts.getTime()) ||
 			!deviceLocation)
 
-	let center: Location = cellLocation || (deviceLocation as Location)
+	let center: Location = cellLocation ?? (deviceLocation as Location)
 	if (
-		(cellLocation &&
-			deviceLocation &&
+		(cellLocation !== undefined &&
+			deviceLocation !== undefined &&
 			deviceLocation.ts.getTime() > cellLocation.ts.getTime()) ||
-		(deviceLocation && !cellLocationIsMoreUpToDate)
+		(deviceLocation !== undefined &&
+			cellLocationIsMoreUpToDate !== undefined &&
+			!cellLocationIsMoreUpToDate)
 	) {
 		center = deviceLocation
 	}
@@ -102,17 +110,11 @@ export const Map = ({
 				}}
 				ref={mapRef}
 				onzoomend={() => {
-					if (
-						mapRef.current &&
-						mapRef.current.viewport &&
-						mapRef.current.viewport.zoom
-					) {
-						window.localStorage.setItem(
-							'bifravst:zoom',
-							`${mapRef.current.viewport.zoom}`,
-						)
-						setMapZoom(mapRef.current.viewport.zoom)
-					}
+					window.localStorage.setItem(
+						'bifravst:zoom',
+						`${mapRef.current?.viewport?.zoom ?? 13}`,
+					)
+					setMapZoom(mapRef.current?.viewport?.zoom ?? 13)
 				}}
 			>
 				<TileLayer
@@ -122,9 +124,12 @@ export const Map = ({
 				<Marker position={center.position}>
 					<Popup>{label}</Popup>
 				</Marker>
-				{deviceLocation && accuracy && !cellLocationIsMoreUpToDate && (
-					<Circle center={deviceLocation.position} radius={accuracy} />
-				)}
+				{deviceLocation &&
+					accuracy &&
+					cellLocationIsMoreUpToDate !== undefined &&
+					!cellLocationIsMoreUpToDate && (
+						<Circle center={deviceLocation.position} radius={accuracy} />
+					)}
 				{cellLocation && cellLocationIsMoreUpToDate && (
 					<Circle
 						center={cellLocation.position}
