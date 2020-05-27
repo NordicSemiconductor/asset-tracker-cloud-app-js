@@ -6,6 +6,7 @@ import { pipe } from 'fp-ts/lib/pipeable'
 import { ErrorInfo } from '../Error/ErrorInfo'
 import { DeviceTwin } from '../@types/azure-device'
 import { DeviceConfig } from '../@types/device-state'
+import { v4 } from 'uuid'
 
 const toQueryString = (obj: any): string => {
 	if (!Object.keys(obj).length) {
@@ -19,21 +20,6 @@ export type Device = {
 	avatar?: string
 	version: number
 	state: DeviceTwin
-}
-
-export enum DeviceUpgradeFirmwareJobStatus {
-	IN_PROGRESS = 'IN_PROGRESS',
-	QUEUED = 'QUEUED',
-	FAILED = 'FAILED',
-	SUCCEEDED = 'SUCCEEDED',
-}
-export type DeviceUpgradeFirmwareJob = {
-	jobId: string
-	location: string
-	status: DeviceUpgradeFirmwareJobStatus
-	queuedAt: Date
-	startedAt?: Date
-	lastUpdatedAt?: Date
 }
 
 export type ApiClient = {
@@ -57,14 +43,11 @@ export type ApiClient = {
 	storeImage: (image: Blob) => Promise<Either<ErrorInfo, { url: string }>>
 	storeDeviceUpdate: (
 		firmware: ArrayBuffer,
-	) => Promise<Either<ErrorInfo, { id: string; url: string }>>
+	) => Promise<Either<ErrorInfo, { url: string }>>
 	setPendingDeviceUpdate: (
 		id: string,
-		job: {
-			id: string
-			url: string
-		},
-	) => Promise<Either<ErrorInfo, DeviceUpgradeFirmwareJob>>
+		url: string,
+	) => Promise<Either<ErrorInfo, { jobId: string }>>
 	getSignalRConnectionInfo: () => Promise<
 		Either<ErrorInfo, { url: string; accessToken: string }>
 	>
@@ -95,7 +78,7 @@ const handleResponse = async <A extends { [key: string]: any }>(
 	if (res.status >= 400) {
 		if (
 			parseInt(res.headers?.get('content-length') ?? '0') > 2 &&
-			res.headers?.get('content-type')?.includes('application/json')
+			(res.headers?.get('content-type')?.includes('application/json') ?? false)
 		) {
 			const json = await res.json()
 			return left(json)
@@ -120,7 +103,7 @@ export const fetchApiClient = ({
 	iotHubRequestHeaders.append('Content-Type', 'application/json')
 	const get = <A extends { [key: string]: any }>(
 		resource: string,
-		query?: object,
+		query?: { [key: string]: any },
 	) => async (): Promise<Either<ErrorInfo, A>> =>
 		handleResponse(
 			fetch(`${endpoint}/api/${resource}${query ? toQueryString(query) : ''}`, {
@@ -131,7 +114,7 @@ export const fetchApiClient = ({
 
 	const patch = <A extends { [key: string]: any }>(
 		resource: string,
-		properties: object,
+		properties: { [key: string]: any },
 	) => async (): Promise<Either<ErrorInfo, A>> =>
 		handleResponse(
 			fetch(`${endpoint}/api/${resource}`, {
@@ -167,7 +150,7 @@ export const fetchApiClient = ({
 	}
 	return {
 		listDevices: get<{ deviceId: string; name?: string }[]>('devices'),
-		getDevice: async (id: string) => {
+		getDevice: async (id: string): Promise<Either<ErrorInfo, Device>> => {
 			const d = await get<IotHubDevice>(`device/${id}`)()
 			if (isLeft(d)) return d
 			return right({
@@ -177,15 +160,28 @@ export const fetchApiClient = ({
 				state: d.right.properties,
 			})
 		},
-		deleteDevice: async (id: string) =>
+		deleteDevice: async (
+			id: string,
+		): Promise<Either<ErrorInfo, { success: boolean }>> =>
 			del️<{ success: boolean }>(`device/${id}`)(),
-		setDeviceName: async (id: string, name: string) =>
+		setDeviceName: async (
+			id: string,
+			name: string,
+		): Promise<Either<ErrorInfo, { success: boolean }>> =>
 			patch<{ success: boolean }>(`device/${id}`, { name })(),
-		setDeviceAvatar: async (id: string, url: string) =>
+		setDeviceAvatar: async (
+			id: string,
+			url: string,
+		): Promise<Either<ErrorInfo, { success: boolean }>> =>
 			patch<{ success: boolean }>(`device/${id}`, { avatar: url })(),
-		setDeviceConfig: async (id: string, config: Partial<DeviceConfig>) =>
+		setDeviceConfig: async (
+			id: string,
+			config: Partial<DeviceConfig>,
+		): Promise<Either<ErrorInfo, { success: boolean }>> =>
 			patch<{ success: boolean }>(`device/${id}`, { config })(),
-		storeImage: async (image: Blob) =>
+		storeImage: async (
+			image: Blob,
+		): Promise<Either<ErrorInfo, { url: string }>> =>
 			new Promise((resolve, reject) => {
 				const reader = new FileReader()
 				reader.onload = async () => {
@@ -198,8 +194,10 @@ export const fetchApiClient = ({
 				}
 				reader.readAsDataURL(image)
 			}),
-		storeDeviceUpdate: async (firmware: ArrayBuffer) =>
-			postRaw<{ id: string; url: string }>(
+		storeDeviceUpdate: async (
+			firmware: ArrayBuffer,
+		): Promise<Either<ErrorInfo, { url: string }>> =>
+			postRaw<{ url: string }>(
 				`firmware`,
 				// https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
 				String.fromCharCode.apply(
@@ -209,19 +207,18 @@ export const fetchApiClient = ({
 			)(),
 		setPendingDeviceUpdate: async (
 			id: string,
-			update: { id: string; url: string },
-		) => {
-			const job: DeviceUpgradeFirmwareJob = {
-				jobId: update.id,
-				location: update.url,
-				status: DeviceUpgradeFirmwareJobStatus.QUEUED,
-				queuedAt: new Date(),
+			url: string,
+		): Promise<Either<ErrorInfo, { jobId: string }>> => {
+			const jobId = v4()
+			const job = {
+				jobId,
+				location: url,
 			}
 			return pipe(
 				patch<{ success: boolean }>(`device/${id}`, {
 					fota: job,
 				}),
-				TE.map(() => job),
+				TE.map(() => ({ jobId })),
 			)()
 		},
 		getSignalRConnectionInfo: get<{ url: string; accessToken: string }>(

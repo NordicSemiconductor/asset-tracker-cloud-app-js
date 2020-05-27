@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ApiClient, Device, DeviceUpgradeFirmwareJob } from '../api'
+import { ApiClient, Device } from '../api'
 import { CatCard } from '../../Cat/CatCard'
 import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
 import { CardHeader, CardBody, Alert, Card } from 'reactstrap'
@@ -19,7 +19,10 @@ import { DeviceTwin } from '../../@types/azure-device'
 import { Map, CatMapContainer, Location, CellLocation } from '../../Map/Map'
 import { Toggle } from '../../Toggle/Toggle'
 import { ReportedTime } from '../../ReportedTime/ReportedTime'
-import { toReportedWithReceivedAt } from '../toReportedWithReceivedAt'
+import {
+	toReportedWithReceivedAt,
+	toReceivedProps,
+} from '../toReportedWithReceivedAt'
 import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
 import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
 import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDiagram'
@@ -38,11 +41,18 @@ export const Cat = ({
 	update: (cat: Device & LoadedCat) => void
 }) => {
 	const reportedWithTime = toReportedWithReceivedAt(cat.state.reported)
+	const fotaJob =
+		cat.state.desired.fota &&
+		cat.state.desired.$metadata.fota &&
+		toReceivedProps(cat.state.desired.fota, cat.state.desired.$metadata.fota)
+
+	const fotaJobs = fotaJob
+		? [{ job: fotaJob, status: reportedWithTime.fota }]
+		: []
 
 	const [deleted, setDeleted] = useState(false)
 	const [deleting, setDeleting] = useState(false)
 	const [error, setError] = useState<ErrorInfo>()
-	const [fotaJobs, setFotaJobs] = useState<DeviceUpgradeFirmwareJob[]>([])
 
 	// Listen for state changes
 	useEffect(() => {
@@ -133,7 +143,7 @@ export const Cat = ({
 			.catch(setError)
 	}
 
-	const onDeviceUpgradeFirmwareJobCreate = (data: ArrayBuffer) => {
+	const onReportedFOTAJobProgressCreate = (data: ArrayBuffer) => {
 		apiClient
 			.storeDeviceUpdate(data)
 			.then((maybeStoredUpdate) => {
@@ -141,12 +151,10 @@ export const Cat = ({
 					setError(maybeStoredUpdate.left)
 				} else {
 					apiClient
-						.setPendingDeviceUpdate(cat.id, maybeStoredUpdate.right)
+						.setPendingDeviceUpdate(cat.id, maybeStoredUpdate.right.url)
 						.then((res) => {
 							if (isLeft(res)) {
 								setError(res.left)
-							} else {
-								setFotaJobs((updates) => [...updates, res.right])
 							}
 						})
 						.catch(setError)
@@ -156,7 +164,7 @@ export const Cat = ({
 	}
 
 	let deviceLocation: Location | undefined = undefined
-	if (reportedWithTime.gps?.v?.value?.lat) {
+	if (reportedWithTime.gps?.v?.value?.lat !== undefined) {
 		deviceLocation = {
 			ts: new Date(reportedWithTime.gps?.ts?.value || Date.now()),
 			position: {
@@ -189,67 +197,61 @@ export const Cat = ({
 						onNameChange,
 					}}
 				></CatHeader>
-				{reportedWithTime && (
-					<>
-						{reportedWithTime.roam?.v && reportedWithTime.dev?.v && (
-							<Toggle>
-								<ConnectionInformation
-									mccmnc={reportedWithTime.roam.v.value.mccmnc}
-									rsrp={reportedWithTime.roam.v.value.rsrp}
-									receivedAt={reportedWithTime.roam.v.receivedAt}
-									reportedAt={new Date(reportedWithTime.roam.ts.value)}
-									networkOperator={reportedWithTime.dev.v.value.nw}
-									iccid={reportedWithTime.dev.v.value.iccid}
-								/>
-							</Toggle>
-						)}
-						{reportedWithTime.gps?.v && (
-							<Toggle>
-								<div className={'info'}>
-									{reportedWithTime.gps?.v?.value.spd &&
-										emojify(
-											` 🏃${Math.round(reportedWithTime.gps?.v?.value.spd)}m/s`,
-										)}
-									{reportedWithTime.gps?.v?.value.alt &&
-										emojify(
-											`✈️ ${Math.round(reportedWithTime.gps?.v?.value.alt)}m`,
-										)}
-									<ReportedTime
-										receivedAt={reportedWithTime.gps?.v.receivedAt}
-										reportedAt={
-											new Date(reportedWithTime.gps?.ts?.value || Date.now())
-										}
-									/>
-								</div>
-							</Toggle>
-						)}
-						{reportedWithTime.bat && (
-							<Toggle>
-								<div className={'info'}>
-									{emojify(`🔋 ${reportedWithTime.bat.v.value / 1000}V`)}
-									<span />
-									<ReportedTime
-										receivedAt={reportedWithTime.bat.v.receivedAt}
-										reportedAt={new Date(reportedWithTime.bat.ts.value)}
-									/>
-								</div>
-							</Toggle>
-						)}
-						{reportedWithTime?.env && (
-							<Toggle>
-								<div className={'info'}>
-									{emojify(`🌡️ ${reportedWithTime.env.v.value.temp}°C`)}
-									{emojify(
-										`💦 ${Math.round(reportedWithTime.env.v.value.hum)}%`,
-									)}
-									<ReportedTime
-										receivedAt={reportedWithTime.env.v.receivedAt}
-										reportedAt={new Date(reportedWithTime.env.ts.value)}
-									/>
-								</div>
-							</Toggle>
-						)}
-					</>
+				{reportedWithTime.roam?.v && reportedWithTime.dev?.v && (
+					<Toggle>
+						<ConnectionInformation
+							mccmnc={reportedWithTime.roam.v.value.mccmnc}
+							rsrp={reportedWithTime.roam.v.value.rsrp}
+							receivedAt={reportedWithTime.roam.v.receivedAt}
+							reportedAt={new Date(reportedWithTime.roam.ts.value)}
+							networkOperator={reportedWithTime.dev.v.value.nw}
+							iccid={reportedWithTime.dev.v.value.iccid}
+						/>
+					</Toggle>
+				)}
+				{reportedWithTime.gps?.v && (
+					<Toggle>
+						<div className={'info'}>
+							{reportedWithTime.gps?.v?.value.spd &&
+								emojify(
+									` 🏃${Math.round(reportedWithTime.gps?.v?.value.spd)}m/s`,
+								)}
+							{reportedWithTime.gps?.v?.value.alt &&
+								emojify(
+									`✈️ ${Math.round(reportedWithTime.gps?.v?.value.alt)}m`,
+								)}
+							<ReportedTime
+								receivedAt={reportedWithTime.gps?.v.receivedAt}
+								reportedAt={
+									new Date(reportedWithTime.gps?.ts?.value || Date.now())
+								}
+							/>
+						</div>
+					</Toggle>
+				)}
+				{reportedWithTime.bat && (
+					<Toggle>
+						<div className={'info'}>
+							{emojify(`🔋 ${reportedWithTime.bat.v.value / 1000}V`)}
+							<span />
+							<ReportedTime
+								receivedAt={reportedWithTime.bat.v.receivedAt}
+								reportedAt={new Date(reportedWithTime.bat.ts.value)}
+							/>
+						</div>
+					</Toggle>
+				)}
+				{reportedWithTime?.env && (
+					<Toggle>
+						<div className={'info'}>
+							{emojify(`🌡️ ${reportedWithTime.env.v.value.temp}°C`)}
+							{emojify(`💦 ${Math.round(reportedWithTime.env.v.value.hum)}%`)}
+							<ReportedTime
+								receivedAt={reportedWithTime.env.v.receivedAt}
+								reportedAt={new Date(reportedWithTime.env.ts.value)}
+							/>
+						</div>
+					</Toggle>
 				)}
 			</CardHeader>
 			<CardBody>
@@ -307,7 +309,7 @@ export const Cat = ({
 								key={`${cat.version}`}
 								device={cat.state.reported.dev}
 								onCreateUpgradeJob={({ data }) => {
-									onDeviceUpgradeFirmwareJobCreate(data)
+									onReportedFOTAJobProgressCreate(data)
 								}}
 							/>
 							<Jobs jobs={fotaJobs} />

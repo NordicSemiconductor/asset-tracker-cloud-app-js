@@ -5,7 +5,7 @@ import { FooterWithFullWidthButton } from '../../Settings/Settings'
 import { DeviceInformation } from '../../@types/device-state'
 import { OnCreateUpgradeJob } from './FOTA'
 
-export const CreateDeviceUpgradeFirmwareJob = ({
+export const CreateReportedFOTAJobProgress = ({
 	onJob,
 	onError,
 }: {

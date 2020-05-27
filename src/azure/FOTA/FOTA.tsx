@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Alert } from 'reactstrap'
 import { DisplayError as ShowError } from '../../Error/Error'
-import { CreateDeviceUpgradeFirmwareJob } from './CreateFOTAJob'
+import { CreateReportedFOTAJobProgress } from './CreateFOTAJob'
 import { DeviceInformation } from '../../@types/device-state'
 
 export type OnCreateUpgradeJob = (args: {
@@ -30,7 +30,7 @@ export const FOTA = ({
 			{device.v.appV && (
 				<>
 					{error && <ShowError error={error} />}
-					<CreateDeviceUpgradeFirmwareJob
+					<CreateReportedFOTAJobProgress
 						key={`uploadfile-${addJobKey}`}
 						device={device}
 						onError={setError}

@@ -2,6 +2,7 @@ import {
 	DeviceTwinReported,
 	PropertyMetadata,
 	MakePropertyMetadata,
+	ReportedFOTAJobProgress,
 } from '../@types/azure-device'
 import {
 	ReportedState,
@@ -9,7 +10,7 @@ import {
 	DeviceConfig,
 } from '../@types/device-state'
 
-const toReceivedProps = <A extends { [key: string]: any }>(
+export const toReceivedProps = <A extends { [key: string]: any }>(
 	v: A,
 	meta: PropertyMetadata & MakePropertyMetadata<A>,
 ): MakeReceivedProperty<A> =>
@@ -29,7 +30,7 @@ const toReceivedProps = <A extends { [key: string]: any }>(
  */
 export const toReportedWithReceivedAt = (
 	reported: DeviceTwinReported,
-): ReportedState => {
+): ReportedState & { fota?: ReportedFOTAJobProgress } => {
 	const { $metadata } = reported
 	return {
 		...(reported.cfg &&
@@ -52,5 +53,9 @@ export const toReportedWithReceivedAt = (
 			$metadata.acc && { acc: toReceivedProps(reported.acc, $metadata.acc) }),
 		...(reported.env &&
 			$metadata.env && { env: toReceivedProps(reported.env, $metadata.env) }),
+		...(reported.fota &&
+			$metadata.fota && {
+				fota: toReceivedProps(reported.fota, $metadata.fota),
+			}),
 	}
 }
