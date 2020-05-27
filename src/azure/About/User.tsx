@@ -13,7 +13,7 @@ export const User = ({ accessToken }: { accessToken: AuthResponse }) => (
 				</dd>
 				<dt>Email</dt>
 				<dd>
-					<code>{JSON.stringify(accessToken.idTokenClaims?.emails?.[0])}</code>
+					<code>{accessToken.idTokenClaims?.emails?.[0]}</code>
 				</dd>
 			</dl>
 		</CardBody>
