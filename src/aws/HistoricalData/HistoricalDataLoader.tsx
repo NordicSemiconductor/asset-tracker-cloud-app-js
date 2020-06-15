@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { query, parseResult, FieldFormatters } from '@bifravst/athena-helpers'
-import { Loading } from '../Loading/Loading'
-import { DisplayError as ShowError } from '../Error/Error'
+import { Loading } from '../../Loading/Loading'
+import { DisplayError as ShowError } from '../../Error/Error'
 import PQueue from 'p-queue'
-import { AthenaContext } from '../aws/App'
+import { AthenaContext } from '../App'
 
 const queue = new PQueue({ concurrency: 1 })
 

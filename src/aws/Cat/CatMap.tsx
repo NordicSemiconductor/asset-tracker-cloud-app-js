@@ -1,4 +1,4 @@
-import { HistoricalDataLoader } from '../../HistoricalData/HistoricalDataLoader'
+import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
 import {
 	Map,
 	Location,

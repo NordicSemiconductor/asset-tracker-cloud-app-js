@@ -51,6 +51,9 @@ export type ApiClient = {
 	getSignalRConnectionInfo: () => Promise<
 		Either<ErrorInfo, { url: string; accessToken: string }>
 	>
+	queryHistoricalDeviceData: (
+		query: string,
+	) => Promise<Either<ErrorInfo, { result: unknown }>>
 }
 
 export type IotHubDevice = Twin & {
@@ -119,6 +122,18 @@ export const fetchApiClient = ({
 		handleResponse(
 			fetch(`${endpoint}/api/${resource}`, {
 				method: 'PATCH',
+				headers: iotHubRequestHeaders,
+				body: JSON.stringify(properties),
+			}),
+		)
+
+	const post = <A extends { [key: string]: any }>(
+		resource: string,
+		properties: { [key: string]: any },
+	) => async (): Promise<Either<ErrorInfo, A>> =>
+		handleResponse(
+			fetch(`${endpoint}/api/${resource}`, {
+				method: 'POST',
 				headers: iotHubRequestHeaders,
 				body: JSON.stringify(properties),
 			}),
@@ -224,5 +239,9 @@ export const fetchApiClient = ({
 		getSignalRConnectionInfo: get<{ url: string; accessToken: string }>(
 			'signalRConnectionInfo',
 		),
+		queryHistoricalDeviceData: async (
+			query: string,
+		): Promise<Either<ErrorInfo, { result: unknown }>> =>
+			post<{ result: any }>('history', { query })(),
 	}
 }

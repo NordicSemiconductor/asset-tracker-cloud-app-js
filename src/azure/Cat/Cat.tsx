@@ -28,6 +28,8 @@ import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
 import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDiagram'
 import { FOTA } from '../FOTA/FOTA'
 import { Jobs } from '../FOTA/FOTAJob'
+import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
+import { HistoricalDataChart } from '../../HistoricalData/HistoricalDataChart'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -331,6 +333,27 @@ export const Cat = ({
 						</Collapsable>
 					</>
 				)}
+				<hr />
+				<Collapsable id={'cat:bat'} title={<h3>{emojify('🔋 Battery')}</h3>}>
+					<HistoricalDataLoader
+						apiClient={apiClient}
+						QueryString={
+							'SELECT c.deviceUpdate.properties.reported.bat.v AS v, c.deviceUpdate.properties.reported.bat.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.bat != null'
+						}
+						formatFields={({
+							v,
+							ts,
+						}: {
+							v: number
+							ts: string
+						}): { value: number; date: Date } => ({
+							value: v,
+							date: new Date(ts),
+						})}
+					>
+						{({ data }) => <HistoricalDataChart data={data} type={'line'} />}
+					</HistoricalDataLoader>
+				</Collapsable>
 				<hr />
 				<Collapsable
 					id={'cat:dangerzone'}
