@@ -30,6 +30,7 @@ import { FOTA } from '../FOTA/FOTA'
 import { Jobs } from '../FOTA/FOTAJob'
 import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
 import { HistoricalDataChart } from '../../HistoricalData/HistoricalDataChart'
+import { HistoricalButtonPresses } from '../../HistoricalButtonPresses/HistoricalButtonPresses'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -376,6 +377,28 @@ export const Cat = ({
 						})}
 					>
 						{({ data }) => <HistoricalDataChart data={data} type={'line'} />}
+					</HistoricalDataLoader>
+				</Collapsable>
+				<hr />
+				{/* TODO: Add Activity */}
+				<Collapsable id={'cat:button'} title={<h3>{emojify('🚨 Button')}</h3>}>
+					<HistoricalDataLoader
+						apiClient={apiClient}
+						QueryString={
+							'SELECT c.deviceUpdate.btn.v AS v, c.deviceUpdate.btn.ts AS ts FROM c WHERE c.deviceUpdate.btn.v != null ORDER BY c.deviceUpdate.btn.ts DESC OFFSET 0 LIMIT 10'
+						}
+						formatFields={({
+							v,
+							ts,
+						}: {
+							v: number
+							ts: string
+						}): { value: number; date: Date } => ({
+							value: v,
+							date: new Date(ts),
+						})}
+					>
+						{({ data }) => <HistoricalButtonPresses data={data} />}
 					</HistoricalDataLoader>
 				</Collapsable>
 				<hr />
