@@ -356,6 +356,30 @@ export const Cat = ({
 				</Collapsable>
 				<hr />
 				<Collapsable
+					id={'cat:environment'}
+					title={<h3>{emojify('⛅ Temperature')}</h3>}
+				>
+					<HistoricalDataLoader
+						apiClient={apiClient}
+						QueryString={
+							'SELECT c.deviceUpdate.properties.reported.env.v.temp AS v, c.deviceUpdate.properties.reported.env.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.env.v.temp != null'
+						}
+						formatFields={({
+							v,
+							ts,
+						}: {
+							v: number
+							ts: string
+						}): { value: number; date: Date } => ({
+							value: v,
+							date: new Date(ts),
+						})}
+					>
+						{({ data }) => <HistoricalDataChart data={data} type={'line'} />}
+					</HistoricalDataLoader>
+				</Collapsable>
+				<hr />
+				<Collapsable
 					id={'cat:dangerzone'}
 					title={<h3>{emojify('☠️ Danger Zone')}</h3>}
 				>
