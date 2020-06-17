@@ -380,7 +380,27 @@ export const Cat = ({
 					</HistoricalDataLoader>
 				</Collapsable>
 				<hr />
-				{/* TODO: Add Activity */}
+				<Collapsable id={'cat:act'} title={<h3>{emojify('🏋️ Activity')}</h3>}>
+					<HistoricalDataLoader
+						apiClient={apiClient}
+						QueryString={
+							'SELECT c.deviceUpdate.properties.reported.acc.v AS v, c.deviceUpdate.properties.reported.acc.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.acc.v != null ORDER BY c.deviceUpdate.properties.reported.acc.ts DESC OFFSET 0 LIMIT 100'
+						}
+						formatFields={({
+							v: { x, y, z },
+							ts,
+						}: {
+							v: { x: number; y: number; z: number }
+							ts: string
+						}): { value: number; date: Date } => ({
+							value: Math.abs(x) + Math.abs(y) + Math.abs(z),
+							date: new Date(ts),
+						})}
+					>
+						{({ data }) => <HistoricalDataChart data={data} type={'column'} />}
+					</HistoricalDataLoader>
+				</Collapsable>
+				<hr />
 				<Collapsable id={'cat:button'} title={<h3>{emojify('🚨 Button')}</h3>}>
 					<HistoricalDataLoader
 						apiClient={apiClient}
