@@ -270,11 +270,16 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	athenaContext={athenaContext}
 																	deviceId={catId}
 																	formatFields={{
-																		value: (v: number[]) =>
-																			v.reduce(
-																				(sum, v) => sum + Math.abs(v),
-																				0,
-																			),
+																		value: ({
+																			x,
+																			y,
+																			z,
+																		}: {
+																			x: number
+																			y: number
+																			z: number
+																		}) =>
+																			Math.abs(x) + Math.abs(y) + Math.abs(z),
 																		date: (v) => new Date(v),
 																	}}
 																	QueryString={`SELECT reported.acc.ts as date, reported.acc.v as value FROM ${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.acc IS NOT NULL ORDER BY reported.acc.ts DESC LIMIT 100`}
