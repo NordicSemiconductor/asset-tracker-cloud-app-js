@@ -339,7 +339,7 @@ export const Cat = ({
 					<HistoricalDataLoader
 						apiClient={apiClient}
 						QueryString={
-							'SELECT c.deviceUpdate.properties.reported.bat.v AS v, c.deviceUpdate.properties.reported.bat.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.bat != null ORDER BY c.deviceUpdate.bat.ts DESC OFFSET 0 LIMIT 100'
+							'SELECT c.deviceUpdate.properties.reported.bat.v AS v, c.deviceUpdate.properties.reported.bat.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.bat != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100'
 						}
 						formatFields={({
 							v,
@@ -363,7 +363,7 @@ export const Cat = ({
 					<HistoricalDataLoader
 						apiClient={apiClient}
 						QueryString={
-							'SELECT c.deviceUpdate.properties.reported.env.v.temp AS v, c.deviceUpdate.properties.reported.env.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.env.v.temp != null ORDER BY c.deviceUpdate.env.ts DESC OFFSET 0 LIMIT 100'
+							'SELECT c.deviceUpdate.properties.reported.env.v.temp AS v, c.deviceUpdate.properties.reported.env.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.env.v.temp != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100'
 						}
 						formatFields={({
 							v,
@@ -384,7 +384,7 @@ export const Cat = ({
 					<HistoricalDataLoader
 						apiClient={apiClient}
 						QueryString={
-							'SELECT c.deviceUpdate.properties.reported.acc.v AS v, c.deviceUpdate.properties.reported.acc.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.acc.v != null ORDER BY c.deviceUpdate.properties.reported.acc.ts DESC OFFSET 0 LIMIT 100'
+							'SELECT c.deviceUpdate.properties.reported.acc.v AS v, c.deviceUpdate.properties.reported.acc.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.acc.v != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100'
 						}
 						formatFields={({
 							v: { x, y, z },
@@ -405,7 +405,7 @@ export const Cat = ({
 					<HistoricalDataLoader
 						apiClient={apiClient}
 						QueryString={
-							'SELECT c.deviceUpdate.btn.v AS v, c.deviceUpdate.btn.ts AS ts FROM c WHERE c.deviceUpdate.btn.v != null ORDER BY c.deviceUpdate.btn.ts DESC OFFSET 0 LIMIT 10'
+							'SELECT c.deviceUpdate.btn.v AS v, c.deviceUpdate.btn.ts AS ts FROM c WHERE c.deviceUpdate.btn.v != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 10'
 						}
 						formatFields={({
 							v,

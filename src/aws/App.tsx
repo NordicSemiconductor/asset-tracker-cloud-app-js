@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 import { CatPage } from './Cat/Page'
 import { CatsPage } from './Cats/Page'
-import { CatsMapPage } from '../CatsMap/Page'
+import { CatsMapPage } from './CatsMap/Page'
 import { NavbarBrandContextProvider } from '../Navigation/NavbarBrand'
 import { ToggleNavigation } from '../Navigation/ToggleNavigation'
 import { GlobalStyle } from '../Styles'
@@ -89,7 +89,7 @@ export const boot = ({
 		const [athenaContext, setAthenaContext] = useState<AthenaContext>()
 		useEffect(() => {
 			Auth.currentCredentials()
-				.then(async creds => {
+				.then(async (creds) => {
 					const c = Auth.essentialCredentials(creds)
 					const iot = new Iot({
 						credentials: creds,
@@ -117,7 +117,7 @@ export const boot = ({
 						policyName: `${userIotPolicyArn}`.split('/')[1] || '',
 					})(c.identityId)
 				})
-				.catch(error => {
+				.catch((error) => {
 					console.error(error)
 				})
 		}, [authData])
@@ -133,7 +133,7 @@ export const boot = ({
 								.then(() => {
 									window.location.reload()
 								})
-								.catch(error => {
+								.catch((error) => {
 									// Woot?!
 									console.error(error)
 								})

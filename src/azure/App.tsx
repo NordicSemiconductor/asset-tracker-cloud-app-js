@@ -12,6 +12,7 @@ import { UserAgentApplication, AuthResponse } from 'msal'
 import { v4 } from 'uuid'
 import { CatPage } from './Cat/Page'
 import { ApiClient, fetchApiClient } from './api'
+import { CatsMapPage } from './CatsMap/Page'
 
 const ACCESS_TOKEN = 'azure:accessToken'
 
@@ -25,7 +26,7 @@ const isExpiredToken = (token: AuthResponse) =>
 
 const getTokenFromLocalStorage = (storename: string) => {
 	const stored = window.localStorage.getItem(storename)
-	if (!stored) return
+	if (stored === null) return
 	const t = JSON.parse(stored)
 	if (isExpiredToken(t)) {
 		console.debug(`${storename} token expired`)
@@ -69,12 +70,12 @@ export const boot = ({
 			userAgentApplication
 				.acquireTokenSilent(tokenRequest)
 				.then(resolve)
-				.catch(error => {
+				.catch((error: Record<string, string>) => {
 					//Acquire token silent failure, and send an interactive request
 					if (
-						error?.errorMessage?.includes('interaction_required') ||
-						error?.message?.includes('User login is required') ||
-						error?.message?.includes('AADB2C90077')
+						(error.errorMessage?.includes('interaction_required') ?? false) ||
+						(error.message?.includes('User login is required') ?? false) ||
+						(error.message?.includes('AADB2C90077') ?? false)
 					) {
 						return userAgentApplication
 							.acquireTokenPopup(tokenRequest)
@@ -88,14 +89,14 @@ export const boot = ({
 	const history = createBrowserHistory()
 
 	return () => {
-		const [accessToken, setAccessToken] = useState<AuthResponse>(
+		const [accessToken, setAccessToken] = useState<AuthResponse | undefined>(
 			getTokenFromLocalStorage(ACCESS_TOKEN),
 		)
 		const [error, setError] = useState<Error>()
 
 		useEffect(() => {
 			let isCancelled = false
-			if (!accessToken) {
+			if (accessToken === undefined) {
 				return
 			}
 			const i = setTimeout(async () => {
@@ -126,16 +127,16 @@ export const boot = ({
 							loggedIn={accessToken !== undefined}
 							onLogout={() => {
 								window.localStorage.clear()
-								setAccessToken(undefined as any)
+								setAccessToken(undefined)
 								setError(undefined)
 								userAgentApplication.logout()
 							}}
 						/>
-						{!accessToken && (
+						{accessToken === undefined && (
 							<Login
 								onLogin={() => {
 									acquireAccessToken()
-										.then(token => {
+										.then((token) => {
 											setAccessToken(token)
 											window.localStorage.setItem(
 												ACCESS_TOKEN,
@@ -146,7 +147,7 @@ export const boot = ({
 								}}
 							/>
 						)}
-						{error && <ErrorComponent error={error} />}
+						{error !== undefined && <ErrorComponent error={error} />}
 						{accessToken && (
 							<AccessTokenContext.Provider value={accessToken}>
 								<ApiClientContext.Provider
@@ -163,6 +164,7 @@ export const boot = ({
 									<Route exact path="/about" component={AboutPage} />
 									<Route exact path="/cats" component={CatsPage} />
 									<Route exact path="/cat/:catId" component={CatPage} />
+									<Route exact path="/cats-on-map" component={CatsMapPage} />
 								</ApiClientContext.Provider>
 							</AccessTokenContext.Provider>
 						)}
