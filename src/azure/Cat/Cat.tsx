@@ -16,7 +16,7 @@ import * as signalR from '@microsoft/signalr'
 import { connect } from '../signalr'
 import * as merge from 'deepmerge'
 import { DeviceTwin } from '../../@types/azure-device'
-import { Map, CatMapContainer, Location, CellLocation } from '../../Map/Map'
+import { CatMapContainer, Location, CellLocation } from '../../Map/Map'
 import { Toggle } from '../../Toggle/Toggle'
 import { ReportedTime } from '../../ReportedTime/ReportedTime'
 import {
@@ -31,6 +31,7 @@ import { Jobs } from '../FOTA/FOTAJob'
 import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
 import { HistoricalDataChart } from '../../HistoricalData/HistoricalDataChart'
 import { HistoricalButtonPresses } from '../../HistoricalButtonPresses/HistoricalButtonPresses'
+import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -173,6 +174,8 @@ export const Cat = ({
 			position: {
 				lat: reportedWithTime.gps.v?.value.lat,
 				lng: reportedWithTime.gps.v?.value.lng,
+				accuracy: reportedWithTime.gps?.v?.value.acc,
+				heading: reportedWithTime.gps?.v?.value.hdg,
 			},
 		}
 	}
@@ -183,12 +186,28 @@ export const Cat = ({
 	return (
 		<CatCard>
 			<CatMapContainer>
-				<Map
+				<HistoricalDataMap
 					deviceLocation={deviceLocation}
 					cellLocation={cellLocation}
-					accuracy={reportedWithTime.gps?.v?.value.acc}
-					heading={reportedWithTime.gps?.v?.value.hdg}
-					label={cat.id}
+					cat={cat}
+					fetchHistory={async (numEntries) =>
+						apiClient
+							.queryHistoricalDeviceData(
+								`SELECT c.deviceUpdate.properties.reported.gps.v AS v, c.deviceUpdate.properties.reported.gps.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.gps.v != null AND c.deviceId = "${cat.id}" ORDER BY c.timestamp DESC OFFSET 0 LIMIT ${numEntries}`,
+							)
+							.then((res) => {
+								if (isLeft(res)) return []
+								const history = (res.right.result as {
+									v: { lat: number; lng: number }
+									ts: string
+								}[]).map(({ v: { lat, lng }, ts }) => ({
+									position: { lat, lng },
+									ts: new Date(ts),
+								}))
+								console.log({ history })
+								return history
+							})
+					}
 				/>
 			</CatMapContainer>
 			<CardHeader>

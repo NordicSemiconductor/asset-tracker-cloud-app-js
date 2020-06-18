@@ -47,7 +47,7 @@ export const SettingsFormGroup = styled(FormGroup)`
 type Position = { lat: number; lng: number }
 
 export type Location = {
-	position: Position
+	position: Position & { accuracy?: number; heading?: number }
 	ts: Date
 }
 
@@ -59,15 +59,11 @@ export type CellLocation = {
 export const Map = ({
 	deviceLocation,
 	cellLocation,
-	accuracy,
-	heading,
 	label,
 	history,
 }: {
 	deviceLocation?: Location
 	cellLocation?: CellLocation
-	accuracy?: number
-	heading?: number
 	label: string
 	history?: Location[]
 }) => {
@@ -124,11 +120,13 @@ export const Map = ({
 				<Marker position={center.position}>
 					<Popup>{label}</Popup>
 				</Marker>
-				{deviceLocation &&
-					accuracy &&
+				{deviceLocation?.position.accuracy !== undefined &&
 					cellLocationIsMoreUpToDate !== undefined &&
 					!cellLocationIsMoreUpToDate && (
-						<Circle center={deviceLocation.position} radius={accuracy} />
+						<Circle
+							center={deviceLocation.position}
+							radius={deviceLocation.position.accuracy}
+						/>
 					)}
 				{cellLocation && cellLocationIsMoreUpToDate && (
 					<Circle
@@ -137,7 +135,7 @@ export const Map = ({
 						color={'#F6C270'}
 					/>
 				)}
-				{deviceLocation && heading && (
+				{deviceLocation?.position.heading !== undefined && (
 					<LeafletConsumer key={mapZoom}>
 						{({ map }) => {
 							if (map) {
@@ -147,11 +145,21 @@ export const Map = ({
 										x +
 											mapZoom *
 												3 *
-												Math.cos((((heading - 90) % 360) * Math.PI) / 180),
+												Math.cos(
+													((((deviceLocation?.position.heading ?? 0) - 90) %
+														360) *
+														Math.PI) /
+														180,
+												),
 										y +
 											mapZoom *
 												3 *
-												Math.sin((((heading - 90) % 360) * Math.PI) / 180),
+												Math.sin(
+													((((deviceLocation?.position.heading ?? 0) - 90) %
+														360) *
+														Math.PI) /
+														180,
+												),
 									],
 									mapZoom,
 								)
@@ -168,8 +176,7 @@ export const Map = ({
 					</LeafletConsumer>
 				)}
 				{deviceLocation &&
-					history &&
-					history.map(({ position: { lat, lng } }, k) => {
+					history?.map(({ position: { lat, lng } }, k) => {
 						const alpha = Math.round((1 - k / history.length) * 255).toString(
 							16,
 						)
