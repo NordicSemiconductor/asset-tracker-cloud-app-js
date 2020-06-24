@@ -47,6 +47,11 @@ export const boot = ({
 	authority: string
 	apiEndpoint: string
 }) => {
+	console.log('Client ID', clientId)
+	console.log('Redirect URI', redirectUri)
+	console.log('B2C Authority', authority)
+	console.log('API Endpoint', apiEndpoint)
+
 	const userAgentApplication = new UserAgentApplication({
 		auth: {
 			clientId,
