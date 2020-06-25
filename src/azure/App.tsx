@@ -39,18 +39,26 @@ const getTokenFromLocalStorage = (storename: string) => {
 export const boot = ({
 	clientId,
 	redirectUri,
-	authority,
 	apiEndpoint,
+	adB2cTenant,
 }: {
 	clientId: string
 	redirectUri: string
-	authority: string
 	apiEndpoint: string
+	adB2cTenant: string
 }) => {
 	console.log('Client ID', clientId)
 	console.log('Redirect URI', redirectUri)
-	console.log('B2C Authority', authority)
+	console.log('AD B2C Tenant', adB2cTenant)
+	const authority = `https://${adB2cTenant}.b2clogin.com/${adB2cTenant}.onmicrosoft.com/B2C_1_signup_signin`
+	console.log('AD B2C Authority', authority)
 	console.log('API Endpoint', apiEndpoint)
+	const apiScope = `https://${adB2cTenant}.onmicrosoft.com/api`
+	const scopes = [
+		`${apiScope}/user_impersonation`,
+		`${apiScope}/bifravst.admin`,
+	]
+	console.log('Token Scopes', scopes)
 
 	const userAgentApplication = new UserAgentApplication({
 		auth: {
@@ -66,7 +74,7 @@ export const boot = ({
 	})
 
 	const tokenRequest = {
-		scopes: ['https://bifravstonazure.onmicrosoft.com/api/user_impersonation'],
+		scopes,
 		sid: v4(),
 	}
 

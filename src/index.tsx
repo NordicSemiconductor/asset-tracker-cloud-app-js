@@ -65,7 +65,7 @@ switch (cloudFlavour) {
 						).replace(/\/+$/, ''),
 						clientId: process.env.REACT_APP_AZURE_CLIENT_ID ?? '',
 						redirectUri: process.env.REACT_APP_AZURE_REDIRECT_URI ?? '',
-						authority: process.env.REACT_APP_AZURE_AD_B2C_AUTHORITY ?? '',
+						adB2cTenant: process.env.REACT_APP_AZURE_AD_B2C_TENANT ?? '',
 					}),
 				)
 			})
