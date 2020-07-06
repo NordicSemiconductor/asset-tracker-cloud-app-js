@@ -38,15 +38,14 @@ const getTokenFromLocalStorage = (storename: string) => {
 
 export const boot = ({
 	clientId,
-	redirectUri,
 	apiEndpoint,
 	adB2cTenant,
 }: {
 	clientId: string
-	redirectUri: string
 	apiEndpoint: string
 	adB2cTenant: string
-}) => {
+}): (() => JSX.Element) => {
+	const redirectUri = document.location.href
 	console.log('Client ID', clientId)
 	console.log('Redirect URI', redirectUri)
 	console.log('AD B2C Tenant', adB2cTenant)
