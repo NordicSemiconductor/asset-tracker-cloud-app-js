@@ -69,8 +69,8 @@
     "@babel/plugin-proposal-optional-chaining": "^7.11.0",
     "@bifravst/code-style": "^8.0.20",
     "@bifravst/eslint-config-typescript": "^5.0.15",
-    "@commitlint/cli": "^9.1.1",
-    "@commitlint/config-angular": "^9.1.1",
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-angular": "^9.1.2",
     "@types/aws-iot-device-sdk": "^2.2.2",
     "@types/intro.js": "^2.4.7",
     "@types/jest": "^26.0.8",
@@ -101,7 +101,7 @@
   },
   "husky": {
     "hooks": {
-      "commit-msg": "commitlint -e",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "lint-staged"
     }
   },
