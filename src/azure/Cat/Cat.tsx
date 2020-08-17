@@ -377,7 +377,7 @@ export const Cat = ({
 				<hr />
 				<Collapsable
 					id={'cat:environment'}
-					title={<h3>{emojify('⛅ Temperature')}</h3>}
+					title={<h3>{emojify('🌡️ Temperature')}</h3>}
 				>
 					<HistoricalDataLoader
 						apiClient={apiClient}

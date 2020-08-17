@@ -240,7 +240,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 															<hr />
 															<Collapsable
 																id={'cat:environment'}
-																title={<h3>{emojify('⛅ Temperature')}</h3>}
+																title={<h3>{emojify('🌡️ Temperature')}</h3>}
 															>
 																<HistoricalDataLoader
 																	athenaContext={athenaContext}
