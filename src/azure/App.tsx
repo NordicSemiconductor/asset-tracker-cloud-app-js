@@ -45,7 +45,8 @@ export const boot = ({
 	apiEndpoint: string
 	adB2cTenant: string
 }): (() => JSX.Element) => {
-	const redirectUri = document.location.href
+	const loc = new URL(document.location.href)
+	const redirectUri = `${loc.protocol}//${loc.host}`
 	console.log('Client ID', clientId)
 	console.log('Redirect URI', redirectUri)
 	console.log('AD B2C Tenant', adB2cTenant)
