@@ -357,9 +357,7 @@ export const Cat = ({
 				<Collapsable id={'cat:bat'} title={<h3>{emojify('🔋 Battery')}</h3>}>
 					<HistoricalDataLoader
 						apiClient={apiClient}
-						QueryString={
-							'SELECT c.deviceUpdate.properties.reported.bat.v AS v, c.deviceUpdate.properties.reported.bat.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.bat != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100'
-						}
+						QueryString={`SELECT c.deviceUpdate.properties.reported.bat.v AS v, c.deviceUpdate.properties.reported.bat.ts AS ts FROM c WHERE c.deviceId = "${cat.id}" AND c.deviceUpdate.properties.reported.bat != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100`}
 						formatFields={({
 							v,
 							ts,
@@ -381,9 +379,7 @@ export const Cat = ({
 				>
 					<HistoricalDataLoader
 						apiClient={apiClient}
-						QueryString={
-							'SELECT c.deviceUpdate.properties.reported.env.v.temp AS v, c.deviceUpdate.properties.reported.env.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.env.v.temp != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100'
-						}
+						QueryString={`SELECT c.deviceUpdate.properties.reported.env.v.temp AS v, c.deviceUpdate.properties.reported.env.ts AS ts FROM c WHERE c.deviceId = "${cat.id}" AND c.deviceUpdate.properties.reported.env.v.temp != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100`}
 						formatFields={({
 							v,
 							ts,
@@ -402,9 +398,7 @@ export const Cat = ({
 				<Collapsable id={'cat:act'} title={<h3>{emojify('🏋️ Activity')}</h3>}>
 					<HistoricalDataLoader
 						apiClient={apiClient}
-						QueryString={
-							'SELECT c.deviceUpdate.properties.reported.acc.v AS v, c.deviceUpdate.properties.reported.acc.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.acc.v != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100'
-						}
+						QueryString={`SELECT c.deviceUpdate.properties.reported.acc.v AS v, c.deviceUpdate.properties.reported.acc.ts AS ts FROM c WHERE c.deviceId = "${cat.id}" AND  c.deviceUpdate.properties.reported.acc.v != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100`}
 						formatFields={({
 							v: { x, y, z },
 							ts,
@@ -423,9 +417,7 @@ export const Cat = ({
 				<Collapsable id={'cat:button'} title={<h3>{emojify('🚨 Button')}</h3>}>
 					<HistoricalDataLoader
 						apiClient={apiClient}
-						QueryString={
-							'SELECT c.deviceUpdate.btn.v AS v, c.deviceUpdate.btn.ts AS ts FROM c WHERE c.deviceUpdate.btn.v != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 10'
-						}
+						QueryString={`SELECT c.deviceUpdate.btn.v AS v, c.deviceUpdate.btn.ts AS ts FROM c WHERE c.deviceId = "${cat.id}" AND  c.deviceUpdate.btn.v != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 10`}
 						formatFields={({
 							v,
 							ts,
