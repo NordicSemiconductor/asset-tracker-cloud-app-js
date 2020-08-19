@@ -14,22 +14,36 @@ export type PropertyMetadata = {
 	$lastUpdatedVersion?: number
 }
 
+/**
+ * Device FOTA status
+ * @see https://docs.microsoft.com/en-us/azure/iot-hub/tutorial-firmware-update
+ */
 export enum FOTAStatus {
-	IN_PROGRESS = 'IN_PROGRESS',
-	QUEUED = 'QUEUED',
-	FAILED = 'FAILED',
-	SUCCEEDED = 'SUCCEEDED',
+	// There is no pending firmware update. currentFwVersion should match fwVersion from desired properties.
+	CURRENT = 'current',
+	// Firmware update image is downloading.
+	DOWNLOADING = 'downloading',
+	// Verifying image file checksum and any other validations.
+	VERIFYING = 'verifying',
+	// Update to the new image file is in progress.
+	APPLYING = 'applying',
+	// Device is rebooting as part of update process.
+	REBOOTING = 'rebooting',
+	// An error occurred during the update process. Additional details should be specified in fwUpdateSubstatus.
+	ERROR = 'error',
+	// Update rolled back to the previous version due to an error.
+	ROLLEDBACK = 'rolledback',
 }
 
 export type AzureFOTAJob = {
-	jobId: string
-	location: string
-	status: FOTAStatus
+	fwVersion: string
+	fwPackageURI: string
 }
 
 export type AzureFOTAJobProgress = {
-	jobId: string
 	status: FOTAStatus
+	currentFwVersion: string
+	pendingFwVersion: string
 }
 
 export type MakePropertyMetadata<Type> = {
@@ -44,7 +58,7 @@ export type DeviceTwinReported = {
 	roam?: RoamingInformation
 	acc?: Accelerometer
 	env?: Environment
-	fota?: AzureFOTAJobProgress
+	firmware?: AzureFOTAJobProgress
 	$metadata: PropertyMetadata & {
 		cfg?: PropertyMetadata & MakePropertyMetadata<DeviceConfig>
 		gps?: PropertyMetadata & MakePropertyMetadata<Gps>
@@ -53,17 +67,17 @@ export type DeviceTwinReported = {
 		roam?: PropertyMetadata & MakePropertyMetadata<RoamingInformation>
 		acc?: PropertyMetadata & MakePropertyMetadata<Accelerometer>
 		env?: PropertyMetadata & MakePropertyMetadata<Environment>
-		fota?: PropertyMetadata & MakePropertyMetadata<AzureFOTAJobProgress>
+		firmware?: PropertyMetadata & MakePropertyMetadata<AzureFOTAJobProgress>
 	}
 	$version: number
 }
 
 export type DeviceTwinDesired = {
 	cfg?: Partial<DeviceConfig>
-	fota?: AzureFOTAJob
+	firmware?: AzureFOTAJob
 	$metadata: PropertyMetadata & {
 		cfg?: PropertyMetadata & MakePropertyMetadata<DeviceConfig>
-		fota?: PropertyMetadata & MakePropertyMetadata<AzureFOTAJob>
+		firmware?: PropertyMetadata & MakePropertyMetadata<AzureFOTAJob>
 	}
 	$version: number
 }

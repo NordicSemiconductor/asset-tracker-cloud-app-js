@@ -32,34 +32,33 @@ export const Jobs = ({
 		<>
 			<hr />
 			<h4>Jobs for this device</h4>
-			{jobs.map(({ job: { jobId, location }, status }) => (
-				<JobItem key={jobId.value}>
-					<span>
-						{status?.status && (
-							<>
-								<code>{status.status.value}</code>{' '}
-							</>
-						)}
-						<TimeInfo>
-							{emojify('📩 ')}
-							<RelativeTime ts={jobId.receivedAt} />
-						</TimeInfo>
+			{jobs.map(({ job: { fwVersion, fwPackageURI }, status }) => (
+				<JobItem key={fwVersion.value}>
+					<strong>{fwVersion.value}</strong>
+					{status?.status && (
+						<>
+							<code>{status.status.value}</code>{' '}
+						</>
+					)}
+					<TimeInfo>
+						{emojify('📩 ')}
+						<RelativeTime ts={fwVersion.receivedAt} />
+					</TimeInfo>
 
-						{status?.status && (
-							<TimeInfo>
-								{emojify('⏳ ')}
-								<RelativeTime ts={status.status.receivedAt} />
-							</TimeInfo>
-						)}
-						<br />
-						<DownloadLink
-							href={location.value}
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							Download
-						</DownloadLink>
-					</span>
+					{status?.status && (
+						<TimeInfo>
+							{emojify('⏳ ')}
+							<RelativeTime ts={status.status.receivedAt} />
+						</TimeInfo>
+					)}
+					<br />
+					<DownloadLink
+						href={fwPackageURI.value}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						Download
+					</DownloadLink>
 				</JobItem>
 			))}
 		</>

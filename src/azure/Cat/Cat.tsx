@@ -46,12 +46,15 @@ export const Cat = ({
 }) => {
 	const reportedWithTime = toReportedWithReceivedAt(cat.state.reported)
 	const fotaJob =
-		cat.state.desired.fota &&
-		cat.state.desired.$metadata.fota &&
-		toReceivedProps(cat.state.desired.fota, cat.state.desired.$metadata.fota)
+		cat.state.desired.firmware &&
+		cat.state.desired.$metadata.firmware &&
+		toReceivedProps(
+			cat.state.desired.firmware,
+			cat.state.desired.$metadata.firmware,
+		)
 
 	const fotaJobs = fotaJob
-		? [{ job: fotaJob, status: reportedWithTime.fota }]
+		? [{ job: fotaJob, status: reportedWithTime.firmware }]
 		: []
 
 	const [deleted, setDeleted] = useState(false)
@@ -147,7 +150,13 @@ export const Cat = ({
 			.catch(setError)
 	}
 
-	const onReportedFOTAJobProgressCreate = (data: ArrayBuffer) => {
+	const onReportedFOTAJobProgressCreate = ({
+		data,
+		version,
+	}: {
+		data: ArrayBuffer
+		version: string
+	}) => {
 		apiClient
 			.storeDeviceUpdate(data)
 			.then((maybeStoredUpdate) => {
@@ -155,7 +164,11 @@ export const Cat = ({
 					setError(maybeStoredUpdate.left)
 				} else {
 					apiClient
-						.setPendingDeviceUpdate(cat.id, maybeStoredUpdate.right.url)
+						.setPendingDeviceUpdate({
+							id: cat.id,
+							url: maybeStoredUpdate.right.url,
+							version,
+						})
 						.then((res) => {
 							if (isLeft(res)) {
 								setError(res.left)
@@ -330,8 +343,8 @@ export const Cat = ({
 							<FOTA
 								key={`${cat.version}`}
 								device={cat.state.reported.dev}
-								onCreateUpgradeJob={({ data }) => {
-									onReportedFOTAJobProgressCreate(data)
+								onCreateUpgradeJob={({ data, version }) => {
+									onReportedFOTAJobProgressCreate({ data, version })
 								}}
 							/>
 							<Jobs jobs={fotaJobs} />

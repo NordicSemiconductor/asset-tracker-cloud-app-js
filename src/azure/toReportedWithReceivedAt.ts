@@ -30,7 +30,7 @@ export const toReceivedProps = <A extends { [key: string]: any }>(
  */
 export const toReportedWithReceivedAt = (
 	reported: DeviceTwinReported,
-): ReportedState & { fota?: ReportedFOTAJobProgress } => {
+): ReportedState & { firmware?: ReportedFOTAJobProgress } => {
 	const { $metadata } = reported
 	return {
 		...(reported.cfg &&
@@ -53,9 +53,9 @@ export const toReportedWithReceivedAt = (
 			$metadata.acc && { acc: toReceivedProps(reported.acc, $metadata.acc) }),
 		...(reported.env &&
 			$metadata.env && { env: toReceivedProps(reported.env, $metadata.env) }),
-		...(reported.fota &&
-			$metadata.fota && {
-				fota: toReceivedProps(reported.fota, $metadata.fota),
+		...(reported.firmware &&
+			$metadata.firmware && {
+				firmware: toReceivedProps(reported.firmware, $metadata.firmware),
 			}),
 	}
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Form, FormGroup, Label } from 'reactstrap'
+import { Button, Form, FormGroup, Label, Input } from 'reactstrap'
 import { FilePicker } from '../../FilePicker/FilePicker'
 import { FooterWithFullWidthButton } from '../../Settings/Settings'
 import { DeviceInformation } from '../../@types/device-state'
@@ -17,9 +17,22 @@ export const CreateReportedFOTAJobProgress = ({
 		file: File
 		data: ArrayBuffer
 	}>()
+	const [nextVersion, setNextVersion] = useState('')
 	return (
 		<Form>
 			<fieldset>
+				<FormGroup>
+					<Label for={'nextVersion'}>Firmware version</Label>
+					<Input
+						type={'text'}
+						name={'nextVersion'}
+						id={'nextVersion'}
+						value={nextVersion}
+						onChange={({ target: { value } }) => {
+							setNextVersion(value)
+						}}
+					/>
+				</FormGroup>
 				<FormGroup>
 					<Label>Firmware file</Label>
 					<p>
@@ -36,28 +49,30 @@ export const CreateReportedFOTAJobProgress = ({
 				</FormGroup>
 			</fieldset>
 			{updateFile && (
-				<>
-					<fieldset>
-						<FormGroup>
-							<Label>Size</Label>
-							<p>{updateFile.file.size} bytes</p>
-						</FormGroup>
-					</fieldset>
-					<FooterWithFullWidthButton>
-						<Button
-							color={'primary'}
-							onClick={() => {
-								onJob({
-									data: updateFile.data,
-									file: updateFile.file,
-								})
-							}}
-						>
-							Deploy upgrade
-						</Button>
-					</FooterWithFullWidthButton>
-				</>
+				<fieldset>
+					<FormGroup>
+						<Label>Size</Label>
+						<p>{updateFile.file.size} bytes</p>
+					</FormGroup>
+				</fieldset>
 			)}
+			<FooterWithFullWidthButton>
+				<Button
+					color={'primary'}
+					disabled={updateFile === undefined || nextVersion.length === 0}
+					onClick={() => {
+						if (updateFile !== undefined) {
+							onJob({
+								data: updateFile.data,
+								file: updateFile.file,
+								version: nextVersion,
+							})
+						}
+					}}
+				>
+					Deploy upgrade
+				</Button>
+			</FooterWithFullWidthButton>
 		</Form>
 	)
 }

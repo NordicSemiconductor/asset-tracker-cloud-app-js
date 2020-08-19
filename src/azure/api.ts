@@ -6,7 +6,6 @@ import { pipe } from 'fp-ts/lib/pipeable'
 import { ErrorInfo } from '../Error/ErrorInfo'
 import { DeviceTwin } from '../@types/azure-device'
 import { DeviceConfig } from '../@types/device-state'
-import { v4 } from 'uuid'
 
 const toQueryString = (obj: any): string => {
 	if (!Object.keys(obj).length) {
@@ -44,10 +43,15 @@ export type ApiClient = {
 	storeDeviceUpdate: (
 		firmware: ArrayBuffer,
 	) => Promise<Either<ErrorInfo, { url: string }>>
-	setPendingDeviceUpdate: (
-		id: string,
-		url: string,
-	) => Promise<Either<ErrorInfo, { jobId: string }>>
+	setPendingDeviceUpdate: ({
+		id,
+		url,
+		version,
+	}: {
+		id: string
+		url: string
+		version: string
+	}) => Promise<Either<ErrorInfo, { success: boolean }>>
 	getSignalRConnectionInfo: () => Promise<
 		Either<ErrorInfo, { url: string; accessToken: string }>
 	>
@@ -220,22 +224,24 @@ export const fetchApiClient = ({
 					(new Uint16Array(firmware) as unknown) as number[],
 				),
 			)(),
-		setPendingDeviceUpdate: async (
-			id: string,
-			url: string,
-		): Promise<Either<ErrorInfo, { jobId: string }>> => {
-			const jobId = v4()
-			const job = {
-				jobId,
-				location: url,
-			}
-			return pipe(
+		setPendingDeviceUpdate: async ({
+			id,
+			url,
+			version,
+		}: {
+			id: string
+			url: string
+			version: string
+		}): Promise<Either<ErrorInfo, { success: boolean }>> =>
+			pipe(
 				patch<{ success: boolean }>(`device/${id}`, {
-					fota: job,
+					firmware: {
+						fwVersion: version,
+						fwPackageURI: url,
+					},
 				}),
-				TE.map(() => ({ jobId })),
-			)()
-		},
+				TE.map(({ success }) => ({ success })),
+			)(),
 		getSignalRConnectionInfo: get<{ url: string; accessToken: string }>(
 			'signalRConnectionInfo',
 		),
