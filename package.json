@@ -96,7 +96,7 @@
     "eslint-plugin-react-hooks": "4.1.0",
     "husky": "4.2.5",
     "react-scripts": "3.4.3",
-    "ts-jest": "26.2.0",
+    "ts-jest": "26.3.0",
     "typescript": "3.9.7"
   },
   "husky": {
