@@ -1,4 +1,3 @@
-import { MergedReportedState } from '../aws/toReportedWithReceivedAt'
 import {
 	DeviceConfig,
 	Gps,
@@ -18,16 +17,16 @@ export type ReportedThingState = {
 	acc?: Accelerometer
 	env?: Environment
 }
+
+export type ThingStateMetadataProperty = {
+	timestamp: number
+	[key: string]: any
+}
+
 export type ThingState = {
 	reported: ReportedThingState
 	desired: {
 		cfg?: Partial<DeviceConfig>
 	}
 	metadata: ThingStateMetadataProperty
-}
-
-export type ThingStateMetadataProperty = {
-	timestamp?: number
-} & {
-	[key: string]: ThingStateMetadataProperty
 }
