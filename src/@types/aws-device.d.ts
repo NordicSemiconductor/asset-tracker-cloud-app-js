@@ -19,7 +19,7 @@ export type ReportedThingState = {
 }
 
 export type ThingStateMetadataProperty = {
-	timestamp: number
+	timestamp?: number
 	[key: string]: any
 }
 
