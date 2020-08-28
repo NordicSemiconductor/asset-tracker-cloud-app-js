@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.11.0",
-    "@bifravst/code-style": "8.0.46",
+    "@bifravst/code-style": "8.0.47",
     "@bifravst/eslint-config-typescript": "5.0.18",
     "@commitlint/cli": "9.1.2",
     "@commitlint/config-angular": "9.1.2",
