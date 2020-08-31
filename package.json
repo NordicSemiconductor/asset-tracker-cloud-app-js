@@ -39,7 +39,7 @@
     "aws-iot-device-sdk": "2.2.6",
     "aws-sdk": "2.742.0",
     "azure-iothub": "1.12.5",
-    "date-fns": "2.16.0",
+    "date-fns": "2.16.1",
     "deepmerge": "4.2.2",
     "e118-iin-list": "1.7.0",
     "fast-deep-equal": "3.1.3",
