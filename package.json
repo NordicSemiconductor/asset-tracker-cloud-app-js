@@ -68,7 +68,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.11.0",
     "@bifravst/code-style": "8.0.53",
-    "@bifravst/eslint-config-typescript": "5.0.20",
+    "@bifravst/eslint-config-typescript": "5.0.21",
     "@commitlint/cli": "9.1.2",
     "@commitlint/config-angular": "9.1.2",
     "@types/aws-iot-device-sdk": "2.2.2",
