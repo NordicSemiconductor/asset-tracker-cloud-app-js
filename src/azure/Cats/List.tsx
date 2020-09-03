@@ -20,7 +20,7 @@ export const List = ({
 	showButtonWarning: (id: string) => Date | undefined
 	snooze: (id: string) => void
 	setButtonPresses: React.Dispatch<React.SetStateAction<DeviceDateMap>>
-}) => {
+}): React.ReactNode => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState<ErrorInfo>()
@@ -39,7 +39,7 @@ export const List = ({
 					setCats(
 						res.right.map(({ deviceId, name }) => ({
 							id: deviceId,
-							name: name || deviceId,
+							name: name ?? deviceId,
 						})),
 					)
 				}
@@ -76,6 +76,7 @@ export const List = ({
 			.catch(setError)
 		return () => {
 			isCancelled = true
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			connection?.stop().catch(console.error)
 		}
 	}, [apiClient, setButtonPresses])
