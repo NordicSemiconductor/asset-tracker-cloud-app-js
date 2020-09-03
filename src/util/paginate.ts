@@ -13,7 +13,7 @@ export const paginate = async <A>({
 }): Promise<A[]> => {
 	const page = await paginator(startKey)
 	const i = [...(items ? items : []), ...page.items]
-	if (page.nextStartKey) {
+	if (page.nextStartKey !== undefined && page.nextStartKey !== null) {
 		await paginate({
 			paginator,
 			startKey: page.nextStartKey,
@@ -23,6 +23,7 @@ export const paginate = async <A>({
 	return i
 }
 
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
 export type PaginatedResult<A> = {
 	items: A[]
 	nextStartKey?: any

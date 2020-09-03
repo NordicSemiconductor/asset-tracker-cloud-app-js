@@ -201,6 +201,7 @@ const IotContext = React.createContext<{
 })
 export const IotConsumer = IotContext.Consumer
 
+// eslint-disable-next-line no-redeclare
 const AthenaContext = React.createContext<AthenaContext>({
 	athena: new Athena({ region: 'us-east-1' }),
 	workGroup: '',
@@ -209,6 +210,7 @@ const AthenaContext = React.createContext<AthenaContext>({
 })
 export const AthenaConsumer = AthenaContext.Consumer
 
+// eslint-disable-next-line no-redeclare
 const StackConfigContext = React.createContext<StackConfigContext>({
 	region: 'us-east-1',
 	avatarBucketName: '',

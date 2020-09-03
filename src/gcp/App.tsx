@@ -35,7 +35,7 @@ export const boot = ({
 	return () => {
 		const [user, setUser] = useState<firebase.User>()
 
-		auth.onAuthStateChanged(user => {
+		auth.onAuthStateChanged((user) => {
 			if (user !== null) {
 				setUser(user)
 			}
@@ -57,7 +57,7 @@ export const boot = ({
 								.then(() => {
 									window.location.reload()
 								})
-								.catch(error => {
+								.catch((error) => {
 									// Woot?!
 									console.error(error)
 								})
@@ -82,6 +82,7 @@ export const boot = ({
 const IdentityIdContext = React.createContext<string>('unauthorized')
 export const IdentityIdConsumer = IdentityIdContext.Consumer
 
+// eslint-disable-next-line no-redeclare
 const CloudConfigContext = React.createContext<CloudConfigContext>({
 	firebaseAuthDomain: '',
 })

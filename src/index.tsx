@@ -15,6 +15,7 @@ export type ReactAppConfig = {
 	version: string
 }
 
+// eslint-disable-next-line no-redeclare
 const ReactAppConfig = React.createContext<ReactAppConfig>({
 	cloudFlavour: CloudFlavour.AWS,
 	version: '',
