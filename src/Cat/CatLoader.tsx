@@ -42,14 +42,14 @@ export function CatLoader<
 	useEffect(() => {
 		let isCancelled = false
 		loader(catId)
-			.then(cat => {
+			.then((cat) => {
 				if (!isCancelled) {
 					if (isRight(cat)) {
 						const c = {
 							...cat.right,
 							id: catId,
-							name: cat.right.name || catId,
-							avatar: cat.right.avatar || 'https://placekitten.com/75/75',
+							name: cat.right.name ?? catId,
+							avatar: cat.right.avatar ?? 'https://placekitten.com/75/75',
 						}
 						setCat(c)
 						setNavbar(<CatNavbar name={c.name} avatar={c.avatar} />)
@@ -58,7 +58,7 @@ export function CatLoader<
 					}
 				}
 			})
-			.catch(err => {
+			.catch((err) => {
 				if (!isCancelled) setError(err)
 			})
 		return () => {

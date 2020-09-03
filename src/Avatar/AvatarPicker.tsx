@@ -10,14 +10,14 @@ export const AvatarPicker = ({
 	onChange: (data: Blob) => void
 	className?: string
 	children: React.ReactElement<any>
-}) => {
+}): React.ReactElement => {
 	const canvasRef = createRef<HTMLCanvasElement>()
 	const inputRef = createRef<HTMLInputElement>()
 	return (
 		<div className={`avatar-picker ${className}`}>
 			{React.cloneElement(children, {
 				onClick: () => {
-					inputRef && inputRef.current && inputRef.current.click()
+					inputRef?.current?.click()
 				},
 			})}
 			<input
@@ -26,12 +26,7 @@ export const AvatarPicker = ({
 				ref={inputRef}
 				style={{ display: 'none' }}
 				onChange={() => {
-					if (
-						inputRef &&
-						inputRef.current &&
-						inputRef.current.files &&
-						inputRef.current.files.length
-					) {
+					if ((inputRef?.current?.files?.length ?? 0) > 0) {
 						const reader = new FileReader()
 						reader.onload = (e: any) => {
 							if (canvasRef.current) {
@@ -50,7 +45,7 @@ export const AvatarPicker = ({
 											ctx.drawImage(img, 0, (avatarSize - h) / 2, avatarSize, h)
 										}
 										canvas.toBlob(
-											blob => {
+											(blob) => {
 												if (blob) {
 													onChange(blob)
 												}
@@ -63,7 +58,7 @@ export const AvatarPicker = ({
 								}
 							}
 						}
-						reader.readAsDataURL(inputRef.current.files[0])
+						reader.readAsDataURL(inputRef?.current?.files?.[0] as File)
 					}
 				}}
 			/>

@@ -15,7 +15,7 @@ export const HistoricalDataChart = ({
 }: {
 	data: { date: Date; value: number }[]
 	type: 'line' | 'column'
-}) => {
+}): React.ReactElement => {
 	const chartRef = useRef<am4charts.XYChart>()
 	const uuid = useRef<string>(v4())
 
@@ -51,7 +51,7 @@ export const HistoricalDataChart = ({
 		chart.data = data
 
 		return () => {
-			chartRef.current && chartRef.current.dispose()
+			chartRef.current?.dispose()
 		}
 	}, [data, type])
 

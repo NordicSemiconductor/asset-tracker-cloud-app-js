@@ -7,11 +7,11 @@ const LoadingP = styled.p`
 	text-align: center;
 `
 
-export const Loading = ({ text }: { text?: string }) => (
+export const Loading = ({ text }: { text?: string }): React.ReactElement => (
 	<div>
 		<LoadingP>
 			<small>
-				<em>{text || 'Loading ...'}</em>
+				<em>{text ?? 'Loading ...'}</em>
 			</small>
 		</LoadingP>
 		<Progress striped animated value={50} />

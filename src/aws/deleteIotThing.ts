@@ -2,10 +2,10 @@ import { Iot } from 'aws-sdk'
 
 export const deleteIotThing = ({ iot }: { iot: Iot }) => async (
 	thingName: string,
-) => {
+): Promise<void> => {
 	const { principals } = await iot.listThingPrincipals({ thingName }).promise()
 	await Promise.all(
-		(principals || []).map(async certificateArn => {
+		(principals ?? []).map(async (certificateArn) => {
 			const certificateId = certificateArn.split('/')[1]
 			await Promise.all([
 				iot

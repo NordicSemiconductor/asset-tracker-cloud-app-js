@@ -14,10 +14,10 @@ export const OutDatedWarning = ({
 		value: boolean | number
 		receivedAt: Date
 	}) => React.ReactElement<any>
-}) => {
+}): React.ReactElement | null => {
 	if (desired === undefined) return null // No config has been set by the user, yet
-	const reportedDoesNotMatchDesired = reported && desired === reported.value
-	if (reportedDoesNotMatchDesired) {
+	const reportedDoesMatchDesired = reported && desired === reported.value
+	if (reportedDoesMatchDesired === true) {
 		return null
 	}
 	if (reported) {

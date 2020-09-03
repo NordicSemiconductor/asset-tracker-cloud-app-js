@@ -1,15 +1,12 @@
 {
-  "extends": [
-    "@bifravst/eslint-config-typescript",
-    "react-app"
-  ],
+  "extends": ["@bifravst/eslint-config-typescript", "react-app"],
   "overrides": [
     {
-      "files": [
-        "*.tsx"
-      ],
+      "files": ["*.tsx"],
       "rules": {
-        "@typescript-eslint/explicit-module-boundary-types": "warn"
+        "@typescript-eslint/explicit-module-boundary-types": "warn",
+        "no-restricted-globals": "off",
+        "react-hooks/exhaustive-deps": "error"
       }
     }
   ]

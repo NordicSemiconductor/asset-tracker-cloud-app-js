@@ -14,7 +14,7 @@ export const Navigation = ({
 	navbar?: boolean
 	onLogout: () => void
 	onClick?: () => void
-}) => {
+}): React.ReactElement => {
 	return (
 		<Nav navbar={navbar}>
 			<NavItem>
@@ -37,7 +37,7 @@ export const Navigation = ({
 					className="nav-link"
 					color={'link'}
 					onClick={() => {
-						onClick && onClick()
+						onClick?.()
 						window.setTimeout(() => {
 							window.requestAnimationFrame(() => {
 								intro.start()

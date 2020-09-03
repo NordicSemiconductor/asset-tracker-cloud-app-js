@@ -114,7 +114,7 @@ export const boot = ({
 					// Attach Iot Policy to user
 					await attachIotPolicyToIdentity({
 						iot,
-						policyName: `${userIotPolicyArn}`.split('/')[1] || '',
+						policyName: `${userIotPolicyArn}`.split('/')[1] ?? '',
 					})(c.identityId)
 				})
 				.catch((error) => {

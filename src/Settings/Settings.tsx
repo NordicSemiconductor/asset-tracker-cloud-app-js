@@ -72,11 +72,11 @@ export const Settings = ({
 	reported?: ReportedConfigState
 	desired?: Partial<DeviceConfig>
 	onSave: (config: Partial<DeviceConfig>) => void
-}) => {
-	const r: ReportedConfigState = reported || {}
+}): React.ReactElement => {
+	const r: ReportedConfigState = reported ?? {}
 
 	const [newDesired, setNewDesired] = useState<Partial<DeviceConfig>>(
-		desired || {},
+		desired ?? {},
 	)
 
 	const hasInitial = desired === undefined
@@ -208,7 +208,9 @@ export const Settings = ({
 					example={2.5}
 					step={0.1}
 					unit={'m/s²'}
-					desired={newDesired.acct ? newDesired.acct / 10 : undefined}
+					desired={
+						newDesired.acct === undefined ? undefined : newDesired.acct / 10
+					}
 					reported={
 						r.acct && {
 							...r.acct,

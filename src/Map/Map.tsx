@@ -66,7 +66,7 @@ export const Map = ({
 	cellLocation?: CellLocation
 	label: string
 	history?: Location[]
-}) => {
+}): React.ReactElement => {
 	let zoom = 13
 	const userZoom = window.localStorage.getItem('bifravst:zoom')
 	if (userZoom !== null) {

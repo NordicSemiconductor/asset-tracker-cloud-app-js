@@ -7,7 +7,7 @@ import { OnCreateUpgradeJob } from './FOTA'
 import { DeviceInformation } from '../../@types/device-state'
 
 const getNextAppVersion = (device: DeviceInformation): string =>
-	semver.inc(device.v.appV, 'patch') || device.v.appV
+	semver.inc(device.v.appV, 'patch') ?? device.v.appV
 
 export const CreateFOTAJob = ({
 	device,

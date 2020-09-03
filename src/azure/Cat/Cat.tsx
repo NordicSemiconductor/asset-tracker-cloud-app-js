@@ -184,7 +184,7 @@ export const Cat = ({
 	let deviceLocation: Location | undefined = undefined
 	if (reportedWithTime.gps?.v?.value?.lat !== undefined) {
 		deviceLocation = {
-			ts: new Date(reportedWithTime.gps?.ts?.value || Date.now()),
+			ts: new Date(reportedWithTime.gps?.ts?.value ?? Date.now()),
 			position: {
 				lat: reportedWithTime.gps.v?.value.lat,
 				lng: reportedWithTime.gps.v?.value.lng,
@@ -259,7 +259,7 @@ export const Cat = ({
 							<ReportedTime
 								receivedAt={reportedWithTime.gps?.v.receivedAt}
 								reportedAt={
-									new Date(reportedWithTime.gps?.ts?.value || Date.now())
+									new Date(reportedWithTime.gps?.ts?.value ?? Date.now())
 								}
 							/>
 						</div>

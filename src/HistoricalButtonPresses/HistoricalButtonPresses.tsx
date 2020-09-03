@@ -6,7 +6,7 @@ export const HistoricalButtonPresses = ({
 	data,
 }: {
 	data: { value: number; date: Date }[]
-}) => (
+}): React.ReactElement => (
 	<Table>
 		<thead>
 			<tr>

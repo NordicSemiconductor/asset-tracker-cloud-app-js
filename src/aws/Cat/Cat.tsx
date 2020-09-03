@@ -64,10 +64,10 @@ export const Cat = ({
 		onNewState: (newState: ThingState) => void
 	}) => Promise<() => void>
 	catMap: (state: ThingState) => React.ReactElement<any>
-}) => {
+}): React.ReactElement => {
 	const [state, setState] = useState<ThingState>()
 	const [error, setError] = useState<Error>()
-	const reported = state && state.reported
+	const reported = state?.reported
 
 	useEffect(() => {
 		let didCancel = false
@@ -100,7 +100,7 @@ export const Cat = ({
 			.catch(setErrorIfNotCanceled)
 
 		return () => {
-			if (stopListening) {
+			if (stopListening !== undefined) {
 				console.log('Stopping listening...')
 				stopListening()
 			}
@@ -112,7 +112,7 @@ export const Cat = ({
 		if (!error) {
 			setTimeout(() => {
 				window.requestAnimationFrame(() => {
-					if (!window.localStorage.getItem('bifravst:cat:intro')) {
+					if (window.localStorage.getItem('bifravst:cat:intro') === null) {
 						intro.start()
 						intro.onexit(() => {
 							window.localStorage.setItem('bifravst:cat:intro', 'done')
@@ -127,7 +127,9 @@ export const Cat = ({
 	if (error)
 		return (
 			<Card>
-				<CardBody>{error && <DisplayError error={error} />}</CardBody>
+				<CardBody>
+					{error !== undefined && <DisplayError error={error} />}
+				</CardBody>
 			</Card>
 		)
 
@@ -150,7 +152,7 @@ export const Cat = ({
 				/>
 				{reported && (
 					<>
-						{reportedWithReceived?.roam && (
+						{reportedWithReceived?.roam !== undefined && (
 							<Toggle>
 								<ConnectionInformation
 									mccmnc={reportedWithReceived.roam.v.value.mccmnc}

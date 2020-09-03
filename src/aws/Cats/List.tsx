@@ -49,9 +49,9 @@ const ListCats = ({
 			.then(({ things }) => {
 				if (isCancelled) return
 				setCats(
-					(things || []).map(({ thingName, attributes }) => ({
-						id: thingName || 'unknown',
-						name: (attributes && attributes.name) || thingName || 'unknown',
+					(things ?? []).map(({ thingName, attributes }) => ({
+						id: thingName ?? 'unknown',
+						name: attributes?.name ?? thingName ?? 'unknown',
 					})),
 				)
 				setLoading(false)
@@ -93,9 +93,7 @@ const ListCats = ({
 			})
 		return () => {
 			isCancelled = true
-			if (connection) {
-				connection.end()
-			}
+			connection?.end()
 		}
 	}, [iot, credentials, region, mqttEndpoint, setButtonPresses])
 

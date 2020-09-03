@@ -15,14 +15,14 @@ export const ButtonWarnings = ({
 	children,
 }: {
 	children: (args: ButtonWarningProps) => React.ReactElement<any>
-}) => {
+}): React.ReactElement => {
 	const [buttonSnoozes, setButtonSnoozes] = useState<DeviceDateMap>({})
 	const [buttonPresses, setButtonPresses] = useState<DeviceDateMap>({})
 
 	// Read/Set localstorage of button snoozes
 	useEffect(() => {
 		const snoozes = window.localStorage.getItem(`bifravst:catlist:snoozes`)
-		if (snoozes) {
+		if (snoozes !== null) {
 			console.log(`Restoring`, JSON.parse(snoozes))
 			setButtonSnoozes(
 				Object.entries(JSON.parse(snoozes)).reduce(
@@ -37,8 +37,8 @@ export const ButtonWarnings = ({
 	}, [])
 
 	const showButtonWarning = (deviceId: string): Date | undefined => {
-		if (!buttonPresses[deviceId]) return
-		if (!buttonSnoozes[deviceId]) return buttonPresses[deviceId]
+		if (buttonPresses[deviceId] === undefined) return
+		if (buttonSnoozes[deviceId] === undefined) return buttonPresses[deviceId]
 		if (isAfter(buttonPresses[deviceId], buttonSnoozes[deviceId]))
 			return buttonPresses[deviceId]
 	}

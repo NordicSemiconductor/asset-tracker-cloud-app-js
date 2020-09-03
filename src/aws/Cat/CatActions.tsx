@@ -105,7 +105,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																return right({
 																	name: attributes?.name,
 																	avatar: attributes?.avatar,
-																	version: version || 0,
+																	version: version ?? 0,
 																})
 															}
 															return left({

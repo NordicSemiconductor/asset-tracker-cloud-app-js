@@ -33,11 +33,8 @@ const signalQuality = (rsrp: number) => (
 	/>
 )
 
-export const Operator = ({ op }: { op?: Op }) => (
-	<span className={'operator'}>
-		{!op && 'Unknown'}
-		{op && op.brand}
-	</span>
+export const Operator = ({ op }: { op?: Op }): React.ReactElement => (
+	<span className={'operator'}>{op?.brand ?? 'Unknown'}</span>
 )
 
 export const ConnectionInformation = ({
@@ -54,8 +51,8 @@ export const ConnectionInformation = ({
 	mccmnc: number
 	receivedAt: Date
 	reportedAt: Date
-}) => {
-	const maybeSimIssuer = iccid ? identifyIssuer(iccid) : none
+}): React.ReactElement => {
+	const maybeSimIssuer = iccid !== undefined ? identifyIssuer(iccid) : none
 	const simIssuer = isSome(maybeSimIssuer)
 		? maybeSimIssuer.value.companyName
 		: false
@@ -68,9 +65,9 @@ export const ConnectionInformation = ({
 				</>
 			</TextWithIcon>
 			<abbr title={'Network operator'}>
-				{emojify(`📶 ${networkOperator || '?'}`)}
+				{emojify(`📶 ${networkOperator ?? '?'}`)}
 			</abbr>
-			<abbr title={'SIM issuer'}>{emojify(`📱 ${simIssuer || '?'}`)}</abbr>
+			<abbr title={'SIM issuer'}>{emojify(`📱 ${simIssuer ?? '?'}`)}</abbr>
 			<ReportedTime receivedAt={receivedAt} reportedAt={reportedAt} />
 		</div>
 	)

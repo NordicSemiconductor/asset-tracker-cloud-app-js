@@ -44,6 +44,7 @@ export function HistoricalDataLoader<I, T>({
 		return () => {
 			removed = true
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [QueryString, apiClient, formatFields])
 
 	return (

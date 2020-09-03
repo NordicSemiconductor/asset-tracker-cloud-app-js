@@ -34,11 +34,11 @@ export const NumberConfigSetting = ({
 		value: number
 		receivedAt: Date
 	}
-}) => {
-	const [input, updateInput] = useState(`${desired || reported?.value}`)
+}): React.ReactElement => {
+	const [input, updateInput] = useState(`${desired ?? reported?.value}`)
 	return (
 		<FormGroup data-intro={intro} className={'number-config-setting'}>
-			{label && <Label for={id}>{label}:</Label>}
+			{label !== undefined && <Label for={id}>{label}:</Label>}
 			<InputGroup>
 				<OutDatedWarning
 					desired={desired}
@@ -52,7 +52,7 @@ export const NumberConfigSetting = ({
 							</InputGroupText>
 						</InputGroupAddon>
 					}
-					onOutDated={r => (
+					onOutDated={(r) => (
 						<InputGroupAddon addonType="prepend" className={'is-outdated'}>
 							<InputGroupText className={'text-danger'}>
 								<abbr
@@ -70,8 +70,8 @@ export const NumberConfigSetting = ({
 					type="number"
 					name={id}
 					id={id}
-					placeholder={`e.g. "${example || 60}"`}
-					step={step || step}
+					placeholder={`e.g. "${example ?? 60}"`}
+					step={step ?? step}
 					min={0}
 					value={input}
 					onChange={({ target: { value } }) => {
@@ -80,7 +80,7 @@ export const NumberConfigSetting = ({
 					}}
 				/>
 				<InputGroupAddon addonType="append">
-					<InputGroupText>{unit || 's'}</InputGroupText>
+					<InputGroupText>{unit ?? 's'}</InputGroupText>
 				</InputGroupAddon>
 			</InputGroup>
 		</FormGroup>
