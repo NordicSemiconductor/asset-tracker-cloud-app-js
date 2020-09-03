@@ -140,7 +140,7 @@ export const boot = ({
 						}}
 					/>
 					<Route exact path="/" render={() => <Redirect to="/cats" />} />
-					{credentials && iot && athenaContext && (
+					{(credentials && iot && athenaContext && (
 						<StackConfigContext.Provider
 							value={{
 								region,
@@ -164,7 +164,8 @@ export const boot = ({
 								</IotContext.Provider>
 							</CredentialsContext.Provider>
 						</StackConfigContext.Provider>
-					)}
+					)) ||
+						null}
 				</NavbarBrandContextProvider>
 			</Router>
 		)

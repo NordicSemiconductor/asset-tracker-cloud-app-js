@@ -53,9 +53,7 @@ export const NavbarBrandConsumer = NavbarBrandContext.Consumer
 
 export const NavbarBrandContextProvider = ({
 	children,
-}: {
-	children: React.ReactElement
-}) => {
+}: React.PropsWithChildren<any>) => {
 	const set = (navbar: React.ReactElement<any>) => {
 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		setState({ ...state, navbar })

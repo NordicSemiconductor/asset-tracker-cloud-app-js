@@ -10,13 +10,14 @@ export const AvatarPicker = ({
 	onChange: (data: Blob) => void
 	className?: string
 	children: React.ReactElement<any>
-}): React.ReactElement => {
+}) => {
 	const canvasRef = createRef<HTMLCanvasElement>()
 	const inputRef = createRef<HTMLInputElement>()
 	return (
 		<div className={`avatar-picker ${className}`}>
 			{React.cloneElement(children, {
 				onClick: () => {
+					// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 					inputRef?.current?.click()
 				},
 			})}

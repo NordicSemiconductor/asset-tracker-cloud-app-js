@@ -72,7 +72,7 @@ export const Settings = ({
 	reported?: ReportedConfigState
 	desired?: Partial<DeviceConfig>
 	onSave: (config: Partial<DeviceConfig>) => void
-}): React.ReactElement => {
+}) => {
 	const r: ReportedConfigState = reported ?? {}
 
 	const [newDesired, setNewDesired] = useState<Partial<DeviceConfig>>(

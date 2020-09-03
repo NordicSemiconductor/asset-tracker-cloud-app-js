@@ -23,7 +23,7 @@ export const HistoricalDataLoader = ({
 	children: (args: {
 		data: { date: Date; value: number }[] // FIXME: should be generic
 	}) => React.ReactElement<any>
-}): React.ReactElement => {
+}) => {
 	const [data, setData] = useState<{ date: Date; value: number }[]>()
 	const [error, setError] = useState<Error>()
 

@@ -15,7 +15,7 @@ export const HistoricalDataChart = ({
 }: {
 	data: { date: Date; value: number }[]
 	type: 'line' | 'column'
-}): React.ReactElement => {
+}) => {
 	const chartRef = useRef<am4charts.XYChart>()
 	const uuid = useRef<string>(v4())
 
@@ -51,6 +51,7 @@ export const HistoricalDataChart = ({
 		chart.data = data
 
 		return () => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			chartRef.current?.dispose()
 		}
 	}, [data, type])

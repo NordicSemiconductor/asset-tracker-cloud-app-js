@@ -15,7 +15,7 @@ export const ButtonWarnings = ({
 	children,
 }: {
 	children: (args: ButtonWarningProps) => React.ReactElement<any>
-}): React.ReactElement => {
+}) => {
 	const [buttonSnoozes, setButtonSnoozes] = useState<DeviceDateMap>({})
 	const [buttonPresses, setButtonPresses] = useState<DeviceDateMap>({})
 

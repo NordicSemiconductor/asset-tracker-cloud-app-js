@@ -33,7 +33,7 @@ const signalQuality = (rsrp: number) => (
 	/>
 )
 
-export const Operator = ({ op }: { op?: Op }): React.ReactElement => (
+export const Operator = ({ op }: { op?: Op }) => (
 	<span className={'operator'}>{op?.brand ?? 'Unknown'}</span>
 )
 
@@ -51,7 +51,7 @@ export const ConnectionInformation = ({
 	mccmnc: number
 	receivedAt: Date
 	reportedAt: Date
-}): React.ReactElement => {
+}) => {
 	const maybeSimIssuer = iccid !== undefined ? identifyIssuer(iccid) : none
 	const simIssuer = isSome(maybeSimIssuer)
 		? maybeSimIssuer.value.companyName

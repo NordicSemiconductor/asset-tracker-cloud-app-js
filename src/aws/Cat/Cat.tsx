@@ -64,7 +64,7 @@ export const Cat = ({
 		onNewState: (newState: ThingState) => void
 	}) => Promise<() => void>
 	catMap: (state: ThingState) => React.ReactElement<any>
-}): React.ReactElement => {
+}) => {
 	const [state, setState] = useState<ThingState>()
 	const [error, setError] = useState<Error>()
 	const reported = state?.reported

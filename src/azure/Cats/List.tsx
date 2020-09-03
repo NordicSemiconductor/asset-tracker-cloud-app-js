@@ -20,7 +20,7 @@ export const List = ({
 	showButtonWarning: (id: string) => Date | undefined
 	snooze: (id: string) => void
 	setButtonPresses: React.Dispatch<React.SetStateAction<DeviceDateMap>>
-}): React.ReactElement => {
+}) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState<ErrorInfo>()

@@ -13,7 +13,7 @@ export const AccelerometerDiagram = ({
 	values,
 }: {
 	values: { x: number; y: number; z: number }
-}): React.ReactElement => {
+}) => {
 	const chartRef = useRef<am4charts.RadarChart>()
 	const uuid = useRef<string>(v4())
 	useEffect(() => {
@@ -55,6 +55,7 @@ export const AccelerometerDiagram = ({
 		series.strokeWidth = 1
 		series.fillOpacity = 0.2
 		return () => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			chartRef.current?.dispose()
 		}
 	}, [values])

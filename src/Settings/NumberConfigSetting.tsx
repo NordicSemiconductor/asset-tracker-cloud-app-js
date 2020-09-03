@@ -34,7 +34,7 @@ export const NumberConfigSetting = ({
 		value: number
 		receivedAt: Date
 	}
-}): React.ReactElement => {
+}) => {
 	const [input, updateInput] = useState(`${desired ?? reported?.value}`)
 	return (
 		<FormGroup data-intro={intro} className={'number-config-setting'}>

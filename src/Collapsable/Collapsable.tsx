@@ -39,7 +39,7 @@ export const Collapsable = ({
 	initial?: boolean
 	children: React.ReactElement<any> | (React.ReactElement<any> | null)[]
 	onToggle?: (collapsed: boolean) => void
-}): React.ReactElement => {
+}) => {
 	let initialState = initial ?? false
 	if (window.localStorage.getItem(`bifravst:toggle:${id}`) === '1') {
 		initialState = true
@@ -49,6 +49,7 @@ export const Collapsable = ({
 	const toggle = () => {
 		const state = !collapsed
 		setCollapsed(state)
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		onToggle?.(state)
 		window.localStorage.setItem(`bifravst:toggle:${id}`, state ? '1' : '0')
 	}

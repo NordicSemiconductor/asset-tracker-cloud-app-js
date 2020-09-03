@@ -93,6 +93,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 
 										return (
 											<CatLoader<{
+												// eslint-disable-next-line no-restricted-globals
 												name?: string
 												avatar?: string
 												version: number

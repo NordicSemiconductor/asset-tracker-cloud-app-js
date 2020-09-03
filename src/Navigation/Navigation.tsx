@@ -14,7 +14,7 @@ export const Navigation = ({
 	navbar?: boolean
 	onLogout: () => void
 	onClick?: () => void
-}): React.ReactElement => {
+}) => {
 	return (
 		<Nav navbar={navbar}>
 			<NavItem>
@@ -37,6 +37,7 @@ export const Navigation = ({
 					className="nav-link"
 					color={'link'}
 					onClick={() => {
+						// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 						onClick?.()
 						window.setTimeout(() => {
 							window.requestAnimationFrame(() => {

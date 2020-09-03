@@ -93,6 +93,7 @@ const ListCats = ({
 			})
 		return () => {
 			isCancelled = true
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			connection?.end()
 		}
 	}, [iot, credentials, region, mqttEndpoint, setButtonPresses])

@@ -12,7 +12,7 @@ export const FilePicker = ({
 	maxSize: number
 	onError: (result: Error) => void
 	onFile: (result: { file: File; data: ArrayBuffer }) => void
-}): React.ReactElement => {
+}) => {
 	const inputRef = createRef<HTMLInputElement>()
 	return (
 		<input

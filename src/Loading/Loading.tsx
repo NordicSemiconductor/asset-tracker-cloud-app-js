@@ -7,7 +7,7 @@ const LoadingP = styled.p`
 	text-align: center;
 `
 
-export const Loading = ({ text }: { text?: string }): React.ReactElement => (
+export const Loading = ({ text }: { text?: string }) => (
 	<div>
 		<LoadingP>
 			<small>
