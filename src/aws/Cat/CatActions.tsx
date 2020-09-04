@@ -93,6 +93,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 
 										return (
 											<CatLoader<{
+												// TODO: this report is a bug.
 												// eslint-disable-next-line no-restricted-globals
 												name?: string
 												avatar?: string

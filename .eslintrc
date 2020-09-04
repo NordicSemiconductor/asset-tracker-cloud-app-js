@@ -1,13 +1,21 @@
 {
-  "extends": ["@bifravst/eslint-config-typescript", "react-app"],
+  "extends": ["react-app", "@bifravst/eslint-config-typescript"],
   "overrides": [
     {
       "files": ["*.tsx"],
       "rules": {
-        "@typescript-eslint/explicit-module-boundary-types": "warn",
-        "no-restricted-globals": "off",
+        "no-undef": "off",
         "react-hooks/exhaustive-deps": "error",
-        "@typescript-eslint/no-unused-expressions": "warn"
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
+        "no-redeclare": "off"
+      }
+    },
+    {
+      "files": ["*.ts"],
+      "rules": {
+        "no-undef": "off"
       }
     }
   ]

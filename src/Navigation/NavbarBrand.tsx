@@ -55,12 +55,10 @@ export const NavbarBrandContextProvider = ({
 	children,
 }: React.PropsWithChildren<any>) => {
 	const set = (navbar: React.ReactElement<any>) => {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		setState({ ...state, navbar })
 	}
 
 	const reset = () => {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		setState({ ...state, navbar: defaultNavbarBrand })
 	}
 

@@ -76,7 +76,7 @@ export const List = ({
 			.catch(setError)
 		return () => {
 			isCancelled = true
-			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+
 			connection?.stop().catch(console.error)
 		}
 	}, [apiClient, setButtonPresses])

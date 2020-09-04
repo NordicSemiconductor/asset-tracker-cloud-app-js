@@ -49,7 +49,7 @@ export const Collapsable = ({
 	const toggle = () => {
 		const state = !collapsed
 		setCollapsed(state)
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+
 		onToggle?.(state)
 		window.localStorage.setItem(`bifravst:toggle:${id}`, state ? '1' : '0')
 	}

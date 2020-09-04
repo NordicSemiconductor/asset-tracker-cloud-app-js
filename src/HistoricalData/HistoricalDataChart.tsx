@@ -51,7 +51,6 @@ export const HistoricalDataChart = ({
 		chart.data = data
 
 		return () => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			chartRef.current?.dispose()
 		}
 	}, [data, type])

@@ -198,7 +198,6 @@ const ApiClientContext = React.createContext<ApiClient>(
 )
 export const ApiClientConsumer = ApiClientContext.Consumer
 
-// eslint-disable-next-line no-redeclare
 const SolutionConfigContext = React.createContext<SolutionConfigContext>({
 	apiEndpoint: '',
 	clientId: '',

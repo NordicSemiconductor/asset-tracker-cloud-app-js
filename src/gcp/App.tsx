@@ -82,7 +82,6 @@ export const boot = ({
 const IdentityIdContext = React.createContext<string>('unauthorized')
 export const IdentityIdConsumer = IdentityIdContext.Consumer
 
-// eslint-disable-next-line no-redeclare
 const CloudConfigContext = React.createContext<CloudConfigContext>({
 	firebaseAuthDomain: '',
 })

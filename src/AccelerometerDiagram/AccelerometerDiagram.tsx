@@ -55,7 +55,6 @@ export const AccelerometerDiagram = ({
 		series.strokeWidth = 1
 		series.fillOpacity = 0.2
 		return () => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			chartRef.current?.dispose()
 		}
 	}, [values])

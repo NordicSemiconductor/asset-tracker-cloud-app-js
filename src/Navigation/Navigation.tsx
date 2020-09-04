@@ -37,7 +37,6 @@ export const Navigation = ({
 					className="nav-link"
 					color={'link'}
 					onClick={() => {
-						// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 						onClick?.()
 						window.setTimeout(() => {
 							window.requestAnimationFrame(() => {

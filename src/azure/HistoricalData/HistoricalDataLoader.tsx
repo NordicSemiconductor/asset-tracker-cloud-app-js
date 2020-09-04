@@ -44,6 +44,7 @@ export function HistoricalDataLoader<I, T>({
 		return () => {
 			removed = true
 		}
+		// eslint does not understand that 'I' is not a dependency
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [QueryString, apiClient, formatFields])
 

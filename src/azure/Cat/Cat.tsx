@@ -81,7 +81,7 @@ export const Cat = ({
 			.catch(setError)
 		return () => {
 			isCancelled = true
-			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+
 			connection?.stop().catch(console.error)
 		}
 	}, [cat, apiClient, update])

@@ -17,7 +17,6 @@ export const AvatarPicker = ({
 		<div className={`avatar-picker ${className}`}>
 			{React.cloneElement(children, {
 				onClick: () => {
-					// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 					inputRef?.current?.click()
 				},
 			})}
