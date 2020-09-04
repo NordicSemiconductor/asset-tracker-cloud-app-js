@@ -18,12 +18,12 @@ export const RelativeTime = ({ ts }: { ts: Date }) => {
 			)
 		}
 
-		let t: NodeJS.Timeout
+		let t: number
 
 		if (Math.abs(diffInSeconds) < 60) {
-			t = global.setTimeout(updateDiffInSeconds, 1000 * 5)
+			t = setTimeout(updateDiffInSeconds, 1000 * 5)
 		} else {
-			t = global.setTimeout(updateDiffInSeconds, 1000 * 60)
+			t = setTimeout(updateDiffInSeconds, 1000 * 60)
 		}
 
 		return () => {

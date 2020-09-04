@@ -8,7 +8,7 @@ import { DeviceTwin } from '../@types/azure-device'
 import { DeviceConfig } from '../@types/device-state'
 
 const toQueryString = (obj: any): string => {
-	if (!Object.keys(obj).length) {
+	if (Object.keys(obj).length === 0) {
 		return ''
 	}
 	return '?' + querystring.stringify(obj)
@@ -113,10 +113,15 @@ export const fetchApiClient = ({
 		query?: { [key: string]: any },
 	) => async (): Promise<Either<ErrorInfo, A>> =>
 		handleResponse(
-			fetch(`${endpoint}/api/${resource}${query ? toQueryString(query) : ''}`, {
-				method: 'GET',
-				headers: iotHubRequestHeaders,
-			}),
+			fetch(
+				`${endpoint}/api/${resource}${
+					query !== undefined ? toQueryString(query) : ''
+				}`,
+				{
+					method: 'GET',
+					headers: iotHubRequestHeaders,
+				},
+			),
 		)
 
 	const patch = <A extends { [key: string]: any }>(

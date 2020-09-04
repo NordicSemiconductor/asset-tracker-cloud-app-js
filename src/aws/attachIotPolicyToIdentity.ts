@@ -6,21 +6,19 @@ export const attachIotPolicyToIdentity = ({
 }: {
 	iot: Iot
 	policyName: string
-}) => async (identityId: string) =>
-	iot
+}) => async (identityId: string): Promise<void> => {
+	const { policies } = await iot
 		.listPrincipalPolicies({
 			principal: identityId,
 		})
 		.promise()
-		.then(async ({ policies }) => {
-			if (policies && policies.length) {
-				return
-			}
-			return iot
-				.attachPrincipalPolicy({
-					principal: identityId,
-					policyName,
-				})
-				.promise()
-				.then(() => undefined)
+	if ((policies?.length ?? 0) === 0) {
+		return
+	}
+	await iot
+		.attachPrincipalPolicy({
+			principal: identityId,
+			policyName,
 		})
+		.promise()
+}

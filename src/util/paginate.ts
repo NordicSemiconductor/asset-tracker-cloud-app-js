@@ -17,7 +17,7 @@ export const paginate = async <A>({
 	items?: A[]
 }): Promise<A[]> => {
 	const page = await paginator(startKey)
-	const i = [...(items ? items : []), ...page.items]
+	const i = [...(items !== undefined ? items : []), ...page.items]
 	if (page.nextStartKey !== undefined && page.nextStartKey !== null) {
 		await paginate({
 			paginator,

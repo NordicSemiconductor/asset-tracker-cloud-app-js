@@ -3,7 +3,7 @@ import { DeviceConfig } from '../@types/device-state'
 
 export const updateThingConfig = (iotData: IotData) => (
 	deviceId: string,
-) => async (config: Partial<DeviceConfig>) => {
+) => async (config: Partial<DeviceConfig>): Promise<void> => {
 	await iotData
 		.updateThingShadow({
 			thingName: deviceId,

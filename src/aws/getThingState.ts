@@ -11,9 +11,9 @@ export const getThingState = (iotData: IotData) => async (
 				thingName: deviceId,
 			})
 			.promise()
-		if (!payload) return none
+		if (payload === undefined) return none
 		const shadow = JSON.parse(payload.toString())
-		if (!shadow.state) return none
+		if (shadow.state === undefined) return none
 		const s = {
 			...shadow.state,
 			metadata: shadow.metadata,

@@ -97,7 +97,9 @@ export const Settings = ({
 		property: string,
 		parser?: (v: string) => number,
 	) => (value: string) => {
-		updateConfig({ [property]: parser ? parser(value) : parseInt(value, 10) })
+		updateConfig({
+			[property]: parser !== undefined ? parser(value) : parseInt(value, 10),
+		})
 	}
 
 	const isActive =

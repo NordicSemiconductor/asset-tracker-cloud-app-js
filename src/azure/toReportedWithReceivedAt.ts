@@ -33,29 +33,47 @@ export const toReportedWithReceivedAt = (
 ): ReportedState & { firmware?: ReportedFOTAJobProgress } => {
 	const { $metadata } = reported
 	return {
-		...(reported.cfg &&
-			$metadata.cfg && {
-				cfg: toReceivedProps(reported.cfg, $metadata.cfg) as Partial<
-					MakeReceivedProperty<DeviceConfig>
-				>,
-			}),
-		...(reported.gps &&
-			$metadata.gps && { gps: toReceivedProps(reported.gps, $metadata.gps) }),
-		...(reported.bat &&
-			$metadata.bat && { bat: toReceivedProps(reported.bat, $metadata.bat) }),
-		...(reported.roam &&
-			$metadata.roam && {
-				roam: toReceivedProps(reported.roam, $metadata.roam),
-			}),
-		...(reported.dev &&
-			$metadata.dev && { dev: toReceivedProps(reported.dev, $metadata.dev) }),
-		...(reported.acc &&
-			$metadata.acc && { acc: toReceivedProps(reported.acc, $metadata.acc) }),
-		...(reported.env &&
-			$metadata.env && { env: toReceivedProps(reported.env, $metadata.env) }),
-		...(reported.firmware &&
-			$metadata.firmware && {
-				firmware: toReceivedProps(reported.firmware, $metadata.firmware),
-			}),
+		...(reported.cfg !== undefined && $metadata.cfg !== undefined
+			? {
+					cfg: toReceivedProps(reported.cfg, $metadata.cfg) as Partial<
+						MakeReceivedProperty<DeviceConfig>
+					>,
+			  }
+			: undefined),
+		...(reported.gps !== undefined && $metadata.gps !== undefined
+			? {
+					gps: toReceivedProps(reported.gps, $metadata.gps),
+			  }
+			: undefined),
+		...(reported.bat !== undefined && $metadata.bat !== undefined
+			? {
+					bat: toReceivedProps(reported.bat, $metadata.bat),
+			  }
+			: undefined),
+		...(reported.roam !== undefined && $metadata.roam !== undefined
+			? {
+					roam: toReceivedProps(reported.roam, $metadata.roam),
+			  }
+			: undefined),
+		...(reported.dev !== undefined && $metadata.dev !== undefined
+			? {
+					dev: toReceivedProps(reported.dev, $metadata.dev),
+			  }
+			: undefined),
+		...(reported.acc !== undefined && $metadata.acc !== undefined
+			? {
+					acc: toReceivedProps(reported.acc, $metadata.acc),
+			  }
+			: undefined),
+		...(reported.env !== undefined && $metadata.env !== undefined
+			? {
+					env: toReceivedProps(reported.env, $metadata.env),
+			  }
+			: undefined),
+		...(reported.firmware !== undefined && $metadata.firmware !== undefined
+			? {
+					firmware: toReceivedProps(reported.firmware, $metadata.firmware),
+			  }
+			: undefined),
 	}
 }

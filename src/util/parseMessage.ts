@@ -6,10 +6,12 @@ import { Message } from '../@types/Message'
 export const parseMessage = (message: {
 	[key: string]: { v: any; ts: number }
 }): Message => ({
-	...(message.btn && {
-		btn: {
-			v: message.btn.v,
-			ts: new Date(message.btn.ts),
-		},
-	}),
+	...(message.btn !== undefined
+		? {
+				btn: {
+					v: message.btn.v,
+					ts: new Date(message.btn.ts),
+				},
+		  }
+		: undefined),
 })

@@ -12,7 +12,7 @@ import {
  * AWS meta does not report timestamps for top level arrays or objects, so find the first timestamp in an array or nested object.
  */
 const findTimestamp = (o: ThingStateMetadataProperty): number | undefined => {
-	if (o.timestamp) return o.timestamp
+	if (o.timestamp !== undefined) return o.timestamp
 	if (Array.isArray(o)) {
 		return o.map(findTimestamp).pop()
 	}
@@ -29,7 +29,7 @@ const toReceivedProps = <A extends { [key: string]: any }>(
 			...o,
 			[k]: {
 				value: v,
-				receivedAt: new Date(ts ? ts * 1000 : Date.now()),
+				receivedAt: new Date(ts !== undefined ? ts * 1000 : Date.now()),
 			},
 		}
 	}, {} as MakeReceivedProperty<A>)
@@ -45,34 +45,41 @@ export const toReportedWithReceivedAt = ({
 	reported: ReportedThingState
 	metadata: ThingStateMetadataProperty
 }): ReportedState => ({
-	...(reported.cfg &&
-		metadata.reported.cfg && {
-			cfg: toReceivedProps(reported.cfg, metadata.reported.cfg) as Partial<
-				MakeReceivedProperty<DeviceConfig>
-			>,
-		}),
-	...(reported.gps &&
-		metadata.reported.gps && {
-			gps: toReceivedProps(reported.gps, metadata.reported.gps),
-		}),
-	...(reported.bat &&
-		metadata.reported.bat && {
-			bat: toReceivedProps(reported.bat, metadata.reported.bat),
-		}),
-	...(reported.roam &&
-		metadata.reported.roam && {
-			roam: toReceivedProps(reported.roam, metadata.reported.roam),
-		}),
-	...(reported.dev &&
-		metadata.reported.dev && {
-			dev: toReceivedProps(reported.dev, metadata.reported.dev),
-		}),
-	...(reported.acc &&
-		metadata.reported.acc && {
-			acc: toReceivedProps(reported.acc, metadata.reported.acc),
-		}),
-	...(reported.env &&
-		metadata.reported.env && {
-			env: toReceivedProps(reported.env, metadata.reported.env),
-		}),
+	...(reported.cfg !== undefined && metadata.reported.cfg !== undefined
+		? {
+				cfg: toReceivedProps(reported.cfg, metadata.reported.cfg) as Partial<
+					MakeReceivedProperty<DeviceConfig>
+				>,
+		  }
+		: undefined),
+	...(reported.gps !== undefined && metadata.reported.gps !== undefined
+		? {
+				gps: toReceivedProps(reported.gps, metadata.reported.gps),
+		  }
+		: undefined),
+	...(reported.bat !== undefined && metadata.reported.bat !== undefined
+		? {
+				bat: toReceivedProps(reported.bat, metadata.reported.bat),
+		  }
+		: undefined),
+	...(reported.roam !== undefined && metadata.reported.roam !== undefined
+		? {
+				roam: toReceivedProps(reported.roam, metadata.reported.roam),
+		  }
+		: undefined),
+	...(reported.dev !== undefined && metadata.reported.dev !== undefined
+		? {
+				dev: toReceivedProps(reported.dev, metadata.reported.dev),
+		  }
+		: undefined),
+	...(reported.acc !== undefined && metadata.reported.acc !== undefined
+		? {
+				acc: toReceivedProps(reported.acc, metadata.reported.acc),
+		  }
+		: undefined),
+	...(reported.env !== undefined && metadata.reported.env !== undefined
+		? {
+				env: toReceivedProps(reported.env, metadata.reported.env),
+		  }
+		: undefined),
 })

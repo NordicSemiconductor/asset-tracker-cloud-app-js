@@ -29,12 +29,14 @@ const LoadHistoricalMapData = ({
 
 		window.setTimeout(() => {
 			if (!isCancelled) {
-				void fetchHistory(numEntries).then((res) => {
-					if (!isCancelled) {
-						console.log('[Map]', 'history', res)
-						setHistory(res)
-					}
-				})
+				void fetchHistory(numEntries)
+					.then((res) => {
+						if (!isCancelled) {
+							console.log('[Map]', 'history', res)
+							setHistory(res)
+						}
+					})
+					.catch(console.error)
 			}
 		}, 500)
 

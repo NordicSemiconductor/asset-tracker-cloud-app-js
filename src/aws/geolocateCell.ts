@@ -21,7 +21,7 @@ export const geolocateCell = (geolocationApiEndpoint: string) => async (
 				)
 				.join('&')}`,
 		)
-			.then(async res => {
+			.then(async (res) => {
 				if (res.status === 200) {
 					const geolocation = await res.json()
 					console.debug('[geolocateCell]', {
@@ -31,13 +31,15 @@ export const geolocateCell = (geolocationApiEndpoint: string) => async (
 					return resolve(right((geolocation as unknown) as Location))
 				} else if (res.status === 409) {
 					const expires = res.headers.get('expires')
-					const retryInMs = expires
-						? Math.floor(new Date(expires).getTime() - Date.now())
-						: 60000
+					const retryInMs =
+						expires !== null
+							? Math.floor(new Date(expires).getTime() - Date.now())
+							: 60000
 					console.debug(
 						'[geolocateCell]',
-						`Location currently not available, will try again at ${retryInMs /
-							1000} seconds.`,
+						`Location currently not available, will try again at ${
+							retryInMs / 1000
+						} seconds.`,
 					)
 					setTimeout(async () => {
 						const geolocation = await geolocateCell(geolocationApiEndpoint)(

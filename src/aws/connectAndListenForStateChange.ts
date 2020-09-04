@@ -63,7 +63,8 @@ export const connectAndListenForStateChange = async ({
 				onNewState(newState)
 			} else {
 				try {
-					onMessage && onMessage(parseMessage(JSON.parse(payload.toString())))
+					// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+					onMessage?.(parseMessage(JSON.parse(payload.toString())))
 				} catch (error) {
 					console.error(
 						`Failed to parse message as JSON: "${payload.toString()}"!`,

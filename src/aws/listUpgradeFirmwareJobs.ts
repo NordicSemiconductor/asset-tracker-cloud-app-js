@@ -20,16 +20,16 @@ export type DeviceUpgradeFirmwareJob = {
 
 export const listUpgradeFirmwareJobs = ({ iot }: { iot: Iot }) => async (
 	deviceId: string,
-) =>
+): Promise<DeviceUpgradeFirmwareJob[]> =>
 	paginate<DeviceUpgradeFirmwareJob>({
-		paginator: async startKey => {
+		paginator: async (startKey) => {
 			const { executionSummaries, nextToken } = await iot
 				.listJobExecutionsForThing({
 					thingName: deviceId,
 					nextToken: startKey,
 				})
 				.promise()
-			if (!executionSummaries) {
+			if (executionSummaries === undefined || executionSummaries === null) {
 				return {
 					items: [],
 					startKey: nextToken,
