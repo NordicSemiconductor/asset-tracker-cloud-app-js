@@ -23,6 +23,7 @@ jobs:
         run: npm ci --no-audit
       - name: Test
         run: npm test -- --all
+      - run: rm -rf node_modules/.cache/eslint-loader
       - name: Build
         env:
           EXTEND_ESLINT: true
