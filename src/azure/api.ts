@@ -58,6 +58,13 @@ export type ApiClient = {
 	queryHistoricalDeviceData: (
 		query: string,
 	) => Promise<Either<ErrorInfo, { result: unknown }>>
+	geolocateCell: (args: {
+		cell: number
+		area: number
+		mccmnc: number
+	}) => Promise<
+		Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
+	>
 }
 
 export type IotHubDevice = Twin & {
@@ -254,5 +261,15 @@ export const fetchApiClient = ({
 			query: string,
 		): Promise<Either<ErrorInfo, { result: unknown }>> =>
 			post<{ result: any }>('history', { query })(),
+		geolocateCell: async (args: {
+			cell: number
+			area: number
+			mccmnc: number
+		}): Promise<
+			Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
+		> =>
+			get<{ lat: number; lng: number; accuracy: number }>('cellgeolocation', {
+				...args,
+			})(),
 	}
 }

@@ -60,6 +60,7 @@ export const Cat = ({
 	const [deleted, setDeleted] = useState(false)
 	const [deleting, setDeleting] = useState(false)
 	const [error, setError] = useState<ErrorInfo>()
+	const [cellLocation, setCellLocation] = useState<CellLocation>()
 
 	// Listen for state changes
 	useEffect(() => {
@@ -85,6 +86,29 @@ export const Cat = ({
 			connection?.stop().catch(console.error)
 		}
 	}, [cat, apiClient, update])
+
+	// Fetch cell geolocation
+	const roamingInfo = cat.state.reported.roam
+	useEffect(() => {
+		if (roamingInfo === undefined) return
+		let removed = false
+		console.log({ roamingInfo })
+		const { cell, area, mccmnc } = roamingInfo.v
+		apiClient
+			.geolocateCell({ cell, area, mccmnc })
+			.then((res) => {
+				if (isLeft(res)) {
+					if (!removed) setError(res.left)
+				} else {
+					console.debug('[Cell Geolocation]', res.right)
+					setCellLocation({ position: res.right, ts: new Date() })
+				}
+			})
+			.catch(setError)
+		return () => {
+			removed = false
+		}
+	}, [roamingInfo, apiClient])
 
 	if (deleting) {
 		return (
@@ -193,9 +217,6 @@ export const Cat = ({
 			},
 		}
 	}
-
-	// FIXME: Implement cell geolocation
-	const cellLocation: CellLocation | undefined = undefined
 
 	return (
 		<CatCard>
