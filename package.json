@@ -73,7 +73,7 @@
     "@commitlint/config-angular": "11.0.0",
     "@types/aws-iot-device-sdk": "2.2.2",
     "@types/intro.js": "2.4.7",
-    "@types/jest": "26.0.13",
+    "@types/jest": "26.0.14",
     "@types/node": "14.10.2",
     "@types/react": "16.9.49",
     "@types/react-dom": "16.9.8",
