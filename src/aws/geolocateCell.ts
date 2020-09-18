@@ -3,7 +3,11 @@ import { left, Either, right } from 'fp-ts/lib/Either'
 type Location = { lat: number; lng: number; accuracy: number }
 
 export const geolocateCell = (geolocationApiEndpoint: string) => async (
-	cell: {
+	{
+		area,
+		mccmnc,
+		cell,
+	}: {
 		area: number
 		mccmnc: number
 		cell: number
@@ -14,7 +18,11 @@ export const geolocateCell = (geolocationApiEndpoint: string) => async (
 		if (retryCount >= 10)
 			return resolve(left(`Maximum retryCount reached (${retryCount})`))
 		fetch(
-			`${geolocationApiEndpoint}/cellgeolocation?${Object.entries(cell)
+			`${geolocationApiEndpoint}/cellgeolocation?${Object.entries({
+				area,
+				mccmnc,
+				cell,
+			})
 				.map(
 					([key, value]) =>
 						encodeURIComponent(key) + '=' + encodeURIComponent(value),
@@ -25,7 +33,7 @@ export const geolocateCell = (geolocationApiEndpoint: string) => async (
 				if (res.status === 200) {
 					const geolocation = await res.json()
 					console.debug('[geolocateCell]', {
-						cell,
+						cell: { area, mccmnc, cell },
 						geolocation,
 					})
 					return resolve(right((geolocation as unknown) as Location))
@@ -43,7 +51,7 @@ export const geolocateCell = (geolocationApiEndpoint: string) => async (
 					)
 					setTimeout(async () => {
 						const geolocation = await geolocateCell(geolocationApiEndpoint)(
-							cell,
+							{ area, mccmnc, cell },
 							retryCount + 1,
 						)
 						resolve(geolocation)
