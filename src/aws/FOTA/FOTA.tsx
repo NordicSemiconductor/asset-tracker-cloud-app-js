@@ -34,7 +34,7 @@ export const FOTA = ({
 	const [jobs, setJobs] = useState([] as DeviceUpgradeFirmwareJob[])
 	const [addJobKey, setAddJobKey] = useState(1)
 
-	const [debouncedListUpgradeJobs] = useDebouncedCallback(() => {
+	const { callback: debouncedListUpgradeJobs } = useDebouncedCallback(() => {
 		listUpgradeJobs()
 			.then(setJobs)
 			.catch((err) => {
