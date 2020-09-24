@@ -12,7 +12,7 @@ export const attachIotPolicyToIdentity = ({
 			principal: identityId,
 		})
 		.promise()
-	if ((policies?.length ?? 0) === 0) {
+	if ((policies?.length ?? 0) > 0) {
 		return
 	}
 	await iot
