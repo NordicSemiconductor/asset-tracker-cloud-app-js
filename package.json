@@ -59,7 +59,7 @@
     "react-leaflet": "2.7.0",
     "react-router-dom": "5.2.0",
     "reactstrap": "8.6.0",
-    "snyk": "1.410.3",
+    "snyk": "1.410.4",
     "styled-components": "5.2.0",
     "twemoji": "13.0.1",
     "use-debounce": "5.0.1",
