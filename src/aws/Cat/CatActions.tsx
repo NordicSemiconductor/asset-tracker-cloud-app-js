@@ -249,7 +249,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	deviceId={catId}
 																	QueryString={`SELECT reported.env.v.temp AS value,
 																	date_format(timestamp, '%Y-%m-%dT%H:%i:%sZ') AS date FROM 
-			${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.env IS NOT NULL ORDER BY date LIMIT 100`}
+			${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.env IS NOT NULL ORDER BY date DESC LIMIT 100`}
 																	formatFields={{
 																		value: parseFloat,
 																		date: (v) => new Date(v),
