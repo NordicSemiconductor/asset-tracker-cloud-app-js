@@ -224,11 +224,14 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																<HistoricalDataLoader
 																	athenaContext={athenaContext}
 																	deviceId={catId}
-																	QueryString={`SELECT min(reported.bat.v) as value, CAST(date_format(timestamp, '%Y-%m-%d') AS DATE) AS date FROM 
-			${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.bat IS NOT NULL GROUP BY CAST(date_format(timestamp, '%Y-%m-%d') AS DATE) ORDER BY date LIMIT 100`}
+																	QueryString={`SELECT min(reported.bat.v) as value, CAST(date_format(timestamp, '%Y-%m-%d %H:00:00') AS TIMESTAMP) AS date FROM 
+			${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.bat IS NOT NULL GROUP BY CAST(date_format(timestamp, '%Y-%m-%d %H:00:00') AS TIMESTAMP) ORDER BY date DESC LIMIT 100`}
 																	formatFields={{
 																		value: (v) => parseInt(v, 10) / 1000,
-																		date: (v) => new Date(`${v}T00:00:00Z`),
+																		date: (v) => {
+																			const [d, t] = v.split(' ')
+																			return new Date(`${d}T${t}Z`)
+																		},
 																	}}
 																>
 																	{({ data }) => (
