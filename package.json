@@ -79,7 +79,7 @@
     "@types/react-dom": "16.9.8",
     "@types/react-leaflet": "2.5.2",
     "@types/react-router-dom": "5.1.6",
-    "@types/reactstrap": "8.5.1",
+    "@types/reactstrap": "8.5.2",
     "@types/semver": "7.3.4",
     "@types/styled-components": "5.1.4",
     "@types/twemoji": "12.1.1",
