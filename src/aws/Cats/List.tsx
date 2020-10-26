@@ -3,7 +3,7 @@ import {
 	IotConsumer,
 	CredentialsConsumer,
 	AthenaConsumer,
-	AthenaContext,
+	AthenaContextType,
 } from '../App'
 import { Card, CardBody, CardHeader } from 'reactstrap'
 import { Iot } from 'aws-sdk'
@@ -32,7 +32,7 @@ const ListCats = ({
 }: {
 	iot: Iot
 	credentials: ICredentials
-	athenaContext: AthenaContext
+	athenaContext: AthenaContextType
 	region: string
 	mqttEndpoint: string
 } & ButtonWarningProps) => {

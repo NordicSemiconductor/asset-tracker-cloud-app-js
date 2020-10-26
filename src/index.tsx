@@ -10,12 +10,12 @@ export enum CloudFlavour {
 const cloudFlavour =
 	(process.env.REACT_APP_CLOUD_FLAVOUR as CloudFlavour) ?? CloudFlavour.AWS
 
-export type ReactAppConfig = {
+export type ReactAppConfigType = {
 	cloudFlavour: CloudFlavour
 	version: string
 }
 
-const ReactAppConfig = React.createContext<ReactAppConfig>({
+const ReactAppConfig = React.createContext<ReactAppConfigType>({
 	cloudFlavour: CloudFlavour.AWS,
 	version: '',
 })

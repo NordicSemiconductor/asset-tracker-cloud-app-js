@@ -1,11 +1,11 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { SolutionConfigContext } from '../App'
+import { SolutionConfigContextType } from '../App'
 
 export const Configuration = ({
 	config,
 }: {
-	config: SolutionConfigContext
+	config: SolutionConfigContextType
 }) => (
 	<Card data-intro="This card shows the apps' configuration.">
 		<CardHeader>Environment</CardHeader>

@@ -17,14 +17,14 @@ import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
 
 import '@aws-amplify/ui/dist/style.css'
 
-export type AthenaContext = {
+export type AthenaContextType = {
 	athena: Athena
 	workGroup: string
 	dataBase: string
 	rawDataTable: string
 }
 
-export type StackConfigContext = {
+export type StackConfigContextType = {
 	region: string
 	avatarBucketName: string
 	fotaBucketName: string
@@ -86,7 +86,7 @@ export const boot = ({
 			mqttEndpoint: string
 			region: string
 		}>()
-		const [athenaContext, setAthenaContext] = useState<AthenaContext>()
+		const [athenaContext, setAthenaContext] = useState<AthenaContextType>()
 		useEffect(() => {
 			Auth.currentCredentials()
 				.then(async (creds) => {
@@ -201,7 +201,7 @@ const IotContext = React.createContext<{
 })
 export const IotConsumer = IotContext.Consumer
 
-const AthenaContext = React.createContext<AthenaContext>({
+const AthenaContext = React.createContext<AthenaContextType>({
 	athena: new Athena({ region: 'us-east-1' }),
 	workGroup: '',
 	dataBase: '',
@@ -209,7 +209,7 @@ const AthenaContext = React.createContext<AthenaContext>({
 })
 export const AthenaConsumer = AthenaContext.Consumer
 
-const StackConfigContext = React.createContext<StackConfigContext>({
+const StackConfigContext = React.createContext<StackConfigContextType>({
 	region: 'us-east-1',
 	avatarBucketName: '',
 	fotaBucketName: '',

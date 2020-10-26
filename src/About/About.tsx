@@ -1,8 +1,8 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { ReactAppConfig } from '..'
+import { ReactAppConfigType } from '..'
 
-export const About = ({ config }: { config: ReactAppConfig }) => (
+export const About = ({ config }: { config: ReactAppConfigType }) => (
 	<Card data-intro="Did you know that this application is open source? Check out the links!">
 		<CardHeader>About</CardHeader>
 		<CardBody>

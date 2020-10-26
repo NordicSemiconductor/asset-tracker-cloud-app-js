@@ -1,6 +1,6 @@
 import { Location, CellLocation } from '../../Map/Map'
 import React, { useState, useEffect } from 'react'
-import { AthenaContext } from '../App'
+import { AthenaContextType } from '../App'
 import { geolocateCell } from '../geolocateCell'
 import { isRight } from 'fp-ts/lib/Either'
 import { CatInfo } from './Cat'
@@ -14,7 +14,7 @@ export const CatMap = ({
 	state: { reported },
 	geolocationApiEndpoint,
 }: {
-	athenaContext: AthenaContext
+	athenaContext: AthenaContextType
 	cat: CatInfo
 	state: ThingState
 	geolocationApiEndpoint: string

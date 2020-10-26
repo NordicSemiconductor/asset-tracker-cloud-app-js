@@ -16,7 +16,7 @@ import { CatsMapPage } from './CatsMap/Page'
 
 const ACCESS_TOKEN = 'azure:accessToken'
 
-export type SolutionConfigContext = {
+export type SolutionConfigContextType = {
 	apiEndpoint: string
 	clientId: string
 }
@@ -198,7 +198,7 @@ const ApiClientContext = React.createContext<ApiClient>(
 )
 export const ApiClientConsumer = ApiClientContext.Consumer
 
-const SolutionConfigContext = React.createContext<SolutionConfigContext>({
+const SolutionConfigContext = React.createContext<SolutionConfigContextType>({
 	apiEndpoint: '',
 	clientId: '',
 })

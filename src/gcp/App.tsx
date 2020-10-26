@@ -12,7 +12,7 @@ import { FirebaseUserPanel } from './FirebaseUserPanel'
 import { VerifyUserEmail } from './VerifyUserEmail'
 import { AboutPage } from './About/Page'
 
-export type CloudConfigContext = {
+export type CloudConfigContextType = {
 	firebaseAuthDomain: string
 }
 
@@ -82,7 +82,7 @@ export const boot = ({
 const IdentityIdContext = React.createContext<string>('unauthorized')
 export const IdentityIdConsumer = IdentityIdContext.Consumer
 
-const CloudConfigContext = React.createContext<CloudConfigContext>({
+const CloudConfigContext = React.createContext<CloudConfigContextType>({
 	firebaseAuthDomain: '',
 })
 export const CloudConfigConsumer = CloudConfigContext.Consumer

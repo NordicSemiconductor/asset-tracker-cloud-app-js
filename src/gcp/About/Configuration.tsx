@@ -1,8 +1,12 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { IdentityIdConsumer, CloudConfigContext } from '../App'
+import { IdentityIdConsumer, CloudConfigContextType } from '../App'
 
-export const Configuration = ({ config }: { config: CloudConfigContext }) => (
+export const Configuration = ({
+	config,
+}: {
+	config: CloudConfigContextType
+}) => (
 	<Card data-intro="This card lists the apps configuration.">
 		<CardHeader>Environment</CardHeader>
 		<CardBody>
@@ -10,7 +14,7 @@ export const Configuration = ({ config }: { config: CloudConfigContext }) => (
 				<dt>User</dt>
 				<dd>
 					<IdentityIdConsumer>
-						{identityId => <code>{identityId}</code>}
+						{(identityId) => <code>{identityId}</code>}
 					</IdentityIdConsumer>
 				</dd>
 				<dt>Firebase Auth Domain</dt>

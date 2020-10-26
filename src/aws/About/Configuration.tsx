@@ -1,8 +1,12 @@
 import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { StackConfigContext } from '../App'
+import { StackConfigContextType } from '../App'
 
-export const Configuration = ({ config }: { config: StackConfigContext }) => (
+export const Configuration = ({
+	config,
+}: {
+	config: StackConfigContextType
+}) => (
 	<Card data-intro="This card shows the apps' configuration.">
 		<CardHeader>Environment</CardHeader>
 		<CardBody>

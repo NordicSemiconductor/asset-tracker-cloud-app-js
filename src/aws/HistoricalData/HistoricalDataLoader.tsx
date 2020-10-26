@@ -3,7 +3,7 @@ import { query, parseResult, FieldFormatters } from '@bifravst/athena-helpers'
 import { Loading } from '../../Loading/Loading'
 import { DisplayError as ShowError } from '../../Error/Error'
 import PQueue from 'p-queue'
-import { AthenaContext } from '../App'
+import { AthenaContextType } from '../App'
 
 const queue = new PQueue({ concurrency: 1 })
 
@@ -15,7 +15,7 @@ export const HistoricalDataLoader = ({
 	formatFields,
 	loading,
 }: {
-	athenaContext: AthenaContext
+	athenaContext: AthenaContextType
 	deviceId: string
 	QueryString: string
 	formatFields?: FieldFormatters
