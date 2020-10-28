@@ -29,7 +29,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@amcharts/amcharts4": "4.10.9",
-    "@bifravst/athena-helpers": "8.0.80",
+    "@bifravst/athena-helpers": "8.0.81",
     "@bifravst/cell-geolocation-helpers": "1.3.16",
     "@bifravst/rsrp-bar": "2.1.8",
     "@microsoft/signalr": "3.1.9",
