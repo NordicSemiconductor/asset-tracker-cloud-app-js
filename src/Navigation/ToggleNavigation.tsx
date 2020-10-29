@@ -47,23 +47,17 @@ const AzureHeader = styled.header`
 	}
 `
 
-const GCPHeader = styled(AzureHeader)`
-	background-color: #1a73e8;
-`
-
 const AWSHeader = styled(AzureHeader)`
 	background-color: #f90;
 `
 
 const flavouredHeaders = {
 	[CloudFlavour.Azure]: AzureHeader,
-	[CloudFlavour.GCP]: GCPHeader,
 	[CloudFlavour.AWS]: AWSHeader,
 }
 
 const navbarClassname = {
 	[CloudFlavour.Azure]: 'navbar-dark',
-	[CloudFlavour.GCP]: 'navbar-dark',
 	[CloudFlavour.AWS]: 'navbar-light',
 }
 

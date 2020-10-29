@@ -2,7 +2,6 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
 export enum CloudFlavour {
-	GCP = 'GCP',
 	Azure = 'AZURE',
 	AWS = 'AWS',
 }
@@ -41,19 +40,6 @@ const onError = (err: Error) => {
 	console.error(err)
 }
 switch (cloudFlavour) {
-	case CloudFlavour.GCP:
-		console.log(`Launching Google Cloud Platform app ...`)
-		import('./gcp/App')
-			.then((gcpApp) => {
-				launch(
-					gcpApp.boot({
-						apiKey: process.env.REACT_APP_FIREBASE_API_KEY ?? '',
-						authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN ?? '',
-					}),
-				)
-			})
-			.catch(onError)
-		break
 	case CloudFlavour.Azure:
 		console.log(`Launching Microsoft Azure app ...`)
 		import('./azure/App')
