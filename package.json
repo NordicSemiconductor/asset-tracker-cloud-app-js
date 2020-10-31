@@ -34,7 +34,7 @@
     "@bifravst/rsrp-bar": "2.1.8",
     "@microsoft/signalr": "3.1.9",
     "aws-amplify": "3.3.6",
-    "aws-amplify-react": "4.2.9",
+    "aws-amplify-react": "4.2.10",
     "aws-iot-device-sdk": "2.2.6",
     "aws-sdk": "2.783.0",
     "azure-iothub": "1.13.0",
