@@ -18,9 +18,6 @@ export const getThingState = (iotData: IotData) => async (
 			...shadow.state,
 			metadata: shadow.metadata,
 		}
-		console.log({
-			getThingState: s,
-		})
 		return some(s)
 	} catch (err) {
 		console.error(err)
