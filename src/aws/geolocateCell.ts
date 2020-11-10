@@ -18,7 +18,7 @@ export const geolocateCell = (geolocationApiEndpoint: string) => async (
 		if (retryCount >= 10)
 			return resolve(left(`Maximum retryCount reached (${retryCount})`))
 		fetch(
-			`${geolocationApiEndpoint}/cellgeolocation?${Object.entries({
+			`${geolocationApiEndpoint}/cell?${Object.entries({
 				area,
 				mccmnc,
 				cell,
