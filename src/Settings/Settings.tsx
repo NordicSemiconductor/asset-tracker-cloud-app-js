@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, ButtonGroup, Form, FormGroup } from 'reactstrap'
+import { Button, ButtonGroup, Form, FormGroup, Alert } from 'reactstrap'
 import equal from 'fast-deep-equal'
 import { OutDatedWarning } from './OutDatedWarning'
 import { NumberConfigSetting } from './NumberConfigSetting'
@@ -8,6 +8,9 @@ import { emojify } from '../Emojify/Emojify'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
 import { DeviceConfig, ReportedConfigState } from '../@types/device-state'
+import { default as introJs } from 'intro.js'
+
+const intro = introJs()
 
 const SettingsForm = styled(Form)`
 	@media (min-width: ${mobileBreakpoint}) {
@@ -56,6 +59,17 @@ const SideBySide = styled.div`
 	@media (min-width: ${mobileBreakpoint}) {
 		display: block;
 	}
+`
+
+const Help = styled.p`
+	display: flex;
+	font-style: italic;
+	font-size: 90%;
+	button {
+		font-size: inherit;
+		padding: 0 0.25rem;
+	}
+	align-items: center;
 `
 
 export const FooterWithFullWidthButton = styled.footer`
@@ -107,136 +121,165 @@ export const Settings = ({
 			? newDesired.act === true
 			: r.act?.value === true
 
+	const [visible, setVisible] = useState(
+		window.localStorage.getItem('bifravst:settings:help') !== 'hidden',
+	)
+
+	const onDismiss = () => {
+		window.localStorage.setItem('bifravst:settings:help', 'hidden')
+		setVisible(false)
+	}
 	return (
-		<SettingsForm>
-			<fieldset>
-				<legend>Mode</legend>
-				<FormGroup data-intro={'This sets the operation mode of the Tracker.'}>
-					<ButtonGroup>
-						<OutDatedWarning
-							desired={newDesired.act}
-							reported={r.act}
-							onNotReported={
-								<Button
-									color={'danger'}
-									disabled={true}
-									title={'Device has not reported this setting, yet.'}
-								>
-									{emojify('❓')}
-								</Button>
-							}
-							onOutDated={(r) => (
-								<Button
-									color={'danger'}
-									outline={true}
-									disabled={true}
-									title={`Device has last synced this setting ${formatDistanceToNow(
-										r.receivedAt,
-									)} ago. Current value: ${JSON.stringify(r.value)}.`}
-								>
-									{emojify('⭕')}
-								</Button>
-							)}
-						/>
-						<Button
-							color={'info'}
-							data-intro={
-								'In <em>passive</em> mode only if it detects movement.'
-							}
-							outline={isActive}
-							onClick={() => {
-								updateConfig({ act: false })
-							}}
-						>
-							Passive
-						</Button>
-						<Button
-							color={'success'}
-							data-intro={
-								'In <em>active</em> mode the tracker will continuously send updates.'
-							}
-							outline={!isActive}
-							onClick={() => {
-								updateConfig({ act: true })
-							}}
-						>
-							Active
-						</Button>
-					</ButtonGroup>
-				</FormGroup>
-			</fieldset>
-			<fieldset>
-				<legend>Active Mode Settings</legend>
-				<NumberConfigSetting
-					label={'Active Wait Time'}
-					intro={
-						'In <em>active</em> mode: wait this long until sending the next update. The actual interval will be this time plus the time it takes to get a GPS fix.'
-					}
-					id={'actwt'}
-					desired={newDesired.actwt}
-					reported={r.actwt}
-					onChange={updateConfigProperty('actwt')}
-				/>
-			</fieldset>
-			<fieldset>
-				<legend>Passive Mode Settings</legend>
-				<SideBySide>
+		<>
+			<Alert color={'info'} isOpen={visible} toggle={onDismiss}>
+				<Help>
+					Click{' '}
+					<Button
+						color={'link'}
+						onClick={() => {
+							window.requestAnimationFrame(() => {
+								intro.start()
+							})
+						}}
+					>
+						{emojify('💁')} Help
+					</Button>{' '}
+					to view detailed description of the settings.
+				</Help>
+			</Alert>
+			<SettingsForm>
+				<fieldset>
+					<legend>Mode</legend>
+					<FormGroup
+						data-intro={'This sets the operation mode of the Tracker.'}
+					>
+						<ButtonGroup>
+							<OutDatedWarning
+								desired={newDesired.act}
+								reported={r.act}
+								onNotReported={
+									<Button
+										color={'danger'}
+										disabled={true}
+										title={'Device has not reported this setting, yet.'}
+									>
+										{emojify('❓')}
+									</Button>
+								}
+								onOutDated={(r) => (
+									<Button
+										color={'danger'}
+										outline={true}
+										disabled={true}
+										title={`Device has last synced this setting ${formatDistanceToNow(
+											r.receivedAt,
+										)} ago. Current value: ${JSON.stringify(r.value)}.`}
+									>
+										{emojify('⭕')}
+									</Button>
+								)}
+							/>
+							<Button
+								color={'info'}
+								data-intro={
+									'In <em>passive</em> mode only if it detects movement.'
+								}
+								outline={isActive}
+								onClick={() => {
+									updateConfig({ act: false })
+								}}
+							>
+								Passive
+							</Button>
+							<Button
+								color={'success'}
+								data-intro={
+									'In <em>active</em> mode the tracker will continuously send updates.'
+								}
+								outline={!isActive}
+								onClick={() => {
+									updateConfig({ act: true })
+								}}
+							>
+								Active
+							</Button>
+						</ButtonGroup>
+					</FormGroup>
+				</fieldset>
+				<fieldset>
+					<legend>Active Mode Settings</legend>
 					<NumberConfigSetting
-						label={'Movement Resolution'}
+						label={'Active Wait Time'}
 						intro={
-							'In <em>passive</em> mode: Time to wait after detecting movement before sending the next update'
+							'In <em>active</em> mode: wait this long until sending the next update. The actual interval will be this time plus the time it takes to get a GPS fix.'
 						}
-						id={'mvres'}
-						desired={newDesired.mvres}
-						reported={r.mvres}
-						onChange={updateConfigProperty('mvres')}
+						id={'actwt'}
+						desired={newDesired.actwt}
+						reported={r.actwt}
+						onChange={updateConfigProperty('actwt')}
 					/>
+				</fieldset>
+				<fieldset>
+					<legend>Passive Mode Settings</legend>
+					<SideBySide>
+						<NumberConfigSetting
+							label={'Movement Resolution'}
+							intro={
+								'In <em>passive</em> mode: Time to wait after detecting movement before sending the next update'
+							}
+							id={'mvres'}
+							desired={newDesired.mvres}
+							reported={r.mvres}
+							onChange={updateConfigProperty('mvres')}
+						/>
+						<NumberConfigSetting
+							label={'Movement Timeout'}
+							intro={
+								'In <em>passive</em> mode: Send update at least this often'
+							}
+							id={'mvt'}
+							example={3600}
+							desired={newDesired.mvt}
+							reported={r.mvt}
+							onChange={updateConfigProperty('mvt')}
+						/>
+					</SideBySide>
 					<NumberConfigSetting
-						label={'Movement Timeout'}
-						intro={'In <em>passive</em> mode: Send update at least this often'}
-						id={'mvt'}
-						example={3600}
-						desired={newDesired.mvt}
-						reported={r.mvt}
-						onChange={updateConfigProperty('mvt')}
-					/>
-				</SideBySide>
-				<NumberConfigSetting
-					label={'Accelerometer threshold'}
-					intro={
-						'Accelerometer threshold: minimal absolute value for and accelerometer reading to be considered movement.'
-					}
-					id={'acct'}
-					example={2.5}
-					step={0.1}
-					unit={'m/s²'}
-					desired={
-						newDesired.acct === undefined ? undefined : newDesired.acct / 10
-					}
-					reported={
-						r.acct && {
-							...r.acct,
-							value: r.acct.value / 10,
+						label={'Accelerometer threshold'}
+						intro={
+							'Accelerometer threshold: minimal absolute value for and accelerometer reading to be considered movement.'
 						}
-					}
-					onChange={updateConfigProperty('acct', (v) =>
-						Math.round(parseFloat(v) * 10),
-					)}
-				/>
-			</fieldset>
-			<fieldset>
-				<legend>Timeouts</legend>
-				<SideBySide>
-					<NumberConfigSetting
-						id={'gpst'}
-						label={'GPS Timeout'}
-						intro={'Timeout for GPS fix'}
-						desired={newDesired.gpst}
-						reported={r.gpst}
-						example={180}
-						onChange={updateConfigProperty('gpst')}
+						id={'acct'}
+						example={2.5}
+						step={0.1}
+						unit={'m/s²'}
+						desired={
+							newDesired.acct === undefined ? undefined : newDesired.acct / 10
+						}
+						reported={
+							r.acct && {
+								...r.acct,
+								value: r.acct.value / 10,
+							}
+						}
+						onChange={updateConfigProperty('acct', (v) =>
+							Math.round(parseFloat(v) * 10),
+						)}
 					/>
-					{/*
+				</fieldset>
+				<fieldset>
+					<legend>Timeouts</legend>
+					<SideBySide>
+						<NumberConfigSetting
+							id={'gpst'}
+							label={'GPS Timeout'}
+							intro={'Timeout for GPS fix'}
+							desired={newDesired.gpst}
+							reported={r.gpst}
+							example={180}
+							onChange={updateConfigProperty('gpst')}
+						/>
+						{/*
 					FIXME: enable once https://github.com/bifravst/cat-tracker-fw/issues/25 is implemented
 					<NumberConfigSetting
 						id={'celt'}
@@ -248,19 +291,20 @@ export const Settings = ({
 						onChange={updateConfigProperty('celt')}
 					/>
 					*/}
-				</SideBySide>
-			</fieldset>
-			<FooterWithFullWidthButton>
-				<Button
-					color={'primary'}
-					disabled={!changed}
-					onClick={() => {
-						onSave(newDesired)
-					}}
-				>
-					Update
-				</Button>
-			</FooterWithFullWidthButton>
-		</SettingsForm>
+					</SideBySide>
+				</fieldset>
+				<FooterWithFullWidthButton>
+					<Button
+						color={'primary'}
+						disabled={!changed}
+						onClick={() => {
+							onSave(newDesired)
+						}}
+					>
+						Update
+					</Button>
+				</FooterWithFullWidthButton>
+			</SettingsForm>
+		</>
 	)
 }
