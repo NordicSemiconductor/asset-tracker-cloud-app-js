@@ -1,5 +1,12 @@
-import React, { createRef } from 'react'
-import { Map as LeafletMap, TileLayer, Marker, Popup } from 'react-leaflet'
+import { LeafletEvent, Map as LeafletMap } from 'leaflet'
+import React from 'react'
+import {
+	MapContainer,
+	TileLayer,
+	Marker,
+	Popup,
+	useMapEvents,
+} from 'react-leaflet'
 
 export type CatLocation = {
 	lat: number
@@ -8,27 +15,30 @@ export type CatLocation = {
 	name: string
 }
 
+const EventHandler = ({
+	onZoomEnd,
+}: {
+	onZoomEnd: (args: { event: LeafletEvent; map: LeafletMap }) => void
+}) => {
+	const map = useMapEvents({
+		zoomend: (event) => onZoomEnd({ event, map }),
+	})
+	return null
+}
+
 export const Map = ({ cats }: { cats: CatLocation[] }) => {
 	let zoom = 3
 	const userZoom = window.localStorage.getItem('bifravst:zoom')
 	if (userZoom !== null) {
 		zoom = parseInt(userZoom, 10)
 	}
-	const mapRef = createRef<LeafletMap>()
 	return (
-		<LeafletMap
-			center={[63.4212859, 10.4370703]}
-			zoom={zoom}
-			ref={mapRef}
-			onzoomend={(e: Record<string, any>) => {
-				if ((mapRef.current?.viewport?.zoom ?? 0) > 0) {
-					window.localStorage.setItem(
-						'bifravst:zoom',
-						`${mapRef.current?.viewport?.zoom ?? 0}`,
-					)
-				}
-			}}
-		>
+		<MapContainer center={[63.4212859, 10.4370703]} zoom={zoom}>
+			<EventHandler
+				onZoomEnd={({ map }) => {
+					window.localStorage.setItem('bifravst:zoom', `${map.getZoom()}`)
+				}}
+			/>
 			<TileLayer
 				attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -38,6 +48,6 @@ export const Map = ({ cats }: { cats: CatLocation[] }) => {
 					<Popup>{name}</Popup>
 				</Marker>
 			))}
-		</LeafletMap>
+		</MapContainer>
 	)
 }

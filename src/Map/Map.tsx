@@ -1,19 +1,21 @@
-import React, { createRef, useState } from 'react'
+import React, { useState } from 'react'
 import {
-	Map as LeafletMap,
+	MapContainer,
 	TileLayer,
 	Marker,
 	Popup,
 	Circle,
 	Polyline,
-	LeafletConsumer,
+	MapConsumer,
+	useMapEvents,
 } from 'react-leaflet'
+import { LeafletEvent, Map as LeafletMap } from 'leaflet'
 import { NoMap } from './NoMap'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
 import { FormGroup } from 'reactstrap'
 
-const LeafletMapContainer = styled.div`
+const MapContainerContainer = styled.div`
 	> .leaflet-container {
 		height: 300px;
 	}
@@ -56,6 +58,17 @@ export type CellLocation = {
 	ts: Date
 }
 
+const EventHandler = ({
+	onZoomEnd,
+}: {
+	onZoomEnd: (args: { event: LeafletEvent; map: LeafletMap }) => void
+}) => {
+	const map = useMapEvents({
+		zoomend: (event) => onZoomEnd({ event, map }),
+	})
+	return null
+}
+
 export const Map = ({
 	deviceLocation,
 	cellLocation,
@@ -73,7 +86,6 @@ export const Map = ({
 		zoom = parseInt(userZoom, 10)
 	}
 	const [mapZoom, setMapZoom] = useState(zoom)
-	const mapRef = createRef<LeafletMap>()
 
 	if (!cellLocation && !deviceLocation) return <NoMap />
 
@@ -98,21 +110,17 @@ export const Map = ({
 	}
 
 	return (
-		<LeafletMapContainer>
-			<LeafletMap
-				viewport={{
-					center: [center.position.lat, center.position.lng],
-					zoom,
-				}}
-				ref={mapRef}
-				onzoomend={() => {
-					window.localStorage.setItem(
-						'bifravst:zoom',
-						`${mapRef.current?.viewport?.zoom ?? 13}`,
-					)
-					setMapZoom(mapRef.current?.viewport?.zoom ?? 13)
-				}}
+		<MapContainerContainer>
+			<MapContainer
+				center={[center.position.lat, center.position.lng]}
+				zoom={zoom}
 			>
+				<EventHandler
+					onZoomEnd={({ map }) => {
+						window.localStorage.setItem('bifravst:zoom', `${map.getZoom()}`)
+						setMapZoom(map.getZoom())
+					}}
+				/>
 				<TileLayer
 					attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -136,44 +144,42 @@ export const Map = ({
 					/>
 				)}
 				{deviceLocation?.position.heading !== undefined && (
-					<LeafletConsumer key={mapZoom}>
-						{({ map }) => {
-							if (map) {
-								const { x, y } = map.project(deviceLocation.position, mapZoom)
-								const endpoint = map.unproject(
-									[
-										x +
-											mapZoom *
-												3 *
-												Math.cos(
-													((((deviceLocation?.position.heading ?? 0) - 90) %
-														360) *
-														Math.PI) /
-														180,
-												),
-										y +
-											mapZoom *
-												3 *
-												Math.sin(
-													((((deviceLocation?.position.heading ?? 0) - 90) %
-														360) *
-														Math.PI) /
-														180,
-												),
-									],
-									mapZoom,
-								)
-								return (
-									<Polyline
-										positions={[deviceLocation.position, endpoint]}
-										weight={mapZoom > 16 ? 1 : 2}
-										linecap={'round'}
-										color={'#000000'}
-									/>
-								)
-							}
+					<MapConsumer key={mapZoom}>
+						{(map) => {
+							const { x, y } = map.project(deviceLocation.position, mapZoom)
+							const endpoint = map.unproject(
+								[
+									x +
+										mapZoom *
+											3 *
+											Math.cos(
+												((((deviceLocation?.position.heading ?? 0) - 90) %
+													360) *
+													Math.PI) /
+													180,
+											),
+									y +
+										mapZoom *
+											3 *
+											Math.sin(
+												((((deviceLocation?.position.heading ?? 0) - 90) %
+													360) *
+													Math.PI) /
+													180,
+											),
+								],
+								mapZoom,
+							)
+							return (
+								<Polyline
+									positions={[deviceLocation.position, endpoint]}
+									weight={mapZoom > 16 ? 1 : 2}
+									lineCap={'round'}
+									color={'#000000'}
+								/>
+							)
 						}}
-					</LeafletConsumer>
+					</MapConsumer>
 				)}
 				{deviceLocation &&
 					history?.map(({ position: { lat, lng } }, k) => {
@@ -188,7 +194,7 @@ export const Map = ({
 									<Polyline
 										positions={[history[k - 1].position, { lat, lng }]}
 										weight={mapZoom > 16 ? 1 : 2}
-										linecap={'round'}
+										lineCap={'round'}
 										color={color}
 										dashArray={'10'}
 									/>
@@ -196,7 +202,7 @@ export const Map = ({
 							</React.Fragment>
 						)
 					})}
-			</LeafletMap>
-		</LeafletMapContainer>
+			</MapContainer>
+		</MapContainerContainer>
 	)
 }
