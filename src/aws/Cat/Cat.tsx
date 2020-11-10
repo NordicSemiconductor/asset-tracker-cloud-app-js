@@ -39,6 +39,7 @@ export const Cat = ({
 	listUpgradeJobs,
 	cancelUpgradeJob,
 	deleteUpgradeJob,
+	cloneUpgradeJob,
 	credentials,
 	children,
 	getThingState,
@@ -51,6 +52,9 @@ export const Cat = ({
 	onCreateUpgradeJob: OnCreateUpgradeJob
 	listUpgradeJobs: () => Promise<DeviceUpgradeFirmwareJob[]>
 	cancelUpgradeJob: (args: { jobId: string; force: boolean }) => Promise<void>
+	cloneUpgradeJob: (args: {
+		jobId: string
+	}) => Promise<DeviceUpgradeFirmwareJob>
 	deleteUpgradeJob: (args: {
 		jobId: string
 		executionNumber: number
@@ -286,6 +290,7 @@ export const Cat = ({
 								listUpgradeJobs={listUpgradeJobs}
 								cancelUpgradeJob={cancelUpgradeJob}
 								deleteUpgradeJob={deleteUpgradeJob}
+								cloneUpgradeJob={cloneUpgradeJob}
 							/>
 						</Collapsable>
 					</>

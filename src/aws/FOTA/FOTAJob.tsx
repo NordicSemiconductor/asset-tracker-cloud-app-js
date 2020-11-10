@@ -36,10 +36,12 @@ export const Jobs = ({
 	jobs,
 	cancelUpgradeJob,
 	deleteUpgradeJob,
+	cloneUpgradeJob,
 }: {
 	jobs: DeviceUpgradeFirmwareJob[]
 	cancelUpgradeJob: (args: { jobId: string; force: boolean }) => void
 	deleteUpgradeJob: (args: { jobId: string; executionNumber: number }) => void
+	cloneUpgradeJob: (args: { jobId: string }) => void
 }) => {
 	return (
 		<>
@@ -117,18 +119,37 @@ export const Jobs = ({
 								</Button>
 							)}
 							{canDelete && (
-								<Button
-									color={'danger'}
-									outline
-									onClick={() =>
-										deleteUpgradeJob({
-											jobId,
-											executionNumber,
-										})
-									}
-								>
-									Delete
-								</Button>
+								<>
+									<Button
+										color={'info'}
+										outline
+										onClick={() =>
+											cloneUpgradeJob({
+												jobId,
+											})
+										}
+										data-intro={
+											'Creates a new Device Firmware Upgrade with the same settings.'
+										}
+										title={
+											'Creates a new Device Firmware Upgrade with the same settings.'
+										}
+									>
+										Clone
+									</Button>
+									<Button
+										color={'danger'}
+										outline
+										onClick={() =>
+											deleteUpgradeJob({
+												jobId,
+												executionNumber,
+											})
+										}
+									>
+										Delete
+									</Button>
+								</>
 							)}
 						</JobItem>
 					)

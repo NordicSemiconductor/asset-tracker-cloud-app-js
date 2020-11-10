@@ -18,6 +18,7 @@ import { upgradeFirmware } from '../upgradeFirmware'
 import { listUpgradeFirmwareJobs } from '../listUpgradeFirmwareJobs'
 import { cancelUpgradeFirmwareJob } from '../cancelUpgradeFirmwareJob'
 import { deleteUpgradeFirmwareJob } from '../deleteUpgradeFirmwareJob'
+import { cloneUpgradeFirmwareJob } from '../cloneUpgradeFirmwareJob'
 import { DeleteCat } from '../../Cat/DeleteCat'
 import { deleteIotThing } from '../deleteIotThing'
 import { connectAndListenForStateChange } from '../connectAndListenForStateChange'
@@ -82,6 +83,12 @@ export const CatActions = ({ catId }: { catId: string }) => {
 										})
 
 										const deleteUpgradeJob = deleteUpgradeFirmwareJob({
+											s3,
+											bucketName: fotaBucketName,
+											iot,
+										})
+
+										const cloneUpgradeJob = cloneUpgradeFirmwareJob({
 											s3,
 											bucketName: fotaBucketName,
 											iot,
@@ -176,6 +183,19 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	jobId,
 																	executionNumber,
 																})
+															}
+															cloneUpgradeJob={async ({
+																jobId,
+															}: {
+																jobId: string
+															}) =>
+																describeThing(catId).then(
+																	async ({ thingArn }) =>
+																		cloneUpgradeJob({
+																			thingArn,
+																			jobId,
+																		}),
+																)
 															}
 															onCreateUpgradeJob={async (args) =>
 																describeThing(catId).then(

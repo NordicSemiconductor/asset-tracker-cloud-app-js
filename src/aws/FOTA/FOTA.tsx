@@ -20,6 +20,7 @@ export const FOTA = ({
 	listUpgradeJobs,
 	cancelUpgradeJob,
 	deleteUpgradeJob,
+	cloneUpgradeJob,
 }: {
 	device: DeviceInformation
 	onCreateUpgradeJob: OnCreateUpgradeJob
@@ -29,6 +30,9 @@ export const FOTA = ({
 		jobId: string
 		executionNumber: number
 	}) => Promise<void>
+	cloneUpgradeJob: (args: {
+		jobId: string
+	}) => Promise<DeviceUpgradeFirmwareJob>
 }) => {
 	const [error, setError] = useState<Error>()
 	const [jobs, setJobs] = useState([] as DeviceUpgradeFirmwareJob[])
@@ -89,6 +93,16 @@ export const FOTA = ({
 							deleteUpgradeJob(args)
 								.then(() => {
 									debouncedListUpgradeJobs()
+								})
+								.catch((err) => {
+									console.error(err)
+								})
+						}}
+						cloneUpgradeJob={(args) => {
+							cloneUpgradeJob(args)
+								.then((createdJob) => {
+									setJobs([createdJob, ...jobs])
+									setAddJobKey(addJobKey + 1)
 								})
 								.catch((err) => {
 									console.error(err)
