@@ -41,7 +41,6 @@ const onError = (err: Error) => {
 }
 switch (cloudFlavour) {
 	case CloudFlavour.Azure:
-		console.log(`Launching Microsoft Azure app ...`)
 		import('./azure/App')
 			.then((azureApp) => {
 				launch(
@@ -58,7 +57,6 @@ switch (cloudFlavour) {
 		break
 	case CloudFlavour.AWS:
 	default:
-		console.log(`Launching Amazon Webservices app ...`)
 		import('./aws/App')
 			.then((awsApp) => {
 				launch(
