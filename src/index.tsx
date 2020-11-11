@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
 export enum CloudFlavour {
-	Azure = 'AZURE',
+	Azure = 'Azure',
 	AWS = 'AWS',
 }
 
@@ -50,7 +50,7 @@ switch (cloudFlavour) {
 							process.env.REACT_APP_AZURE_API_ENDPOINT ?? ''
 						).replace(/\/+$/, ''),
 						clientId: process.env.REACT_APP_AZURE_CLIENT_ID ?? '',
-						adB2cTenant: process.env.REACT_APP_AZURE_AD_B2C_TENANT ?? '',
+						adB2cTenant: process.env.REACT_APP_AZURE_B2C_TENANT ?? '',
 					}),
 				)
 			})
