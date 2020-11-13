@@ -4,8 +4,13 @@ import { FilePicker } from '../../FilePicker/FilePicker'
 import { FooterWithFullWidthButton } from '../../Settings/Settings'
 import { DeviceInformation } from '../../@types/device-state'
 import { OnCreateUpgradeJob } from './FOTA'
+import semver from 'semver'
+
+const getNextAppVersion = (device: DeviceInformation): string =>
+	semver.inc(device.v.appV, 'patch') ?? device.v.appV
 
 export const CreateReportedFOTAJobProgress = ({
+	device,
 	onJob,
 	onError,
 }: {
@@ -43,6 +48,16 @@ export const CreateReportedFOTAJobProgress = ({
 							onFile={(file) => {
 								onError(undefined)
 								setUpdateFile(file)
+								onError(undefined)
+								setUpdateFile(file)
+								const semverMatch = /v([0-9]+\.[0-9]+\..+)\.[^.]+$/.exec(
+									file.file.name,
+								)
+								if (semverMatch) {
+									setNextVersion(semverMatch[1])
+								} else {
+									setNextVersion(getNextAppVersion(device))
+								}
 							}}
 						/>
 					</p>
