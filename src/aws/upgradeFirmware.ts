@@ -81,19 +81,22 @@ export const upgradeFirmware = ({
 	iot: Iot
 	bucketName: string
 }) => async ({
-	data,
 	file,
 	thingArn,
 	version,
 	targetBoard,
 }: {
-	data: ArrayBuffer
 	file: File
 	thingArn: string
 	version: string
 	targetBoard: string
 }): Promise<DeviceUpgradeFirmwareJob> => {
 	const jobId = v4()
+	const data = await new Promise<ArrayBuffer>((resolve) => {
+		const reader = new FileReader()
+		reader.onload = (e: any) => resolve(e.target.result)
+		reader.readAsArrayBuffer(file)
+	})
 	await s3
 		.putObject({
 			Bucket: bucketName,
@@ -103,6 +106,7 @@ export const upgradeFirmware = ({
 			ContentType: 'text/octet-stream',
 		})
 		.promise()
+
 	return createJob({
 		iot,
 		file,

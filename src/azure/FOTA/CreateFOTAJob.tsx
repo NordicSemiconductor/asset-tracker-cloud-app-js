@@ -18,10 +18,7 @@ export const CreateReportedFOTAJobProgress = ({
 	onJob: OnCreateUpgradeJob
 	onError: (error?: Error) => void
 }) => {
-	const [updateFile, setUpdateFile] = useState<{
-		file: File
-		data: ArrayBuffer
-	}>()
+	const [updateFile, setUpdateFile] = useState<File>()
 	const [nextVersion, setNextVersion] = useState('')
 	return (
 		<Form>
@@ -48,10 +45,8 @@ export const CreateReportedFOTAJobProgress = ({
 							onFile={(file) => {
 								onError(undefined)
 								setUpdateFile(file)
-								onError(undefined)
-								setUpdateFile(file)
 								const semverMatch = /v([0-9]+\.[0-9]+\..+)\.[^.]+$/.exec(
-									file.file.name,
+									file.name,
 								)
 								if (semverMatch) {
 									setNextVersion(semverMatch[1])
@@ -67,7 +62,7 @@ export const CreateReportedFOTAJobProgress = ({
 				<fieldset>
 					<FormGroup>
 						<Label>Size</Label>
-						<p>{updateFile.file.size} bytes</p>
+						<p>{updateFile.size} bytes</p>
 					</FormGroup>
 				</fieldset>
 			)}
@@ -78,8 +73,7 @@ export const CreateReportedFOTAJobProgress = ({
 					onClick={() => {
 						if (updateFile !== undefined) {
 							onJob({
-								data: updateFile.data,
-								file: updateFile.file,
+								file: updateFile,
 								version: nextVersion,
 							})
 						}

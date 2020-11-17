@@ -41,7 +41,7 @@ export type ApiClient = {
 	) => Promise<Either<ErrorInfo, { success: boolean }>>
 	storeImage: (image: Blob) => Promise<Either<ErrorInfo, { url: string }>>
 	storeDeviceUpdate: (
-		firmware: ArrayBuffer,
+		firmware: File,
 	) => Promise<Either<ErrorInfo, { url: string }>>
 	setPendingDeviceUpdate: ({
 		id,
@@ -226,16 +226,20 @@ export const fetchApiClient = ({
 				reader.readAsDataURL(image)
 			}),
 		storeDeviceUpdate: async (
-			firmware: ArrayBuffer,
+			file: File,
 		): Promise<Either<ErrorInfo, { url: string }>> =>
-			postRaw<{ url: string }>(
-				`firmware`,
-				// https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
-				String.fromCharCode.apply(
-					null,
-					(new Uint16Array(firmware) as unknown) as number[],
-				),
-			)(),
+			new Promise((resolve, reject) => {
+				const reader = new FileReader()
+				reader.onload = async () => {
+					postRaw<{ url: string }>(
+						`firmware`,
+						(reader.result as string).split(',')[1],
+					)()
+						.then(resolve)
+						.catch(reject)
+				}
+				reader.readAsDataURL(file)
+			}),
 		setPendingDeviceUpdate: async ({
 			id,
 			url,

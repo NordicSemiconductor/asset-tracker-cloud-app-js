@@ -4,11 +4,7 @@ import { DisplayError as ShowError } from '../../Error/Error'
 import { CreateReportedFOTAJobProgress } from './CreateFOTAJob'
 import { DeviceInformation } from '../../@types/device-state'
 
-export type OnCreateUpgradeJob = (args: {
-	file: File
-	data: ArrayBuffer
-	version: string
-}) => void
+export type OnCreateUpgradeJob = (args: { file: File; version: string }) => void
 
 export const FOTA = ({
 	device,

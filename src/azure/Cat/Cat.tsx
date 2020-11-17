@@ -176,14 +176,14 @@ export const Cat = ({
 	}
 
 	const onReportedFOTAJobProgressCreate = ({
-		data,
+		file,
 		version,
 	}: {
-		data: ArrayBuffer
+		file: File
 		version: string
 	}) => {
 		apiClient
-			.storeDeviceUpdate(data)
+			.storeDeviceUpdate(file)
 			.then((maybeStoredUpdate) => {
 				if (isLeft(maybeStoredUpdate)) {
 					setError(maybeStoredUpdate.left)
@@ -365,8 +365,8 @@ export const Cat = ({
 							<FOTA
 								key={`${cat.version}`}
 								device={cat.state.reported.dev}
-								onCreateUpgradeJob={({ data, version }) => {
-									onReportedFOTAJobProgressCreate({ data, version })
+								onCreateUpgradeJob={({ file, version }) => {
+									onReportedFOTAJobProgressCreate({ file, version })
 								}}
 							/>
 							<Jobs jobs={fotaJobs} />

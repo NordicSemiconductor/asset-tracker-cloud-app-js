@@ -11,7 +11,7 @@ export const FilePicker = ({
 	accept: string
 	maxSize: number
 	onError: (result: Error) => void
-	onFile: (result: { file: File; data: ArrayBuffer }) => void
+	onFile: (file: File) => void
 }) => {
 	const inputRef = createRef<HTMLInputElement>()
 	return (
@@ -22,19 +22,7 @@ export const FilePicker = ({
 			ref={inputRef}
 			onChange={() => {
 				if ((inputRef?.current?.files?.length ?? 0) > 0) {
-					const f = inputRef?.current?.files?.[0] as File
-					if (f.size > maxSize) {
-						onError(new Error(`Filesize ${f.size} is too large!`))
-					} else {
-						const reader = new FileReader()
-						reader.onload = (e: any) => {
-							onFile({
-								file: f,
-								data: e.target.result,
-							})
-						}
-						reader.readAsArrayBuffer(f)
-					}
+					onFile(inputRef?.current?.files?.[0] as File)
 				}
 			}}
 		/>
