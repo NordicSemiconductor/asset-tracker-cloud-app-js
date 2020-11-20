@@ -64,7 +64,7 @@
     "uuid": "8.3.1"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-chaining": "7.12.1",
+    "@babel/plugin-proposal-optional-chaining": "7.12.7",
     "@bifravst/code-style": "8.0.134",
     "@bifravst/eslint-config-typescript": "5.0.77",
     "@commitlint/cli": "11.0.0",
