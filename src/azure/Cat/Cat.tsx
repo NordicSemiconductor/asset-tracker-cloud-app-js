@@ -8,7 +8,7 @@ import { Collapsable } from '../../Collapsable/Collapsable'
 import { DeleteCat } from '../../Cat/DeleteCat'
 import { DisplayError } from '../../Error/Error'
 import { ErrorInfo } from '../../Error/ErrorInfo'
-import { isLeft } from 'fp-ts/lib/Either'
+import { isLeft, isRight } from 'fp-ts/lib/Either'
 import { Loading } from '../../Loading/Loading'
 import { LoadedCat } from '../../Cat/CatLoader'
 import { Settings } from '../../Settings/Settings'
@@ -97,9 +97,7 @@ export const Cat = ({
 		apiClient
 			.geolocateCell({ cell, area, mccmnc })
 			.then((res) => {
-				if (isLeft(res)) {
-					if (!removed) setError(res.left)
-				} else {
+				if (isRight(res)) {
 					console.debug('[Cell Geolocation]', res.right)
 					setCellLocation({ position: res.right, ts: new Date() })
 				}
