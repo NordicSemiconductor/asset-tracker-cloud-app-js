@@ -35,9 +35,9 @@ export const Jobs = ({
 			{jobs.map(({ job: { fwVersion, fwPackageURI }, status }) => (
 				<JobItem key={fwVersion.value}>
 					<strong>{fwVersion.value}</strong>
-					{status?.status && (
+					{status?.fwUpdateStatus && (
 						<>
-							<code>{status.status.value}</code>{' '}
+							<code>{status.fwUpdateStatus.value}</code>{' '}
 						</>
 					)}
 					<TimeInfo>
@@ -45,10 +45,10 @@ export const Jobs = ({
 						<RelativeTime ts={fwVersion.receivedAt} />
 					</TimeInfo>
 
-					{status?.status && (
+					{status?.fwUpdateStatus && (
 						<TimeInfo>
 							{emojify('⏳ ')}
-							<RelativeTime ts={status.status.receivedAt} />
+							<RelativeTime ts={status.fwUpdateStatus.receivedAt} />
 						</TimeInfo>
 					)}
 					<br />
