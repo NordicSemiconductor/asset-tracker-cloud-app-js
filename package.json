@@ -70,7 +70,7 @@
     "@commitlint/cli": "11.0.0",
     "@commitlint/config-angular": "11.0.0",
     "@types/aws-iot-device-sdk": "2.2.2",
-    "@types/intro.js": "2.4.8",
+    "@types/intro.js": "3.0.0",
     "@types/jest": "26.0.15",
     "@types/node": "14.14.9",
     "@types/react": "17.0.0",
