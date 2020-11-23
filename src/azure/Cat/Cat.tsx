@@ -97,14 +97,14 @@ export const Cat = ({
 		apiClient
 			.geolocateCell({ cell, area, mccmnc })
 			.then((res) => {
-				if (isRight(res)) {
+				if (isRight(res) && !removed) {
 					console.debug('[Cell Geolocation]', res.right)
 					setCellLocation({ position: res.right, ts: new Date() })
 				}
 			})
 			.catch(setError)
 		return () => {
-			removed = false
+			removed = true
 		}
 	}, [roamingInfo, apiClient])
 
