@@ -7,9 +7,10 @@ import {
 	Accelerometer,
 	Environment,
 	MakeReceivedProperty,
+	ReportedState,
 } from './device-state'
 
-export type PropertyMetadata = {
+export type PropertyMetadata = Record<string, any> & {
 	$lastUpdated: string
 	$lastUpdatedVersion?: number
 }
@@ -41,7 +42,7 @@ export type AzureFOTAJob = {
 }
 
 export type AzureFOTAJobProgress = {
-	status: FOTAStatus
+	fwUpdateStatus: FOTAStatus
 	currentFwVersion: string
 	pendingFwVersion: string
 }
@@ -88,3 +89,7 @@ export type DeviceTwin = {
 }
 
 export type ReportedFOTAJobProgress = MakeReceivedProperty<AzureFOTAJobProgress>
+
+export type AzureReportedState = ReportedState & {
+	firmware?: ReportedFOTAJobProgress
+}

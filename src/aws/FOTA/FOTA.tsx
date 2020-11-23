@@ -5,7 +5,7 @@ import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
 import { useDebouncedCallback } from 'use-debounce'
 import { Jobs } from './FOTAJob'
 import { CreateFOTAJob } from './CreateFOTAJob'
-import { DeviceInformation } from '../../@types/device-state'
+import { AWSDeviceInformation } from '../../@types/aws-device'
 
 export type OnCreateUpgradeJob = (args: {
 	file: File
@@ -21,7 +21,7 @@ export const FOTA = ({
 	deleteUpgradeJob,
 	cloneUpgradeJob,
 }: {
-	device: DeviceInformation
+	device: AWSDeviceInformation
 	onCreateUpgradeJob: OnCreateUpgradeJob
 	listUpgradeJobs: () => Promise<DeviceUpgradeFirmwareJob[]>
 	cancelUpgradeJob: (args: { jobId: string; force: boolean }) => Promise<void>

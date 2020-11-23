@@ -2,19 +2,19 @@ import React, { useState } from 'react'
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap'
 import { FilePicker } from '../../FilePicker/FilePicker'
 import { FooterWithFullWidthButton } from '../../Settings/Settings'
-import { DeviceInformation } from '../../@types/device-state'
 import { OnCreateUpgradeJob } from './FOTA'
 import semver from 'semver'
+import { AzureFOTAJobProgress } from '../../@types/azure-device'
 
-const getNextAppVersion = (device: DeviceInformation): string =>
-	semver.inc(device.v.appV, 'patch') ?? device.v.appV
+const getNextAppVersion = (fw: AzureFOTAJobProgress): string =>
+	semver.inc(fw.currentFwVersion, 'patch') ?? fw.currentFwVersion
 
 export const CreateReportedFOTAJobProgress = ({
-	device,
+	fw,
 	onJob,
 	onError,
 }: {
-	device: DeviceInformation
+	fw: AzureFOTAJobProgress
 	onJob: OnCreateUpgradeJob
 	onError: (error?: Error) => void
 }) => {
@@ -51,7 +51,7 @@ export const CreateReportedFOTAJobProgress = ({
 								if (semverMatch) {
 									setNextVersion(semverMatch[1])
 								} else {
-									setNextVersion(getNextAppVersion(device))
+									setNextVersion(getNextAppVersion(fw))
 								}
 							}}
 						/>

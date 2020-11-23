@@ -349,11 +349,12 @@ export const Cat = ({
 								key={`${cat.version}`}
 								device={reportedWithTime.dev}
 								roaming={reportedWithTime.roam}
+								appV={cat.state.reported.firmware?.currentFwVersion}
 							/>
 						</Collapsable>
 					</>
 				)}
-				{cat.state.reported.dev && (
+				{cat.state.reported.firmware && (
 					<>
 						<hr />
 						<Collapsable
@@ -362,7 +363,7 @@ export const Cat = ({
 						>
 							<FOTA
 								key={`${cat.version}`}
-								device={cat.state.reported.dev}
+								fw={cat.state.reported.firmware}
 								onCreateUpgradeJob={({ file, version }) => {
 									onReportedFOTAJobProgressCreate({ file, version })
 								}}

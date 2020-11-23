@@ -49,7 +49,6 @@ export type DeviceInformation = {
 		iccid: string
 		modV: string
 		brdV: string
-		appV: string
 	}
 	ts: number
 }
@@ -80,9 +79,7 @@ export type ReportedBattery = MakeReceivedProperty<Battery>
 export type ReportedAccelerometer = MakeReceivedProperty<Accelerometer>
 export type ReportedEnvironment = MakeReceivedProperty<Environment>
 export type ReportedDeviceInformation = MakeReceivedProperty<DeviceInformation>
-export type ReportedRoamingInformation = MakeReceivedProperty<
-	RoamingInformation
->
+export type ReportedRoamingInformation = MakeReceivedProperty<RoamingInformation>
 
 export type ReportedState = {
 	cfg?: ReportedConfigState

@@ -4,9 +4,9 @@ import { Button, Form, FormGroup, Input, Label } from 'reactstrap'
 import { FilePicker } from '../../FilePicker/FilePicker'
 import { FooterWithFullWidthButton } from '../../Settings/Settings'
 import { OnCreateUpgradeJob } from './FOTA'
-import { DeviceInformation } from '../../@types/device-state'
+import { AWSDeviceInformation } from '../../@types/aws-device'
 
-const getNextAppVersion = (device: DeviceInformation): string =>
+const getNextAppVersion = (device: AWSDeviceInformation): string =>
 	semver.inc(device.v.appV, 'patch') ?? device.v.appV
 
 export const CreateFOTAJob = ({
@@ -14,7 +14,7 @@ export const CreateFOTAJob = ({
 	onJob,
 	onError,
 }: {
-	device: DeviceInformation
+	device: AWSDeviceInformation
 	onJob: OnCreateUpgradeJob
 	onError: (error?: Error) => void
 }) => {

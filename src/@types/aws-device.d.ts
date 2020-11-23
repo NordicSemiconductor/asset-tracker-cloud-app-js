@@ -6,13 +6,21 @@ import {
 	RoamingInformation,
 	Accelerometer,
 	Environment,
+	ReportedState,
+	MakeReceivedProperty,
 } from './device-state'
+
+export type AWSDeviceInformation = DeviceInformation & {
+	v: {
+		appV: string
+	}
+}
 
 export type ReportedThingState = {
 	cfg?: Partial<DeviceConfig>
 	gps?: Gps
 	bat?: Battery
-	dev?: DeviceInformation
+	dev?: AWSDeviceInformation
 	roam?: RoamingInformation
 	acc?: Accelerometer
 	env?: Environment
@@ -21,6 +29,10 @@ export type ReportedThingState = {
 export type ThingStateMetadataProperty = {
 	timestamp?: number
 	[key: string]: any
+}
+
+export type AWSReportedState = ReportedState & {
+	dev?: MakeReceivedProperty<AWSDeviceInformation>
 }
 
 export type ThingState = {

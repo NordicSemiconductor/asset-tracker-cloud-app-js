@@ -1,12 +1,9 @@
 import {
 	ThingStateMetadataProperty,
 	ReportedThingState,
+	AWSReportedState,
 } from '../@types/aws-device'
-import {
-	ReportedState,
-	MakeReceivedProperty,
-	DeviceConfig,
-} from '../@types/device-state'
+import { MakeReceivedProperty, DeviceConfig } from '../@types/device-state'
 
 /**
  * AWS meta does not report timestamps for top level arrays or objects, so find the first timestamp in an array or nested object.
@@ -44,7 +41,7 @@ export const toReportedWithReceivedAt = ({
 }: {
 	reported: ReportedThingState
 	metadata: ThingStateMetadataProperty
-}): ReportedState => ({
+}): AWSReportedState => ({
 	...(reported.cfg !== undefined && metadata.reported.cfg !== undefined
 		? {
 				cfg: toReceivedProps(reported.cfg, metadata.reported.cfg) as Partial<

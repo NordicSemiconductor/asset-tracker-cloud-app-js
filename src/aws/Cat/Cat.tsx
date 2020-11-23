@@ -272,6 +272,7 @@ export const Cat = ({
 								key={`${cat.version}`}
 								device={reportedWithReceived.dev}
 								roaming={reportedWithReceived.roam}
+								appV={reportedWithReceived.dev?.v?.value?.appV}
 							/>
 						</Collapsable>
 					</>

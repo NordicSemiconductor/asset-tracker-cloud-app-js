@@ -32,9 +32,11 @@ export const DeviceInformationDl = styled.dl`
 export const DeviceInfo = ({
 	device,
 	roaming,
+	appV,
 }: {
 	device: ReportedDeviceInformation
 	roaming?: ReportedRoamingInformation
+	appV?: string
 }) => (
 	<div>
 		<h4>Hard- and Software</h4>
@@ -49,7 +51,7 @@ export const DeviceInfo = ({
 			</dd>
 			<dt>Application</dt>
 			<dd>
-				<code>{device.v.value.appV}</code>
+				<code>{appV ?? '—'}</code>
 			</dd>
 		</DeviceInformationDl>
 		<h4>Connection</h4>

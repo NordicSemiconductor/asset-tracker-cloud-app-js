@@ -1,3 +1,4 @@
+import { FOTAStatus } from '../@types/azure-device'
 import { toReportedWithReceivedAt } from './toReportedWithReceivedAt'
 
 describe('toReportedWithReceivedAt', () => {
@@ -18,10 +19,14 @@ describe('toReportedWithReceivedAt', () => {
 					nw: 'LAN',
 					modV: 'device-simulator',
 					brdV: 'device-simulator',
-					appV: '0.0.0-development',
 					iccid: '12345678901234567890',
 				},
 				ts: 1587480111020,
+			},
+			firmware: {
+				fwUpdateStatus: FOTAStatus.CURRENT,
+				currentFwVersion: '0.0.0-development',
+				pendingFwVersion: '',
 			},
 			roam: {
 				v: {
@@ -110,6 +115,18 @@ describe('toReportedWithReceivedAt', () => {
 						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 					},
 				},
+				firmware: {
+					$lastUpdated: '2020-11-23T11:04:00.8352873Z',
+					fwUpdateStatus: {
+						$lastUpdated: '2020-11-23T11:04:00.8352873Z',
+					},
+					currentFwVersion: {
+						$lastUpdated: '2020-11-23T11:04:00.8352873Z',
+					},
+					pendingFwVersion: {
+						$lastUpdated: '2020-11-23T11:04:00.8352873Z',
+					},
+				},
 			},
 			$version: 85,
 		})
@@ -135,7 +152,6 @@ describe('toReportedWithReceivedAt', () => {
 					nw: 'LAN',
 					modV: 'device-simulator',
 					brdV: 'device-simulator',
-					appV: '0.0.0-development',
 					iccid: '12345678901234567890',
 				},
 				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
@@ -143,6 +159,20 @@ describe('toReportedWithReceivedAt', () => {
 			ts: {
 				value: 1587480111020,
 				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
+			},
+		})
+		expect(r.firmware).toEqual({
+			fwUpdateStatus: {
+				value: FOTAStatus.CURRENT,
+				receivedAt: new Date('2020-11-23T11:04:00.8352873Z'),
+			},
+			currentFwVersion: {
+				value: '0.0.0-development',
+				receivedAt: new Date('2020-11-23T11:04:00.8352873Z'),
+			},
+			pendingFwVersion: {
+				value: '',
+				receivedAt: new Date('2020-11-23T11:04:00.8352873Z'),
 			},
 		})
 	})

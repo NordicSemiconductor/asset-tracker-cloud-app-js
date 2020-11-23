@@ -2,13 +2,9 @@ import {
 	DeviceTwinReported,
 	PropertyMetadata,
 	MakePropertyMetadata,
-	ReportedFOTAJobProgress,
+	AzureReportedState,
 } from '../@types/azure-device'
-import {
-	ReportedState,
-	MakeReceivedProperty,
-	DeviceConfig,
-} from '../@types/device-state'
+import { MakeReceivedProperty, DeviceConfig } from '../@types/device-state'
 
 export const toReceivedProps = <A extends { [key: string]: any }>(
 	v: A,
@@ -30,7 +26,7 @@ export const toReceivedProps = <A extends { [key: string]: any }>(
  */
 export const toReportedWithReceivedAt = (
 	reported: DeviceTwinReported,
-): ReportedState & { firmware?: ReportedFOTAJobProgress } => {
+): AzureReportedState => {
 	const { $metadata } = reported
 	return {
 		...(reported.cfg !== undefined && $metadata.cfg !== undefined
