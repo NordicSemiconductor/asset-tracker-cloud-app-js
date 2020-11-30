@@ -59,21 +59,22 @@ switch (cloudFlavour) {
 	default:
 		import('./aws/App')
 			.then((awsApp) => {
+				const [
+					timestreamDb,
+					timestreamTable,
+				] = process.env.REACT_APP_HISTORICALDATA_TABLE_INFO?.split('|') ?? [
+					'',
+					'',
+				]
 				launch(
 					awsApp.boot({
 						identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID ?? '',
 						region: process.env.REACT_APP_REGION ?? '',
 						userPoolId: process.env.REACT_APP_USER_POOL_ID ?? '',
 						userPoolClientId: process.env.REACT_APP_USER_POOL_CLIENT_ID ?? '',
-						athenaConfig: {
-							workGroup:
-								process.env.REACT_APP_HISTORICALDATA_WORKGROUP_NAME ?? '',
-							dataBase:
-								process.env.REACT_APP_HISTORICALDATA_DATABASE_NAME ?? '',
-							rawDataTable:
-								process.env.REACT_APP_HISTORICALDATA_TABLE_NAME ?? '',
-							bucketName:
-								process.env.REACT_APP_HISTORICAL_DATA_BUCKET_NAME ?? '',
+						timestreamConfig: {
+							db: timestreamDb,
+							table: timestreamTable,
 						},
 						mqttEndpoint: process.env.REACT_APP_MQTT_ENDPOINT ?? '',
 						userIotPolicyArn: process.env.REACT_APP_USER_IOT_POLICY_ARN ?? '',

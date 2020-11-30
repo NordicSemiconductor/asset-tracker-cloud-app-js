@@ -1,20 +1,20 @@
 import { Location, CellLocation } from '../../Map/Map'
 import React, { useState, useEffect } from 'react'
-import { AthenaContextType } from '../App'
+import { TimestreamQueryContextType } from '../App'
 import { geolocateCell } from '../geolocateCell'
 import { isRight } from 'fp-ts/lib/Either'
 import { CatInfo } from './Cat'
 import { ThingState } from '../../@types/aws-device'
 import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
-import { query, parseResult } from '@bifravst/athena-helpers'
+import { parseResult } from '@bifravst/timestream-helpers'
 
 export const CatMap = ({
-	athenaContext,
+	timestreamQueryContext,
 	cat,
 	state: { reported },
 	geolocationApiEndpoint,
 }: {
-	athenaContext: AthenaContextType
+	timestreamQueryContext: TimestreamQueryContextType
 	cat: CatInfo
 	state: ThingState
 	geolocationApiEndpoint: string
@@ -62,29 +62,48 @@ export const CatMap = ({
 			deviceLocation={deviceLocation}
 			cellLocation={cellLocation}
 			cat={cat}
-			fetchHistory={async (numEntries) => {
-				const q = query({
-					WorkGroup: athenaContext.workGroup,
-					athena: athenaContext.athena,
-				})
-				return q({
-					QueryString: `SELECT reported.gps.ts as date, reported.gps.v.lat as lat, reported.gps.v.lng as lng FROM ${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${cat.id}' AND reported.gps IS NOT NULL AND reported.gps.v.lat IS NOT NULL AND reported.gps.v.lng IS NOT NULL ORDER BY reported.gps.ts DESC LIMIT ${numEntries}`,
-				}).then(async (ResultSet) => {
-					const data = parseResult({
-						ResultSet,
-						formatFields: {
-							lat: parseFloat,
-							lng: parseFloat,
-							date: (v) => new Date(v),
-						},
-						skip: 1,
+			fetchHistory={async (numEntries) =>
+				timestreamQueryContext.timestreamQuery
+					.query({
+						QueryString: `SELECT
+					array_agg(measure_value::double) AS values,
+					array_agg(measure_name) AS keys,
+					time AS date
+					FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
+					WHERE deviceId='${cat.id}' 
+					AND measureGroup IN (
+						-- Select the last 100 GPS measures
+						SELECT
+						measureGroup
+						FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
+						WHERE deviceId='${cat.id}' 
+						AND substr(measure_name, 1, 4) = 'gps.'
+						GROUP BY measureGroup, time
+						ORDER BY time DESC
+						LIMIT ${numEntries}
+					)
+					AND substr(measure_name, 1, 4) = 'gps.'
+					GROUP BY measureGroup, time
+					ORDER BY time DESC`,
 					})
-					return data.map(({ lat, lng, date }) => ({
-						position: { lat: lat as number, lng: lng as number },
-						ts: (date as unknown) as Date,
-					}))
-				})
-			}}
+					.promise()
+					.then((res) =>
+						parseResult<{
+							values: string[]
+							keys: string[]
+							date: Date
+						}>(res),
+					)
+					.then((data) =>
+						data.map(({ values, keys, date }) => ({
+							position: keys.reduce(
+								(obj, k, i) => ({ ...obj, [k]: values[i] }),
+								{} as { lat: number; lng: number },
+							),
+							ts: (date as unknown) as Date,
+						})),
+					)
+			}
 		/>
 	)
 }

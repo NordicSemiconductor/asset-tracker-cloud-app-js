@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import {
 	CredentialsConsumer,
 	IotConsumer,
-	AthenaConsumer,
+	TimestreamQueryConsumer,
 	StackConfigConsumer,
 } from '../App'
 import { Alert } from 'reactstrap'
@@ -49,8 +49,8 @@ export const CatActions = ({ catId }: { catId: string }) => {
 				fotaBucketName,
 				geolocationApiEndpoint,
 			}) => (
-				<AthenaConsumer>
-					{(athenaContext) => (
+				<TimestreamQueryConsumer>
+					{(timestreamQueryContext) => (
 						<CredentialsConsumer>
 							{(credentials) => (
 								<IotConsumer>
@@ -228,7 +228,9 @@ export const CatActions = ({ catId }: { catId: string }) => {
 															}}
 															catMap={(state) => (
 																<CatMap
-																	athenaContext={athenaContext}
+																	timestreamQueryContext={
+																		timestreamQueryContext
+																	}
 																	cat={cat}
 																	state={state}
 																	geolocationApiEndpoint={
@@ -241,18 +243,26 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																id={'cat:bat'}
 																title={<h3>{emojify('🔋 Battery')}</h3>}
 															>
-																<HistoricalDataLoader
-																	athenaContext={athenaContext}
+																<HistoricalDataLoader<{
+																	date: Date
+																	value: number
+																}>
+																	timestreamQueryContext={
+																		timestreamQueryContext
+																	}
 																	deviceId={catId}
-																	QueryString={`SELECT min(reported.bat.v) as value, CAST(date_format(timestamp, '%Y-%m-%d %H:00:00') AS TIMESTAMP) AS date FROM 
-			${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.bat IS NOT NULL GROUP BY CAST(date_format(timestamp, '%Y-%m-%d %H:00:00') AS TIMESTAMP) ORDER BY date DESC LIMIT 100`}
-																	formatFields={{
-																		value: (v) => parseInt(v, 10) / 1000,
-																		date: (v) => {
-																			const [d, t] = v.split(' ')
-																			return new Date(`${d}T${t}Z`)
-																		},
-																	}}
+																	QueryString={`
+																		SELECT
+																		bin(time, 1h) as date,
+																		MIN(
+																			measure_value::double
+																		) / 1000 AS value
+																		FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
+																		WHERE deviceId='${catId}' 
+																		AND measure_name='bat' 
+																		GROUP BY bin(time, 1h)
+																		ORDER BY bin(time, 1h)
+																		`}
 																>
 																	{({ data }) => (
 																		<HistoricalDataChart
@@ -267,16 +277,21 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																id={'cat:environment'}
 																title={<h3>{emojify('🌡️ Temperature')}</h3>}
 															>
-																<HistoricalDataLoader
-																	athenaContext={athenaContext}
+																<HistoricalDataLoader<{
+																	date: Date
+																	value: number
+																}>
+																	timestreamQueryContext={
+																		timestreamQueryContext
+																	}
 																	deviceId={catId}
-																	QueryString={`SELECT reported.env.v.temp AS value,
-																	date_format(timestamp, '%Y-%m-%dT%H:%i:%sZ') AS date FROM 
-			${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.env IS NOT NULL ORDER BY date DESC LIMIT 100`}
-																	formatFields={{
-																		value: parseFloat,
-																		date: (v) => new Date(v),
-																	}}
+																	QueryString={`SELECT
+																	time as date, measure_value::double AS value
+																	FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
+																	WHERE deviceId='${catId}' 
+																	AND measure_name='env.temp' 
+																	ORDER BY time DESC
+																	LIMIT 100`}
 																>
 																	{({ data }) => (
 																		<HistoricalDataChart
@@ -291,23 +306,24 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																id={'cat:act'}
 																title={<h3>{emojify('🏋️ Activity')}</h3>}
 															>
-																<HistoricalDataLoader
-																	athenaContext={athenaContext}
+																<HistoricalDataLoader<{
+																	date: Date
+																	value: number
+																}>
+																	timestreamQueryContext={
+																		timestreamQueryContext
+																	}
 																	deviceId={catId}
-																	formatFields={{
-																		value: ({
-																			x,
-																			y,
-																			z,
-																		}: {
-																			x: number
-																			y: number
-																			z: number
-																		}) =>
-																			Math.abs(x) + Math.abs(y) + Math.abs(z),
-																		date: (v) => new Date(v),
-																	}}
-																	QueryString={`SELECT reported.acc.ts as date, reported.acc.v as value FROM ${athenaContext.dataBase}.${athenaContext.rawDataTable} WHERE deviceId='${catId}' AND reported.acc IS NOT NULL ORDER BY reported.acc.ts DESC LIMIT 100`}
+																	QueryString={`
+																		SELECT
+																		SUM(measure_value::double) AS value,
+																		time AS date
+																		FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
+																		WHERE deviceId='${catId}' 
+																		AND measure_name IN ('acc.x', 'acc.y', 'acc.z')
+																		GROUP BY time
+																		ORDER BY time DESC
+																		LIMIT 100`}
 																>
 																	{({ data }) => (
 																		<HistoricalDataChart
@@ -322,20 +338,20 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																id={'cat:button'}
 																title={<h3>{emojify('🚨 Button')}</h3>}
 															>
-																<HistoricalDataLoader
-																	athenaContext={athenaContext}
+																<HistoricalDataLoader<{
+																	date: Date
+																	value: number
+																}>
+																	timestreamQueryContext={
+																		timestreamQueryContext
+																	}
 																	deviceId={catId}
-																	formatFields={{
-																		date: (v) => new Date(v),
-																	}}
 																	QueryString={`		
-																	SELECT message.btn.v AS value,
-																		message.btn.ts AS date,
-																		timestamp
-																	FROM ${athenaContext.dataBase}.${athenaContext.rawDataTable}
-																	WHERE deviceid = '${catId}'
-																	AND message.btn IS NOT NULL
-																	ORDER BY timestamp DESC
+																	SELECT measure_value::double AS value, time as date
+																	FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
+																	WHERE deviceId='${catId}' 
+																	AND measure_name='btn'
+																	ORDER BY time DESC
 																	LIMIT 10
 																	`}
 																>
@@ -370,7 +386,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 							)}
 						</CredentialsConsumer>
 					)}
-				</AthenaConsumer>
+				</TimestreamQueryConsumer>
 			)}
 		</StackConfigConsumer>
 	)

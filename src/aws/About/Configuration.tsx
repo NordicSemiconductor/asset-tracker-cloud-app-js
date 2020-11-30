@@ -34,22 +34,12 @@ export const Configuration = ({
 				<dt>Historical Data Storage</dt>
 				<dd>
 					<a
-						href={`https://s3.console.aws.amazon.com/s3/buckets/${config.athenaConfig.bucketName}/?region=${config.region}&tab=overview`}
+						href={`https://${config.region}.console.aws.amazon.com/timestream/home?region=${config.region}#databases/${config.timestreamConfig.db}/tables/${config.timestreamConfig.table}`}
 					>
-						<code>{config.athenaConfig.bucketName}</code>
+						<code>
+							{config.timestreamConfig.db}.{config.timestreamConfig.table}
+						</code>
 					</a>
-				</dd>
-				<dt>Athena Work Group</dt>
-				<dd>
-					<code>{config.athenaConfig.workGroup}</code>
-				</dd>
-				<dt>Athena Database</dt>
-				<dd>
-					<code>{config.athenaConfig.dataBase}</code>
-				</dd>
-				<dt>Athena Table</dt>
-				<dd>
-					<code>{config.athenaConfig.rawDataTable}</code>
 				</dd>
 				<dt>Avatar Storage</dt>
 				<dd>

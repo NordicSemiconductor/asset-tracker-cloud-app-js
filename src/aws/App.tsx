@@ -3,7 +3,7 @@ import { CognitoUser } from 'amazon-cognito-identity-js'
 import Amplify, { Auth } from 'aws-amplify'
 import { withAuthenticator } from 'aws-amplify-react'
 import { Iot, IotData } from 'aws-sdk'
-import Athena from 'aws-sdk/clients/athena'
+import TimestreamQuery from 'aws-sdk/clients/timestreamquery'
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 import { CatPage } from './Cat/Page'
@@ -17,11 +17,10 @@ import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
 
 import '@aws-amplify/ui/dist/style.css'
 
-export type AthenaContextType = {
-	athena: Athena
-	workGroup: string
-	dataBase: string
-	rawDataTable: string
+export type TimestreamQueryContextType = {
+	timestreamQuery: TimestreamQuery
+	db: string
+	table: string
 }
 
 export type StackConfigContextType = {
@@ -32,11 +31,9 @@ export type StackConfigContextType = {
 	userPoolId: string
 	userPoolClientId: string
 	mqttEndpoint: string
-	athenaConfig: {
-		workGroup: string
-		dataBase: string
-		rawDataTable: string
-		bucketName: string
+	timestreamConfig: {
+		db: string
+		table: string
 	}
 }
 
@@ -46,7 +43,7 @@ export const boot = ({
 	region,
 	userPoolId,
 	userPoolClientId,
-	athenaConfig,
+	timestreamConfig,
 	mqttEndpoint,
 	avatarBucketName,
 	fotaBucketName,
@@ -57,11 +54,9 @@ export const boot = ({
 	region: string
 	userPoolId: string
 	userPoolClientId: string
-	athenaConfig: {
-		workGroup: string
-		dataBase: string
-		rawDataTable: string
-		bucketName: string
+	timestreamConfig: {
+		db: string
+		table: string
 	}
 	mqttEndpoint: string
 	avatarBucketName: string
@@ -86,7 +81,10 @@ export const boot = ({
 			mqttEndpoint: string
 			region: string
 		}>()
-		const [athenaContext, setAthenaContext] = useState<AthenaContextType>()
+		const [
+			timestreamQueryContext,
+			setTimestreamQueryContext,
+		] = useState<TimestreamQueryContextType>()
 		useEffect(() => {
 			Auth.currentCredentials()
 				.then(async (creds) => {
@@ -107,9 +105,9 @@ export const boot = ({
 						mqttEndpoint,
 						region,
 					})
-					setAthenaContext({
-						athena: new Athena({ region, credentials: c }),
-						...athenaConfig,
+					setTimestreamQueryContext({
+						timestreamQuery: new TimestreamQuery({ region, credentials: c }),
+						...timestreamConfig,
 					})
 					// Attach Iot Policy to user
 					await attachIotPolicyToIdentity({
@@ -140,7 +138,7 @@ export const boot = ({
 						}}
 					/>
 					<Route exact path="/" render={() => <Redirect to="/cats" />} />
-					{(credentials && iot && athenaContext && (
+					{(credentials && iot && timestreamQueryContext && (
 						<StackConfigContext.Provider
 							value={{
 								region,
@@ -150,17 +148,19 @@ export const boot = ({
 								userPoolId,
 								userPoolClientId,
 								mqttEndpoint,
-								athenaConfig,
+								timestreamConfig,
 							}}
 						>
 							<CredentialsContext.Provider value={credentials}>
 								<IotContext.Provider value={iot}>
-									<AthenaContext.Provider value={athenaContext}>
+									<TimestreamQueryContext.Provider
+										value={timestreamQueryContext}
+									>
 										<Route exact path="/about" component={AboutPage} />
 										<Route exact path="/cats" component={CatsPage} />
 										<Route exact path="/cats-on-map" component={CatsMapPage} />
 										<Route exact path="/cat/:catId" component={CatPage} />
-									</AthenaContext.Provider>
+									</TimestreamQueryContext.Provider>
 								</IotContext.Provider>
 							</CredentialsContext.Provider>
 						</StackConfigContext.Provider>
@@ -201,13 +201,12 @@ const IotContext = React.createContext<{
 })
 export const IotConsumer = IotContext.Consumer
 
-const AthenaContext = React.createContext<AthenaContextType>({
-	athena: new Athena({ region: 'us-east-1' }),
-	workGroup: '',
-	dataBase: '',
-	rawDataTable: '',
+const TimestreamQueryContext = React.createContext<TimestreamQueryContextType>({
+	timestreamQuery: new TimestreamQuery({ region: 'us-east-1' }),
+	db: '',
+	table: '',
 })
-export const AthenaConsumer = AthenaContext.Consumer
+export const TimestreamQueryConsumer = TimestreamQueryContext.Consumer
 
 const StackConfigContext = React.createContext<StackConfigContextType>({
 	region: 'us-east-1',
@@ -217,11 +216,9 @@ const StackConfigContext = React.createContext<StackConfigContextType>({
 	userPoolId: '',
 	userPoolClientId: '',
 	mqttEndpoint: '',
-	athenaConfig: {
-		workGroup: '',
-		dataBase: '',
-		rawDataTable: '',
-		bucketName: '',
+	timestreamConfig: {
+		db: '',
+		table: '',
 	},
 })
 export const StackConfigConsumer = StackConfigContext.Consumer

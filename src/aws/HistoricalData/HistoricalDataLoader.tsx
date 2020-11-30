@@ -1,48 +1,36 @@
 import React, { useEffect, useState } from 'react'
-import { query, parseResult, FieldFormatters } from '@bifravst/athena-helpers'
+import { parseResult } from '@bifravst/timestream-helpers'
 import { Loading } from '../../Loading/Loading'
 import { DisplayError as ShowError } from '../../Error/Error'
-import PQueue from 'p-queue'
-import { AthenaContextType } from '../App'
+import { TimestreamQueryContextType } from '../App'
 
-const queue = new PQueue({ concurrency: 1 })
-
-export const HistoricalDataLoader = ({
-	athenaContext,
+export const HistoricalDataLoader = <T extends Record<string, any>>({
+	timestreamQueryContext,
 	deviceId,
 	children,
 	QueryString,
-	formatFields,
 	loading,
 }: {
-	athenaContext: AthenaContextType
+	timestreamQueryContext: TimestreamQueryContextType
 	deviceId: string
 	QueryString: string
-	formatFields?: FieldFormatters
 	loading?: React.ReactElement<any>
-	children: (args: {
-		data: { date: Date; value: number }[] // FIXME: should be generic
-	}) => React.ReactElement<any>
+	children: (args: { data: T[] }) => React.ReactElement<any>
 }) => {
-	const [data, setData] = useState<{ date: Date; value: number }[]>()
+	const [data, setData] = useState<T[]>()
 	const [error, setError] = useState<Error>()
 
 	useEffect(() => {
-		const { athena, workGroup } = athenaContext
+		const { timestreamQuery } = timestreamQueryContext
 		let removed = false
-		const q = query({
-			WorkGroup: workGroup,
-			athena,
-			debugLog: (...args: any) => {
-				console.debug('[athena]', ...args)
-			},
-			errorLog: (...args: any) => {
-				console.error('[athena]', ...args)
-			},
-		})
-		queue
-			.add(async () => q({ QueryString }))
-			.then(async (ResultSet) => {
+
+		timestreamQuery
+			.query({
+				QueryString,
+			})
+			.promise()
+			.then(parseResult)
+			.then((data) => {
 				if (removed) {
 					console.debug(
 						'[Historical Data]',
@@ -50,19 +38,15 @@ export const HistoricalDataLoader = ({
 					)
 					return
 				}
-				const data = parseResult({
-					ResultSet,
-					formatFields,
-					skip: 1,
-				})
 				console.debug('[Historical Data]', data)
-				setData((data as unknown) as { date: Date; value: number }[])
+				setData((data as unknown) as T[])
 			})
 			.catch(setError)
+
 		return () => {
 			removed = true
 		}
-	}, [athenaContext, deviceId, QueryString, formatFields])
+	}, [timestreamQueryContext, deviceId, QueryString])
 
 	return (
 		<>

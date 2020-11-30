@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import {
 	IotConsumer,
 	CredentialsConsumer,
-	AthenaConsumer,
-	AthenaContextType,
+	TimestreamQueryConsumer,
+	TimestreamQueryContextType,
 } from '../App'
 import { Card, CardBody, CardHeader } from 'reactstrap'
 import { Iot } from 'aws-sdk'
@@ -12,7 +12,7 @@ import { DisplayError } from '../../Error/Error'
 import { connectAndListenForMessages } from '../connectAndListenForMessages'
 import { ICredentials } from '@aws-amplify/core'
 import { device } from 'aws-iot-device-sdk'
-import { query, parseResult } from '@bifravst/athena-helpers'
+import { parseResult } from '@bifravst/timestream-helpers'
 import {
 	ButtonWarnings,
 	DeviceDateMap,
@@ -23,7 +23,7 @@ import { CatList } from '../../CatList/CatList'
 const ListCats = ({
 	iot,
 	credentials,
-	athenaContext,
+	timestreamQueryContext,
 	mqttEndpoint,
 	region,
 	showButtonWarning,
@@ -32,7 +32,7 @@ const ListCats = ({
 }: {
 	iot: Iot
 	credentials: ICredentials
-	athenaContext: AthenaContextType
+	timestreamQueryContext: TimestreamQueryContextType
 	region: string
 	mqttEndpoint: string
 } & ButtonWarningProps) => {
@@ -101,45 +101,36 @@ const ListCats = ({
 	// Fetch historical button presses
 	useEffect(() => {
 		let isCancelled = false
-		const { athena, workGroup, dataBase, rawDataTable } = athenaContext
-		query({
-			WorkGroup: workGroup,
-			athena,
-			debugLog: (...args: any) => {
-				console.debug('[athena]', ...args)
-			},
-			errorLog: (...args: any) => {
-				console.error('[athena]', ...args)
-			},
-		})({
-			QueryString: `		
-				SELECT m.message.btn.v as button, 
-						m.message.btn.ts as ts,
-						m.timestamp,
-						m.deviceid
-				FROM (
-					SELECT deviceid,
-						MAX(timestamp) AS max_timestamp
-				FROM ${dataBase}.${rawDataTable} t
-				WHERE t.message.btn IS NOT NULL
+		const { timestreamQuery, db, table } = timestreamQueryContext
+		timestreamQuery
+			.query({
+				QueryString: `SELECT
+			m.measure_value::double as button, 
+			m.time as ts,
+			m.deviceId
+			FROM (
+				SELECT deviceId,
+				MAX(time) AS max_time
+				FROM "${db}"."${table}" 
+				WHERE measure_name='btn'
 				GROUP BY 1 
-					) t JOIN ${dataBase}.${rawDataTable} m ON m.timestamp = t.max_timestamp AND m.deviceid = t.deviceid
-				`,
-		})
-			.then(async (ResultSet) => {
+			) t JOIN "${db}"."${table}" m ON m.time = t.max_time AND m.deviceId = t.deviceId`,
+			})
+			.promise()
+			.then((result) =>
+				parseResult<{
+					button: number
+					ts: Date
+					deviceId: string
+				}>(result),
+			)
+			.then((data) => {
 				if (isCancelled) return
-				const data = parseResult({
-					ResultSet,
-					skip: 1,
-					formatFields: {
-						ts: (n) => new Date(n),
-					},
-				})
 				setButtonPresses((presses) => ({
 					...data.reduce(
-						(p, { deviceid, ts }) => ({
+						(p, { deviceId, ts }) => ({
 							...p,
-							[deviceid as string]: (ts as unknown) as Date,
+							[deviceId]: (ts as unknown) as Date,
 						}),
 						{} as DeviceDateMap,
 					),
@@ -153,7 +144,7 @@ const ListCats = ({
 		return () => {
 			isCancelled = true
 		}
-	}, [athenaContext, setButtonPresses])
+	}, [timestreamQueryContext, setButtonPresses])
 
 	if (loading || error)
 		return (
@@ -189,8 +180,8 @@ const ListCats = ({
 }
 
 export const List = () => (
-	<AthenaConsumer>
-		{(athenaContext) => (
+	<TimestreamQueryConsumer>
+		{(timestreamQueryContext) => (
 			<CredentialsConsumer>
 				{(credentials) => (
 					<IotConsumer>
@@ -199,7 +190,7 @@ export const List = () => (
 								{(buttonWarningProps) => (
 									<ListCats
 										{...{
-											athenaContext,
+											timestreamQueryContext,
 											iot,
 											credentials,
 											mqttEndpoint,
@@ -214,5 +205,5 @@ export const List = () => (
 				)}
 			</CredentialsConsumer>
 		)}
-	</AthenaConsumer>
+	</TimestreamQueryConsumer>
 )
