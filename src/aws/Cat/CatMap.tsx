@@ -52,6 +52,10 @@ export const CatMap = ({
 			position: {
 				lat: reported.gps.v.lat,
 				lng: reported.gps.v.lng,
+				accuracy: reported.gps.v.acc,
+				altitude: reported.gps.v.alt,
+				heading: reported.gps.v.hdg,
+				speed: reported.gps.v.spd,
 			},
 		}
 	}
@@ -90,13 +94,31 @@ export const CatMap = ({
 				ORDER BY time DESC`,
 					)
 					.then((data) =>
-						data.map(({ objectValues, objectKeys, date }) => ({
-							position: objectKeys.reduce(
+						data.map(({ objectValues, objectKeys, date }) => {
+							const pos = objectKeys.reduce(
 								(obj, k, i) => ({ ...obj, [k.split('.')[1]]: objectValues[i] }),
-								{} as { lat: number; lng: number },
-							),
-							ts: (date as unknown) as Date,
-						})),
+								{} as {
+									lat: number
+									lng: number
+									acc: number
+									alt: number
+									hdg: number
+									spd: number
+								},
+							)
+							const l: Location = {
+								position: {
+									lat: pos.lat,
+									lng: pos.lng,
+									accuracy: pos.acc,
+									heading: pos.hdg,
+									altitude: pos.alt,
+									speed: pos.spd,
+								},
+								ts: (date as unknown) as Date,
+							}
+							return l
+						}),
 					)
 			}
 		/>

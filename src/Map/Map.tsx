@@ -14,6 +14,7 @@ import { NoMap } from './NoMap'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
 import { FormGroup } from 'reactstrap'
+import { formatDistanceToNow } from 'date-fns'
 
 const MapContainerContainer = styled.div`
 	> .leaflet-container {
@@ -46,10 +47,32 @@ export const SettingsFormGroup = styled(FormGroup)`
 	}
 `
 
+const HistoryInfo = styled.dl`
+	display: grid;
+	grid-template: auto / 1fr 2fr;
+	dt,
+	dd {
+		padding: 0;
+		margin: 0;
+		border-bottom: 1px solid #f0f0f0;
+	}
+	dt {
+		padding-right: 1rem;
+	}
+	dt {
+		flex-grow: 1;
+	}
+`
+
 type Position = { lat: number; lng: number }
 
 export type Location = {
-	position: Position & { accuracy?: number; heading?: number }
+	position: Position & {
+		accuracy?: number
+		heading?: number
+		altitude?: number
+		speed?: number
+	}
 	ts: Date
 }
 
@@ -68,6 +91,39 @@ const EventHandler = ({
 	})
 	return null
 }
+
+const HeadingMarker = ({
+	heading,
+	position,
+	mapZoom,
+	color,
+}: {
+	position: Position
+	heading: number
+	mapZoom: number
+	color?: string
+}) => (
+	<MapConsumer key={mapZoom}>
+		{(map) => {
+			const { x, y } = map.project(position, mapZoom)
+			const endpoint = map.unproject(
+				[
+					x + mapZoom * 3 * Math.cos((((heading - 90) % 360) * Math.PI) / 180),
+					y + mapZoom * 3 * Math.sin((((heading - 90) % 360) * Math.PI) / 180),
+				],
+				mapZoom,
+			)
+			return (
+				<Polyline
+					positions={[position, endpoint]}
+					weight={mapZoom > 16 ? 1 : 2}
+					lineCap={'round'}
+					color={color ?? '#000000'}
+				/>
+			)
+		}}
+	</MapConsumer>
+)
 
 export const Map = ({
 	deviceLocation,
@@ -144,64 +200,69 @@ export const Map = ({
 					/>
 				)}
 				{deviceLocation?.position.heading !== undefined && (
-					<MapConsumer key={mapZoom}>
-						{(map) => {
-							const { x, y } = map.project(deviceLocation.position, mapZoom)
-							const endpoint = map.unproject(
-								[
-									x +
-										mapZoom *
-											3 *
-											Math.cos(
-												((((deviceLocation?.position.heading ?? 0) - 90) %
-													360) *
-													Math.PI) /
-													180,
-											),
-									y +
-										mapZoom *
-											3 *
-											Math.sin(
-												((((deviceLocation?.position.heading ?? 0) - 90) %
-													360) *
-													Math.PI) /
-													180,
-											),
-								],
-								mapZoom,
-							)
-							return (
-								<Polyline
-									positions={[deviceLocation.position, endpoint]}
-									weight={mapZoom > 16 ? 1 : 2}
-									lineCap={'round'}
-									color={'#000000'}
-								/>
-							)
-						}}
-					</MapConsumer>
+					<HeadingMarker
+						position={deviceLocation.position}
+						heading={deviceLocation.position.heading}
+						mapZoom={mapZoom}
+					/>
 				)}
 				{deviceLocation &&
-					history?.map(({ position: { lat, lng } }, k) => {
-						const alpha = Math.round((1 - k / history.length) * 255).toString(
-							16,
-						)
-						const color = `#1f56d2${alpha}`
-						return (
-							<React.Fragment key={`history-${k}`}>
-								<Circle center={{ lat, lng }} radius={1} color={color} />
-								{k > 0 && (
-									<Polyline
-										positions={[history[k - 1].position, { lat, lng }]}
-										weight={mapZoom > 16 ? 1 : 2}
-										lineCap={'round'}
-										color={color}
-										dashArray={'10'}
-									/>
-								)}
-							</React.Fragment>
-						)
-					})}
+					history?.map(
+						({ position: { lat, lng, accuracy, heading, speed }, ts }, k) => {
+							const alpha = Math.round((1 - k / history.length) * 255).toString(
+								16,
+							)
+							const color = `#1f56d2${alpha}`
+							return (
+								<React.Fragment key={`history-${k}`}>
+									<Circle center={{ lat, lng }} radius={1} color={color} />
+									{k > 0 && (
+										<Polyline
+											positions={[history[k - 1].position, { lat, lng }]}
+											weight={mapZoom > 16 ? 1 : 2}
+											lineCap={'round'}
+											color={color}
+											dashArray={'10'}
+										/>
+									)}
+									{heading !== undefined && (
+										<HeadingMarker
+											position={{ lat, lng }}
+											heading={heading}
+											mapZoom={mapZoom}
+											color={'#00000080'}
+										/>
+									)}
+									<Circle
+										center={{ lat, lng }}
+										radius={16}
+										fillColor={'#826717'}
+										stroke={false}
+									>
+										<Popup position={{ lat, lng }}>
+											<HistoryInfo>
+												<dt>Time</dt>
+												<dd>
+													<time dateTime={new Date(ts).toISOString()}>
+														{formatDistanceToNow(ts, {
+															includeSeconds: true,
+															addSuffix: true,
+														})}
+													</time>
+												</dd>
+												<dt>Accuracy</dt>
+												<dd>{accuracy} m</dd>
+												<dt>Speed</dt>
+												<dd>{speed} m/s</dd>
+												<dt>Heading</dt>
+												<dd>{heading}°</dd>
+											</HistoryInfo>
+										</Popup>
+									</Circle>
+								</React.Fragment>
+							)
+						},
+					)}
 			</MapContainer>
 		</MapContainerContainer>
 	)
