@@ -251,18 +251,18 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		timestreamQueryContext
 																	}
 																	deviceId={catId}
-																	QueryString={`
-																		SELECT
-																		bin(time, 1h) as date,
-																		MIN(
-																			measure_value::double
-																		) / 1000 AS value
-																		FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
-																		WHERE deviceId='${catId}' 
-																		AND measure_name='bat' 
-																		GROUP BY bin(time, 1h)
-																		ORDER BY bin(time, 1h)
-																		`}
+																	QueryString={(table) => `
+																	SELECT
+																	bin(time, 1h) as date,
+																	MIN(
+																		measure_value::double
+																	) / 1000 AS value
+																	FROM ${table}
+																	WHERE deviceId='${catId}' 
+																	AND measure_name='bat' 
+																	GROUP BY bin(time, 1h)
+																	ORDER BY bin(time, 1h)
+																	`}
 																>
 																	{({ data }) => (
 																		<HistoricalDataChart
@@ -285,9 +285,9 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		timestreamQueryContext
 																	}
 																	deviceId={catId}
-																	QueryString={`SELECT
+																	QueryString={(table) => `SELECT
 																	time as date, measure_value::double AS value
-																	FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
+																	FROM ${table}
 																	WHERE deviceId='${catId}' 
 																	AND measure_name='env.temp' 
 																	ORDER BY time DESC
@@ -314,11 +314,11 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		timestreamQueryContext
 																	}
 																	deviceId={catId}
-																	QueryString={`
+																	QueryString={(table) => `
 																		SELECT
 																		SUM(measure_value::double) AS value,
 																		time AS date
-																		FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
+																		FROM ${table}
 																		WHERE deviceId='${catId}' 
 																		AND measure_name IN ('acc.x', 'acc.y', 'acc.z')
 																		GROUP BY time
@@ -346,9 +346,9 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		timestreamQueryContext
 																	}
 																	deviceId={catId}
-																	QueryString={`		
+																	QueryString={(table) => `		
 																	SELECT measure_value::double AS value, time as date
-																	FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
+																	FROM ${table}
 																	WHERE deviceId='${catId}' 
 																	AND measure_name='btn'
 																	ORDER BY time DESC

@@ -12,7 +12,6 @@ import { DisplayError } from '../../Error/Error'
 import { connectAndListenForMessages } from '../connectAndListenForMessages'
 import { ICredentials } from '@aws-amplify/core'
 import { device } from 'aws-iot-device-sdk'
-import { parseResult } from '@bifravst/timestream-helpers'
 import {
 	ButtonWarnings,
 	DeviceDateMap,
@@ -101,28 +100,23 @@ const ListCats = ({
 	// Fetch historical button presses
 	useEffect(() => {
 		let isCancelled = false
-		const { timestreamQuery, db, table } = timestreamQueryContext
-		timestreamQuery
-			.query({
-				QueryString: `SELECT
+		timestreamQueryContext
+			.query<{
+				button: number
+				ts: Date
+				deviceId: string
+			}>(
+				(table) => `SELECT
 			m.measure_value::double as button, 
 			m.time as ts,
 			m.deviceId
 			FROM (
 				SELECT deviceId,
 				MAX(time) AS max_time
-				FROM "${db}"."${table}" 
+				FROM ${table}
 				WHERE measure_name='btn'
 				GROUP BY 1 
-			) t JOIN "${db}"."${table}" m ON m.time = t.max_time AND m.deviceId = t.deviceId`,
-			})
-			.promise()
-			.then((result) =>
-				parseResult<{
-					button: number
-					ts: Date
-					deviceId: string
-				}>(result),
+			) t JOIN ${table} m ON m.time = t.max_time AND m.deviceId = t.deviceId`,
 			)
 			.then((data) => {
 				if (isCancelled) return

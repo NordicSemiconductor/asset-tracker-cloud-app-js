@@ -6,7 +6,6 @@ import { isRight } from 'fp-ts/lib/Either'
 import { CatInfo } from './Cat'
 import { ThingState } from '../../@types/aws-device'
 import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
-import { parseResult } from '@bifravst/timestream-helpers'
 
 export const CatMap = ({
 	timestreamQueryContext,
@@ -63,41 +62,37 @@ export const CatMap = ({
 			cellLocation={cellLocation}
 			cat={cat}
 			fetchHistory={async (numEntries) =>
-				timestreamQueryContext.timestreamQuery
-					.query({
-						QueryString: `SELECT
-					array_agg(measure_value::double) AS values,
-					array_agg(measure_name) AS keys,
-					time AS date
-					FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
+				timestreamQueryContext
+					.query<{
+						objectValues: string[]
+						objectKeys: string[]
+						date: Date
+					}>(
+						(table) => `SELECT
+				array_agg(measure_value::double) AS objectValues,
+				array_agg(measure_name) AS objectKeys,
+				time AS date
+				FROM ${table}
+				WHERE deviceId='${cat.id}' 
+				AND measureGroup IN (
+					-- Select the last 100 GPS measures
+					SELECT
+					measureGroup
+					FROM ${table}
 					WHERE deviceId='${cat.id}' 
-					AND measureGroup IN (
-						-- Select the last 100 GPS measures
-						SELECT
-						measureGroup
-						FROM "${timestreamQueryContext.db}"."${timestreamQueryContext.table}" 
-						WHERE deviceId='${cat.id}' 
-						AND substr(measure_name, 1, 4) = 'gps.'
-						GROUP BY measureGroup, time
-						ORDER BY time DESC
-						LIMIT ${numEntries}
-					)
 					AND substr(measure_name, 1, 4) = 'gps.'
 					GROUP BY measureGroup, time
-					ORDER BY time DESC`,
-					})
-					.promise()
-					.then((res) =>
-						parseResult<{
-							values: string[]
-							keys: string[]
-							date: Date
-						}>(res),
+					ORDER BY time DESC
+					LIMIT ${numEntries}
+				)
+				AND substr(measure_name, 1, 4) = 'gps.'
+				GROUP BY measureGroup, time
+				ORDER BY time DESC`,
 					)
 					.then((data) =>
-						data.map(({ values, keys, date }) => ({
-							position: keys.reduce(
-								(obj, k, i) => ({ ...obj, [k]: values[i] }),
+						data.map(({ objectValues, objectKeys, date }) => ({
+							position: objectKeys.reduce(
+								(obj, k, i) => ({ ...obj, [k.split('.')[1]]: objectValues[i] }),
 								{} as { lat: number; lng: number },
 							),
 							ts: (date as unknown) as Date,

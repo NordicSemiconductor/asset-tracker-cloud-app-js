@@ -16,11 +16,12 @@ import { AboutPage } from './About/Page'
 import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
 
 import '@aws-amplify/ui/dist/style.css'
+import { parseResult } from '@bifravst/timestream-helpers'
 
 export type TimestreamQueryContextType = {
-	timestreamQuery: TimestreamQuery
-	db: string
-	table: string
+	query: <Result extends Record<string, any>>(
+		fn: (table: string) => string,
+	) => Promise<Result[]>
 }
 
 export type StackConfigContextType = {
@@ -105,9 +106,51 @@ export const boot = ({
 						mqttEndpoint,
 						region,
 					})
+					const timestreamQuery = new TimestreamQuery({
+						region,
+						credentials: c,
+					})
 					setTimestreamQueryContext({
-						timestreamQuery: new TimestreamQuery({ region, credentials: c }),
-						...timestreamConfig,
+						query: async <Result extends Record<string, any>>(
+							queryStringFn: (table: string) => string,
+						) => {
+							const QueryString = queryStringFn(
+								`"${timestreamConfig.db}"."${timestreamConfig.table}"`,
+							)
+							return timestreamQuery
+								.query({ QueryString })
+								.promise()
+								.then((res) => parseResult<Result>(res))
+								.then((result) => {
+									console.log({
+										timestreamQuery: QueryString,
+										result,
+									})
+									return result
+								})
+								.catch((error) => {
+									// Highlight error
+									const rx = /The query syntax is invalid at line ([0-9]+):([0-9]+)/
+									const m = rx.exec(error.message)
+									if (m) {
+										const lines = QueryString.split('\n')
+										const line = parseInt(m[1], 10)
+										const col = parseInt(m[2], 10)
+										const indent = (s: string) => `   ${s}`
+										console.error({
+											timestreamQuery: [
+												...lines.slice(0, line).map(indent),
+												`-- ${' '.repeat(col - 1)}^`,
+												...lines.slice(line).map(indent),
+											].join('\n'),
+											error,
+										})
+									} else {
+										console.error({ timestreamQuery: QueryString, error })
+									}
+									throw error
+								})
+						},
 					})
 					// Attach Iot Policy to user
 					await attachIotPolicyToIdentity({
@@ -202,9 +245,7 @@ const IotContext = React.createContext<{
 export const IotConsumer = IotContext.Consumer
 
 const TimestreamQueryContext = React.createContext<TimestreamQueryContextType>({
-	timestreamQuery: new TimestreamQuery({ region: 'us-east-1' }),
-	db: '',
-	table: '',
+	query: async () => Promise.resolve<any>(undefined),
 })
 export const TimestreamQueryConsumer = TimestreamQueryContext.Consumer
 

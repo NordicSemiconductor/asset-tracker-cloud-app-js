@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { parseResult } from '@bifravst/timestream-helpers'
 import { Loading } from '../../Loading/Loading'
 import { DisplayError as ShowError } from '../../Error/Error'
 import { TimestreamQueryContextType } from '../App'
@@ -13,7 +12,7 @@ export const HistoricalDataLoader = <T extends Record<string, any>>({
 }: {
 	timestreamQueryContext: TimestreamQueryContextType
 	deviceId: string
-	QueryString: string
+	QueryString: Parameters<TimestreamQueryContextType['query']>[0]
 	loading?: React.ReactElement<any>
 	children: (args: { data: T[] }) => React.ReactElement<any>
 }) => {
@@ -21,15 +20,10 @@ export const HistoricalDataLoader = <T extends Record<string, any>>({
 	const [error, setError] = useState<Error>()
 
 	useEffect(() => {
-		const { timestreamQuery } = timestreamQueryContext
 		let removed = false
 
-		timestreamQuery
-			.query({
-				QueryString,
-			})
-			.promise()
-			.then(parseResult)
+		timestreamQueryContext
+			.query<T>(QueryString)
 			.then((data) => {
 				if (removed) {
 					console.debug(
