@@ -15,6 +15,7 @@ import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
 import { FormGroup } from 'reactstrap'
 import { formatDistanceToNow } from 'date-fns'
+import { SignalQuality } from '../ConnectionInformation/ConnectionInformation'
 
 const MapContainerContainer = styled.div`
 	> .leaflet-container {
@@ -81,6 +82,17 @@ export type CellLocation = {
 	ts: Date
 }
 
+export type Roaming = {
+	roaming: {
+		mccmnc: number
+		rsrp: number
+		cell: number
+		area: number
+		ip: string
+	}
+	ts: Date
+}
+
 const EventHandler = ({
 	onZoomEnd,
 }: {
@@ -134,7 +146,10 @@ export const Map = ({
 	deviceLocation?: Location
 	cellLocation?: CellLocation
 	label: string
-	history?: Location[]
+	history?: {
+		location: Location
+		roaming?: Roaming
+	}[]
 }) => {
 	let zoom = 13
 	const userZoom = window.localStorage.getItem('bifravst:zoom')
@@ -208,7 +223,16 @@ export const Map = ({
 				)}
 				{deviceLocation &&
 					history?.map(
-						({ position: { lat, lng, accuracy, heading, speed }, ts }, k) => {
+						(
+							{
+								location: {
+									position: { lat, lng, accuracy, heading, speed },
+									ts,
+								},
+								roaming,
+							},
+							k,
+						) => {
 							const alpha = Math.round((1 - k / history.length) * 255).toString(
 								16,
 							)
@@ -218,7 +242,10 @@ export const Map = ({
 									<Circle center={{ lat, lng }} radius={1} color={color} />
 									{k > 0 && (
 										<Polyline
-											positions={[history[k - 1].position, { lat, lng }]}
+											positions={[
+												history[k - 1].location.position,
+												{ lat, lng },
+											]}
 											weight={mapZoom > 16 ? 1 : 2}
 											lineCap={'round'}
 											color={color}
@@ -241,6 +268,12 @@ export const Map = ({
 									>
 										<Popup position={{ lat, lng }}>
 											<HistoryInfo>
+												<dt>Accuracy</dt>
+												<dd>{accuracy} m</dd>
+												<dt>Speed</dt>
+												<dd>{speed} m/s</dd>
+												<dt>Heading</dt>
+												<dd>{heading}°</dd>
 												<dt>Time</dt>
 												<dd>
 													<time dateTime={new Date(ts).toISOString()}>
@@ -250,13 +283,36 @@ export const Map = ({
 														})}
 													</time>
 												</dd>
-												<dt>Accuracy</dt>
-												<dd>{accuracy} m</dd>
-												<dt>Speed</dt>
-												<dd>{speed} m/s</dd>
-												<dt>Heading</dt>
-												<dd>{heading}°</dd>
 											</HistoryInfo>
+											{roaming !== undefined && (
+												<>
+													<HistoryInfo>
+														<dt>Connection</dt>
+														<dd style={{ textAlign: 'right' }}>
+															<SignalQuality rsrp={roaming.roaming.rsrp} />
+														</dd>
+														<dt>MCC/MNC</dt>
+														<dd>{roaming.roaming.mccmnc}</dd>
+														<dt>Area Code</dt>
+														<dd>{roaming.roaming.rsrp}</dd>
+														<dt>Cell ID</dt>
+														<dd>{roaming.roaming.area}</dd>
+														<dt>IP</dt>
+														<dd>{roaming.roaming.ip}</dd>
+														<dt>Time</dt>
+														<dd>
+															<time
+																dateTime={new Date(roaming.ts).toISOString()}
+															>
+																{formatDistanceToNow(roaming.ts, {
+																	includeSeconds: true,
+																	addSuffix: true,
+																})}
+															</time>
+														</dd>
+													</HistoryInfo>
+												</>
+											)}
 										</Popup>
 									</Circle>
 								</React.Fragment>

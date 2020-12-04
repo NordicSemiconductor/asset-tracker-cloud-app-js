@@ -14,14 +14,18 @@ import { ToggleNavigation } from '../Navigation/ToggleNavigation'
 import { GlobalStyle } from '../Styles'
 import { AboutPage } from './About/Page'
 import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
+import { parseResult } from '@bifravst/timestream-helpers'
+import { format } from 'date-fns'
 
 import '@aws-amplify/ui/dist/style.css'
-import { parseResult } from '@bifravst/timestream-helpers'
+
+const timeStreamFormatDate = (d: Date) => format(d, 'yyyy-MM-dd HH:mm:ss.SSS')
 
 export type TimestreamQueryContextType = {
 	query: <Result extends Record<string, any>>(
 		fn: (table: string) => string,
 	) => Promise<Result[]>
+	formatDate: (d: Date) => string
 }
 
 export type StackConfigContextType = {
@@ -122,7 +126,7 @@ export const boot = ({
 								.promise()
 								.then((res) => parseResult<Result>(res))
 								.then((result) => {
-									console.log({
+									console.log('[Timestream]', {
 										timestreamQuery: QueryString,
 										result,
 									})
@@ -137,7 +141,7 @@ export const boot = ({
 										const line = parseInt(m[1], 10)
 										const col = parseInt(m[2], 10)
 										const indent = (s: string) => `   ${s}`
-										console.error({
+										console.error('[Timestream]', {
 											timestreamQuery: [
 												...lines.slice(0, line).map(indent),
 												`-- ${' '.repeat(col - 1)}^`,
@@ -146,11 +150,15 @@ export const boot = ({
 											error,
 										})
 									} else {
-										console.error({ timestreamQuery: QueryString, error })
+										console.error('[Timestream]', {
+											timestreamQuery: QueryString,
+											error,
+										})
 									}
 									throw error
 								})
 						},
+						formatDate: timeStreamFormatDate,
 					})
 					// Attach Iot Policy to user
 					await attachIotPolicyToIdentity({
@@ -159,7 +167,7 @@ export const boot = ({
 					})(c.identityId)
 				})
 				.catch((error) => {
-					console.error(error)
+					console.error('[Timestream]', error)
 				})
 		}, [authData])
 
@@ -246,6 +254,7 @@ export const IotConsumer = IotContext.Consumer
 
 const TimestreamQueryContext = React.createContext<TimestreamQueryContextType>({
 	query: async () => Promise.resolve<any>(undefined),
+	formatDate: timeStreamFormatDate,
 })
 export const TimestreamQueryConsumer = TimestreamQueryContext.Consumer
 

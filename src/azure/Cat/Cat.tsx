@@ -230,15 +230,14 @@ export const Cat = ({
 							)
 							.then((res) => {
 								if (isLeft(res)) return []
-								const history = (res.right.result as {
+								const location = (res.right.result as {
 									v: { lat: number; lng: number }
 									ts: string
 								}[]).map(({ v: { lat, lng }, ts }) => ({
 									position: { lat, lng },
 									ts: new Date(ts),
 								}))
-								console.log({ history })
-								return history
+								return location.map((location) => ({ location }))
 							})
 					}
 				/>

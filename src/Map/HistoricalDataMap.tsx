@@ -17,10 +17,10 @@ const LoadHistoricalMapData = ({
 	cellLocation?: CellLocation
 	numEntries: number
 	fetchHistoricalData: boolean
-	fetchHistory: (numEntries: number) => Promise<Location[]>
+	fetchHistory: (numEntries: number) => Promise<{ location: Location }[]>
 	onSettings: (args: { enabled: boolean; numEntries: number }) => void
 }) => {
-	const [history, setHistory] = useState<Location[]>()
+	const [history, setHistory] = useState<{ location: Location }[]>()
 
 	useEffect(() => {
 		let isCancelled = false
@@ -91,7 +91,13 @@ export const HistoricalDataMap = ({
 	cat: CatInfo
 	deviceLocation?: Location
 	cellLocation?: CellLocation
-	fetchHistory: (numEntries: number) => Promise<Location[]>
+	fetchHistory: (
+		numEntries: number,
+	) => Promise<
+		{
+			location: Location
+		}[]
+	>
 }) => {
 	let initialState = true
 

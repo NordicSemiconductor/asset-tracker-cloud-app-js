@@ -1,4 +1,4 @@
-import { Location, CellLocation } from '../../Map/Map'
+import { Location, CellLocation, Roaming } from '../../Map/Map'
 import React, { useState, useEffect } from 'react'
 import { TimestreamQueryContextType } from '../App'
 import { geolocateCell } from '../geolocateCell'
@@ -73,25 +73,24 @@ export const CatMap = ({
 						date: Date
 					}>(
 						(table) => `SELECT
-				array_agg(measure_value::double) AS objectValues,
-				array_agg(measure_name) AS objectKeys,
-				time AS date
-				FROM ${table}
-				WHERE deviceId='${cat.id}' 
-				AND measureGroup IN (
-					-- Select the last 100 GPS measures
-					SELECT
-					measureGroup
-					FROM ${table}
-					WHERE deviceId='${cat.id}' 
-					AND substr(measure_name, 1, 4) = 'gps.'
-					GROUP BY measureGroup, time
-					ORDER BY time DESC
-					LIMIT ${numEntries}
-				)
-				AND substr(measure_name, 1, 4) = 'gps.'
-				GROUP BY measureGroup, time
-				ORDER BY time DESC`,
+							array_agg(measure_value::double) AS objectValues,
+							array_agg(measure_name) AS objectKeys,
+							time AS date
+							FROM ${table}
+							WHERE deviceId='${cat.id}' 
+							AND measureGroup IN (
+								SELECT
+								measureGroup
+								FROM ${table}
+								WHERE deviceId='${cat.id}' 
+								AND substr(measure_name, 1, 4) = 'gps.'
+								GROUP BY measureGroup, time
+								ORDER BY time DESC
+								LIMIT ${numEntries}
+							)
+							AND substr(measure_name, 1, 4) = 'gps.'
+							GROUP BY measureGroup, time
+							ORDER BY time DESC`,
 					)
 					.then((data) =>
 						data.map(({ objectValues, objectKeys, date }) => {
@@ -120,6 +119,68 @@ export const CatMap = ({
 							return l
 						}),
 					)
+					.then(async (locations) => {
+						if (!locations.length)
+							return locations.map((location) => ({ location }))
+						return timestreamQueryContext
+							.query<{
+								objectValuesDouble: number[]
+								objectValuesVarchar: string[]
+								objectKeys: string[]
+								date: Date
+							}>(
+								(table) => `
+								SELECT
+								array_agg(measure_value::double) AS objectValuesDouble,
+								array_agg(measure_value::varchar) AS objectValuesVarchar,
+								array_agg(measure_name) AS objectKeys,
+								time as date
+								FROM ${table}
+								WHERE deviceId='${cat.id}'
+								AND substr(measure_name, 1, 5) = 'roam.'
+								AND time <= '${timestreamQueryContext.formatDate(locations[0].ts)}'
+								GROUP BY measureGroup, time
+								ORDER BY time DESC
+								`,
+							)
+							.then((result) => {
+								const roaming = result.map(
+									({
+										objectValuesDouble,
+										objectValuesVarchar,
+										objectKeys,
+										date,
+									}) => {
+										const roaming = objectKeys.reduce(
+											(obj, k, i) => ({
+												...obj,
+												[k.split('.')[1]]:
+													objectValuesDouble[i] ?? objectValuesVarchar[i],
+											}),
+											{} as {
+												mccmnc: number
+												rsrp: number
+												cell: number
+												area: number
+												ip: string
+											},
+										)
+										const l: Roaming = {
+											roaming,
+											ts: (date as unknown) as Date,
+										}
+										return l
+									},
+								)
+								// Add roaming data to history
+								return locations.map((location) => ({
+									location,
+									roaming: roaming.find(
+										({ ts }) => ts.getTime() <= location.ts.getTime(),
+									), // Find the first roaming entry that is older than the location
+								}))
+							})
+					})
 			}
 		/>
 	)

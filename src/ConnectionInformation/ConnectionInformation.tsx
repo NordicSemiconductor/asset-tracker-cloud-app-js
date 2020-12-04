@@ -11,8 +11,9 @@ import { isSome, none } from 'fp-ts/lib/Option'
 const StyledRSRPBar = styled(RSRPBar)`
 	width: 20px;
 	height: 20px;
+	margin-right: 0.2rem;
 `
-const signalQuality = (rsrp: number) => (
+export const SignalQuality = ({ rsrp }: { rsrp: number }) => (
 	<RSRP
 		rsrp={rsrp}
 		renderBar={({ quality, dbm }) =>
@@ -58,7 +59,7 @@ export const ConnectionInformation = ({
 		: false
 	return (
 		<div className={'info connection-information'}>
-			<TextWithIcon icon={signalQuality(rsrp)}>
+			<TextWithIcon icon={SignalQuality({ rsrp })}>
 				<>
 					&nbsp;
 					<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
