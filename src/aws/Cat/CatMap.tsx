@@ -70,11 +70,13 @@ export const CatMap = ({
 					.query<{
 						objectValues: string[]
 						objectKeys: string[]
+						objectSource: string[]
 						date: Date
 					}>(
 						(table) => `SELECT
 							array_agg(measure_value::double) AS objectValues,
 							array_agg(measure_name) AS objectKeys,
+							array_agg(source) AS objectSource,
 							time AS date
 							FROM ${table}
 							WHERE deviceId='${cat.id}' 
@@ -93,27 +95,60 @@ export const CatMap = ({
 							ORDER BY time DESC`,
 					)
 					.then((data) =>
-						data.map(({ objectValues, objectKeys, date }) => {
+						data.map(({ objectValues, objectKeys, date, objectSource }) => {
+							console.log({ objectSource })
 							const pos = objectKeys.reduce(
-								(obj, k, i) => ({ ...obj, [k.split('.')[1]]: objectValues[i] }),
+								(obj, k, i) => ({
+									...obj,
+									[k.split('.')[1]]: {
+										v: objectValues[i],
+										source: objectSource[i],
+									},
+								}),
 								{} as {
-									lat: number
-									lng: number
-									acc: number
-									alt: number
-									hdg: number
-									spd: number
+									lat: {
+										v: number
+										source?: 'batch'
+									}
+									lng: {
+										v: number
+										source?: 'batch'
+									}
+									acc: {
+										v: number
+										source?: 'batch'
+									}
+									alt: {
+										v: number
+										source?: 'batch'
+									}
+									hdg: {
+										v: number
+										source?: 'batch'
+									}
+									spd: {
+										v: number
+										source?: 'batch'
+									}
 								},
 							)
 							const l: Location = {
 								position: {
-									lat: pos.lat,
-									lng: pos.lng,
-									accuracy: pos.acc,
-									heading: pos.hdg,
-									altitude: pos.alt,
-									speed: pos.spd,
+									lat: pos.lat.v,
+									lng: pos.lng.v,
+									accuracy: pos.acc.v,
+									heading: pos.hdg.v,
+									altitude: pos.alt.v,
+									speed: pos.spd.v,
 								},
+								batch: [
+									pos.lat.source,
+									pos.lng.source,
+									pos.acc.source,
+									pos.hdg.source,
+									pos.alt.source,
+									pos.spd.source,
+								].includes('batch'),
 								ts: (date as unknown) as Date,
 							}
 							return l

@@ -74,6 +74,7 @@ export type Location = {
 		altitude?: number
 		speed?: number
 	}
+	batch?: boolean
 	ts: Date
 }
 
@@ -227,6 +228,7 @@ export const Map = ({
 							{
 								location: {
 									position: { lat, lng, accuracy, heading, speed },
+									batch,
 									ts,
 								},
 								roaming,
@@ -260,6 +262,17 @@ export const Map = ({
 											color={'#00000080'}
 										/>
 									)}
+									{batch && (
+										<Circle
+											center={{ lat, lng }}
+											radius={20}
+											stroke={true}
+											color={'#ff0000'}
+											weight={2}
+											fill={false}
+											dashArray={mapZoom > 16 ? '3 6' : '6 12'}
+										/>
+									)}
 									<Circle
 										center={{ lat, lng }}
 										radius={16}
@@ -283,8 +296,14 @@ export const Map = ({
 														})}
 													</time>
 												</dd>
+												{batch && (
+													<>
+														<dt>Batch</dt>
+														<dd>Yes</dd>
+													</>
+												)}
 											</HistoryInfo>
-											{roaming !== undefined && (
+											{roaming !== undefined && !batch && (
 												<>
 													<HistoryInfo>
 														<dt>Connection</dt>
