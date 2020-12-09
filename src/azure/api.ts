@@ -40,10 +40,10 @@ export type ApiClient = {
 		url: string,
 	) => Promise<Either<ErrorInfo, { success: boolean }>>
 	storeImage: (image: Blob) => Promise<Either<ErrorInfo, { url: string }>>
-	storeDeviceUpdate: (
+	storeDeviceUpgrade: (
 		firmware: File,
 	) => Promise<Either<ErrorInfo, { url: string }>>
-	setPendingDeviceUpdate: ({
+	setPendingDeviceUpgrade: ({
 		id,
 		url,
 		version,
@@ -225,7 +225,7 @@ export const fetchApiClient = ({
 				}
 				reader.readAsDataURL(image)
 			}),
-		storeDeviceUpdate: async (
+		storeDeviceUpgrade: async (
 			file: File,
 		): Promise<Either<ErrorInfo, { url: string }>> =>
 			new Promise((resolve, reject) => {
@@ -240,7 +240,7 @@ export const fetchApiClient = ({
 				}
 				reader.readAsDataURL(file)
 			}),
-		setPendingDeviceUpdate: async ({
+		setPendingDeviceUpgrade: async ({
 			id,
 			url,
 			version,

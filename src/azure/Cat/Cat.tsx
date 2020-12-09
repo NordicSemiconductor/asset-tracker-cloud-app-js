@@ -181,15 +181,15 @@ export const Cat = ({
 		version: string
 	}) => {
 		apiClient
-			.storeDeviceUpdate(file)
-			.then((maybeStoredUpdate) => {
-				if (isLeft(maybeStoredUpdate)) {
-					setError(maybeStoredUpdate.left)
+			.storeDeviceUpgrade(file)
+			.then((maybeStoredUpgrade) => {
+				if (isLeft(maybeStoredUpgrade)) {
+					setError(maybeStoredUpgrade.left)
 				} else {
 					apiClient
-						.setPendingDeviceUpdate({
+						.setPendingDeviceUpgrade({
 							id: cat.id,
-							url: maybeStoredUpdate.right.url,
+							url: maybeStoredUpgrade.right.url,
 							version,
 						})
 						.then((res) => {

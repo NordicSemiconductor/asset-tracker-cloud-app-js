@@ -18,7 +18,7 @@ export const CreateFOTAJob = ({
 	onJob: OnCreateUpgradeJob
 	onError: (error?: Error) => void
 }) => {
-	const [updateFile, setUpdateFile] = useState<File>()
+	const [upgradeFile, setUpgradeFile] = useState<File>()
 	const [nextVersion, setNextVersion] = useState(getNextAppVersion(device))
 	const [targetBoard, setTargetBoard] = useState(device.v.brdV)
 	const [saving, setSaving] = useState(false)
@@ -35,7 +35,7 @@ export const CreateFOTAJob = ({
 							disabled={saving}
 							onFile={(file) => {
 								onError(undefined)
-								setUpdateFile(file)
+								setUpgradeFile(file)
 								const semverMatch = /v([0-9]+\.[0-9]+\..+)\.[^.]+$/.exec(
 									file.name,
 								)
@@ -55,12 +55,12 @@ export const CreateFOTAJob = ({
 					</p>
 				</FormGroup>
 			</fieldset>
-			{updateFile && (
+			{upgradeFile && (
 				<>
 					<fieldset>
 						<FormGroup>
 							<Label>Size</Label>
-							<p>{updateFile.size} bytes</p>
+							<p>{upgradeFile.size} bytes</p>
 						</FormGroup>
 						<FormGroup>
 							<Label for={'nextVersion'}>Firmware version</Label>
@@ -96,7 +96,7 @@ export const CreateFOTAJob = ({
 							onClick={() => {
 								setSaving(true)
 								onJob({
-									file: updateFile,
+									file: upgradeFile,
 									targetBoard,
 									version: nextVersion,
 								}).catch(console.error)

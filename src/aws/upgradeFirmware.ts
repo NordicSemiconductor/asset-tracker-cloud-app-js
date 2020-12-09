@@ -35,7 +35,7 @@ export const createJob = async ({
 		name: string
 	}
 }): Promise<DeviceUpgradeFirmwareJob> => {
-	const description = `Update ${thingArn.split('/')[1]} to version ${version}.`
+	const description = `Upgrade ${thingArn.split('/')[1]} to version ${version}.`
 	await iot
 		.createJob({
 			jobId,
