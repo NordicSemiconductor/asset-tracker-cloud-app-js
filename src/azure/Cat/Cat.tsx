@@ -8,7 +8,7 @@ import { Collapsable } from '../../Collapsable/Collapsable'
 import { DeleteCat } from '../../Cat/DeleteCat'
 import { DisplayError } from '../../Error/Error'
 import { ErrorInfo } from '../../Error/ErrorInfo'
-import { isLeft, isRight } from 'fp-ts/lib/Either'
+import { Either, isLeft, isRight, left } from 'fp-ts/lib/Either'
 import { Loading } from '../../Loading/Loading'
 import { LoadedCat } from '../../Cat/CatLoader'
 import { Settings } from '../../Settings/Settings'
@@ -93,9 +93,28 @@ export const Cat = ({
 		if (roamingInfo === undefined) return
 		let removed = false
 		console.log({ roamingInfo })
-		const { cell, area, mccmnc } = roamingInfo.v
-		apiClient
-			.geolocateCell({ cell, area, mccmnc })
+
+		const locatCell = async (cell: {
+			cell: number
+			area: number
+			mccmnc: number
+		}): Promise<
+			Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
+		> => {
+			const cellFromDevices = await apiClient.geolocateCell(cell)
+			if (isRight(cellFromDevices)) return cellFromDevices
+			const cellFromUnwiredLabs = await apiClient.geolocateCellFromUnwiredLabs(
+				cell,
+			)
+			if (isRight(cellFromUnwiredLabs)) return cellFromUnwiredLabs
+			return left({
+				type: 'Not found',
+				message: `Could not resolve cell`,
+				detail: cell,
+			})
+		}
+
+		void locatCell(roamingInfo.v)
 			.then((res) => {
 				if (isRight(res) && !removed) {
 					console.debug('[Cell Geolocation]', res.right)

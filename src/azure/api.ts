@@ -65,6 +65,13 @@ export type ApiClient = {
 	}) => Promise<
 		Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
 	>
+	geolocateCellFromUnwiredLabs: (args: {
+		cell: number
+		area: number
+		mccmnc: number
+	}) => Promise<
+		Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
+	>
 }
 
 export type IotHubDevice = Twin & {
@@ -275,5 +282,18 @@ export const fetchApiClient = ({
 			get<{ lat: number; lng: number; accuracy: number }>('cellgeolocation', {
 				...args,
 			})(),
+		geolocateCellFromUnwiredLabs: async (args: {
+			cell: number
+			area: number
+			mccmnc: number
+		}): Promise<
+			Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
+		> =>
+			get<{ lat: number; lng: number; accuracy: number }>(
+				'cellgeolocation/unwired',
+				{
+					...args,
+				},
+			)(),
 	}
 }
