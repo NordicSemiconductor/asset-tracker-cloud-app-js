@@ -53,7 +53,7 @@
     "msal": "1.4.4",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-leaflet": "3.0.4",
+    "react-leaflet": "3.0.5",
     "react-router-dom": "5.2.0",
     "reactstrap": "8.7.1",
     "snyk": "1.437.2",
