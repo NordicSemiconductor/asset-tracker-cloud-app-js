@@ -75,7 +75,7 @@
     "@types/react": "17.0.0",
     "@types/react-dom": "17.0.0",
     "@types/react-leaflet": "2.5.2",
-    "@types/react-router-dom": "5.1.6",
+    "@types/react-router-dom": "5.1.7",
     "@types/reactstrap": "8.7.2",
     "@types/semver": "7.3.4",
     "@types/styled-components": "5.1.6",
