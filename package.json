@@ -29,6 +29,10 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@amcharts/amcharts4": "4.10.13",
+    "@aws-sdk/client-iot": "3.1.0",
+    "@aws-sdk/client-iot-data-plane": "3.1.0",
+    "@aws-sdk/client-s3": "3.1.0",
+    "@aws-sdk/util-utf8-browser": "3.1.0",
     "@bifravst/cell-geolocation-helpers": "1.3.26",
     "@bifravst/rsrp-bar": "2.1.8",
     "@bifravst/timestream-helpers": "1.3.14",
@@ -36,7 +40,6 @@
     "aws-amplify": "3.3.13",
     "aws-amplify-react": "4.2.17",
     "aws-iot-device-sdk": "2.2.6",
-    "aws-sdk": "2.821.0",
     "azure-iothub": "1.13.1",
     "date-fns": "2.16.1",
     "deepmerge": "4.2.2",
@@ -56,7 +59,6 @@
     "react-leaflet": "3.0.5",
     "react-router-dom": "5.2.0",
     "reactstrap": "8.8.1",
-    "snyk": "1.437.3",
     "styled-components": "5.2.1",
     "twemoji": "13.0.1",
     "use-debounce": "5.2.0",
@@ -95,6 +97,7 @@
     "lint-staged": "10.5.3",
     "prettier": "2.2.1",
     "react-scripts": "4.0.1",
+    "snyk": "1.437.3",
     "ts-jest": "26.4.4",
     "typescript": "4.1.3"
   },
@@ -143,7 +146,7 @@
       "json"
     ],
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      ".+\\.tsx?$": "ts-jest"
     },
     "testRegex": ".+\\.spec\\.ts$",
     "globals": {

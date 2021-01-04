@@ -1,4 +1,9 @@
-import { Iot, S3 } from 'aws-sdk'
+import { CopyObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+	DescribeJobCommand,
+	GetJobDocumentCommand,
+	IoTClient,
+} from '@aws-sdk/client-iot'
 import { v4 } from 'uuid'
 import { DeviceUpgradeFirmwareJob } from './listUpgradeFirmwareJobs'
 import { createJob, FOTAJobDocument } from './upgradeFirmware'
@@ -8,8 +13,8 @@ export const cloneUpgradeFirmwareJob = ({
 	s3,
 	bucketName,
 }: {
-	iot: Iot
-	s3: S3
+	iot: IoTClient
+	s3: S3Client
 	bucketName: string
 }) => async ({
 	jobId,
@@ -19,14 +24,13 @@ export const cloneUpgradeFirmwareJob = ({
 	jobId: string
 }): Promise<DeviceUpgradeFirmwareJob> => {
 	const [{ job }, document] = await Promise.all([
-		iot
-			.describeJob({
+		iot.send(
+			new DescribeJobCommand({
 				jobId,
-			})
-			.promise(),
+			}),
+		),
 		iot
-			.getJobDocument({ jobId })
-			.promise()
+			.send(new GetJobDocumentCommand({ jobId }))
 			.then(
 				({ document }) => JSON.parse(document as string) as FOTAJobDocument,
 			),
@@ -37,13 +41,13 @@ export const cloneUpgradeFirmwareJob = ({
 
 	const newJobId = v4()
 
-	await s3
-		.copyObject({
+	await s3.send(
+		new CopyObjectCommand({
 			Bucket: bucketName,
 			Key: newJobId,
 			CopySource: `${bucketName}/${jobId}`,
-		})
-		.promise()
+		}),
+	)
 
 	return createJob({
 		iot,

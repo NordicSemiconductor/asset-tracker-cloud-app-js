@@ -6,7 +6,7 @@ import {
 	StackConfigConsumer,
 } from '../App'
 import { Alert } from 'reactstrap'
-import { S3 } from 'aws-sdk'
+import { S3Client } from '@aws-sdk/client-s3'
 import { uploadAvatar } from '../uploadAvatar'
 import { updateThingAttributes } from '../updateThingAttributes'
 import { HistoricalDataChart } from '../../HistoricalData/HistoricalDataChart'
@@ -55,7 +55,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 							{(credentials) => (
 								<IotConsumer>
 									{({ iot, iotData, mqttEndpoint }) => {
-										const s3 = new S3({
+										const s3 = new S3Client({
 											credentials,
 											region,
 										})

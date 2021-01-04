@@ -1,12 +1,13 @@
-import { Iot, S3 } from 'aws-sdk'
+import { DeleteJobExecutionCommand, IoTClient } from '@aws-sdk/client-iot'
+import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3'
 
 export const deleteUpgradeFirmwareJob = ({
 	iot,
 	s3,
 	bucketName,
 }: {
-	iot: Iot
-	s3: S3
+	iot: IoTClient
+	s3: S3Client
 	bucketName: string
 }) => async ({
 	jobId,
@@ -19,23 +20,25 @@ export const deleteUpgradeFirmwareJob = ({
 }): Promise<void> => {
 	await Promise.all([
 		await s3
-			.deleteObject({
-				Bucket: bucketName,
-				Key: jobId,
-			})
-			.promise()
-			.catch(error => {
+			.send(
+				new DeleteObjectCommand({
+					Bucket: bucketName,
+					Key: jobId,
+				}),
+			)
+			.catch((error) => {
 				console.error(`Failed to delete firmware file for job ${jobId}`)
 				console.error(error)
 			}),
 		await iot
-			.deleteJobExecution({
-				jobId,
-				thingName: deviceId,
-				executionNumber,
-			})
-			.promise()
-			.catch(error => {
+			.send(
+				new DeleteJobExecutionCommand({
+					jobId,
+					thingName: deviceId,
+					executionNumber,
+				}),
+			)
+			.catch((error) => {
 				console.error(`Failed to delete job ${jobId}`)
 				console.error(error)
 			}),

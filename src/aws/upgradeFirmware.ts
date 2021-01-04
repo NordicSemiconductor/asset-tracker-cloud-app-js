@@ -1,4 +1,9 @@
-import { Iot, S3 } from 'aws-sdk'
+import {
+	CreateJobCommand,
+	IoTClient,
+	JobExecutionStatus,
+} from '@aws-sdk/client-iot'
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { v4 } from 'uuid'
 import { DeviceUpgradeFirmwareJob } from './listUpgradeFirmwareJobs'
 
@@ -24,7 +29,7 @@ export const createJob = async ({
 	bucketName,
 	file,
 }: {
-	iot: Iot
+	iot: IoTClient
 	thingArn: string
 	version: string
 	targetBoard: string
@@ -36,8 +41,8 @@ export const createJob = async ({
 	}
 }): Promise<DeviceUpgradeFirmwareJob> => {
 	const description = `Upgrade ${thingArn.split('/')[1]} to version ${version}.`
-	await iot
-		.createJob({
+	await iot.send(
+		new CreateJobCommand({
 			jobId,
 			targets: [thingArn],
 			document: JSON.stringify({
@@ -54,12 +59,13 @@ export const createJob = async ({
 			} as FOTAJobDocument),
 			description,
 			targetSelection: 'SNAPSHOT',
-		})
-		.promise()
+		}),
+	)
+
 	return {
 		jobId,
 		description,
-		status: 'QUEUED',
+		status: JobExecutionStatus.QUEUED,
 		document: {
 			size: file.size,
 			fwversion: version,
@@ -77,8 +83,8 @@ export const upgradeFirmware = ({
 	iot,
 	bucketName,
 }: {
-	s3: S3
-	iot: Iot
+	s3: S3Client
+	iot: IoTClient
 	bucketName: string
 }) => async ({
 	file,
@@ -92,20 +98,20 @@ export const upgradeFirmware = ({
 	targetBoard: string
 }): Promise<DeviceUpgradeFirmwareJob> => {
 	const jobId = v4()
-	const data = await new Promise<ArrayBuffer>((resolve) => {
+	const data = await new Promise<Buffer>((resolve) => {
 		const reader = new FileReader()
 		reader.onload = (e: any) => resolve(e.target.result)
 		reader.readAsArrayBuffer(file)
 	})
-	await s3
-		.putObject({
+	await s3.send(
+		new PutObjectCommand({
 			Bucket: bucketName,
 			Key: jobId,
 			Body: data,
 			ContentLength: file.size,
 			ContentType: 'text/octet-stream',
-		})
-		.promise()
+		}),
+	)
 
 	return createJob({
 		iot,

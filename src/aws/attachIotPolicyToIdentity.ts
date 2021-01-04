@@ -1,24 +1,29 @@
-import { Iot } from 'aws-sdk'
+import {
+	AttachPrincipalPolicyCommand,
+	IoTClient,
+	ListPrincipalPoliciesCommand,
+} from '@aws-sdk/client-iot'
 
 export const attachIotPolicyToIdentity = ({
 	iot,
 	policyName,
 }: {
-	iot: Iot
+	iot: IoTClient
 	policyName: string
 }) => async (identityId: string): Promise<void> => {
-	const { policies } = await iot
-		.listPrincipalPolicies({
+	const { policies } = await iot.send(
+		new ListPrincipalPoliciesCommand({
 			principal: identityId,
-		})
-		.promise()
+		}),
+	)
+
 	if ((policies?.length ?? 0) > 0) {
 		return
 	}
-	await iot
-		.attachPrincipalPolicy({
+	await iot.send(
+		new AttachPrincipalPolicyCommand({
 			principal: identityId,
 			policyName,
-		})
-		.promise()
+		}),
+	)
 }

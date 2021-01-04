@@ -1,6 +1,10 @@
-import { Iot } from 'aws-sdk'
+import { CancelJobExecutionCommand, IoTClient } from '@aws-sdk/client-iot'
 
-export const cancelUpgradeFirmwareJob = ({ iot }: { iot: Iot }) => async ({
+export const cancelUpgradeFirmwareJob = ({
+	iot,
+}: {
+	iot: IoTClient
+}) => async ({
 	jobId,
 	force,
 	deviceId,
@@ -9,11 +13,11 @@ export const cancelUpgradeFirmwareJob = ({ iot }: { iot: Iot }) => async ({
 	force: boolean
 	jobId: string
 }): Promise<void> => {
-	await iot
-		.cancelJobExecution({
+	await iot.send(
+		new CancelJobExecutionCommand({
 			jobId,
 			force,
 			thingName: deviceId,
-		})
-		.promise()
+		}),
+	)
 }

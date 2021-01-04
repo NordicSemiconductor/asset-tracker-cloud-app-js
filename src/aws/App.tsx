@@ -2,8 +2,12 @@ import { ICredentials } from '@aws-amplify/core'
 import { CognitoUser } from 'amazon-cognito-identity-js'
 import Amplify, { Auth } from 'aws-amplify'
 import { withAuthenticator } from 'aws-amplify-react'
-import { Iot, IotData } from 'aws-sdk'
-import TimestreamQuery from 'aws-sdk/clients/timestreamquery'
+import { IoTClient } from '@aws-sdk/client-iot'
+import { IoTDataPlaneClient } from '@aws-sdk/client-iot-data-plane'
+import {
+	TimestreamQueryClient,
+	QueryCommand,
+} from '@aws-sdk/client-timestream-query'
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 import { CatPage } from './Cat/Page'
@@ -81,8 +85,8 @@ export const boot = ({
 	const App = ({ authData }: { authData: CognitoUser }) => {
 		const [credentials, setCredentials] = useState<ICredentials>()
 		const [iot, setIot] = useState<{
-			iot: Iot
-			iotData: IotData
+			iot: IoTClient
+			iotData: IoTDataPlaneClient
 			mqttEndpoint: string
 			region: string
 		}>()
@@ -94,11 +98,11 @@ export const boot = ({
 			Auth.currentCredentials()
 				.then(async (creds) => {
 					const c = Auth.essentialCredentials(creds)
-					const iot = new Iot({
+					const iot = new IoTClient({
 						credentials: creds,
 						region,
 					})
-					const iotData = new IotData({
+					const iotData = new IoTDataPlaneClient({
 						credentials: creds,
 						endpoint: mqttEndpoint,
 						region,
@@ -110,7 +114,7 @@ export const boot = ({
 						mqttEndpoint,
 						region,
 					})
-					const timestreamQuery = new TimestreamQuery({
+					const timestreamQuery = new TimestreamQueryClient({
 						region,
 						credentials: c,
 					})
@@ -122,8 +126,7 @@ export const boot = ({
 								`"${timestreamConfig.db}"."${timestreamConfig.table}"`,
 							)
 							return timestreamQuery
-								.query({ QueryString })
-								.promise()
+								.send(new QueryCommand({ QueryString }))
 								.then((res) => parseResult<Result>(res))
 								.then((result) => {
 									console.log('[Timestream]', {
@@ -240,13 +243,13 @@ const CredentialsContext = React.createContext<ICredentials>({
 export const CredentialsConsumer = CredentialsContext.Consumer
 
 const IotContext = React.createContext<{
-	iot: Iot
-	iotData: IotData
+	iot: IoTClient
+	iotData: IoTDataPlaneClient
 	mqttEndpoint: string
 	region: string
 }>({
-	iot: (undefined as unknown) as Iot,
-	iotData: (undefined as unknown) as IotData,
+	iot: (undefined as unknown) as IoTClient,
+	iotData: (undefined as unknown) as IoTDataPlaneClient,
 	mqttEndpoint: '',
 	region: '',
 })

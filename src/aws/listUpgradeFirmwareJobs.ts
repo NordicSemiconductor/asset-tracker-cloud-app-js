@@ -1,10 +1,18 @@
-import { Iot } from 'aws-sdk'
+import {
+	DescribeJobCommand,
+	GetJobDocumentCommand,
+	IoTClient,
+	ListJobExecutionsForThingCommand,
+	JobExecutionSummary,
+	JobExecutionStatus,
+	Job,
+} from '@aws-sdk/client-iot'
 import { paginate } from '../util/paginate'
 
 export type DeviceUpgradeFirmwareJob = {
 	jobId: string
 	description: string
-	status: Iot.JobExecutionStatus
+	status: JobExecutionStatus
 	executionNumber: number
 	document: {
 		size: number
@@ -18,17 +26,18 @@ export type DeviceUpgradeFirmwareJob = {
 	lastUpdatedAt?: Date
 }
 
-export const listUpgradeFirmwareJobs = ({ iot }: { iot: Iot }) => async (
+export const listUpgradeFirmwareJobs = ({ iot }: { iot: IoTClient }) => async (
 	deviceId: string,
 ): Promise<DeviceUpgradeFirmwareJob[]> =>
 	paginate<DeviceUpgradeFirmwareJob>({
 		paginator: async (startKey) => {
-			const { executionSummaries, nextToken } = await iot
-				.listJobExecutionsForThing({
+			const { executionSummaries, nextToken } = await iot.send(
+				new ListJobExecutionsForThingCommand({
 					thingName: deviceId,
 					nextToken: startKey,
-				})
-				.promise()
+				}),
+			)
+
 			if (executionSummaries === undefined || executionSummaries === null) {
 				return {
 					items: [],
@@ -39,8 +48,8 @@ export const listUpgradeFirmwareJobs = ({ iot }: { iot: Iot }) => async (
 				items: await Promise.all(
 					executionSummaries.map(async ({ jobId, jobExecutionSummary }) => {
 						const [{ job }, { document }] = await Promise.all([
-							iot.describeJob({ jobId: `${jobId}` }).promise(),
-							iot.getJobDocument({ jobId: `${jobId}` }).promise(),
+							iot.send(new DescribeJobCommand({ jobId: `${jobId}` })),
+							iot.send(new GetJobDocumentCommand({ jobId: `${jobId}` })),
 						])
 						const {
 							status,
@@ -48,7 +57,7 @@ export const listUpgradeFirmwareJobs = ({ iot }: { iot: Iot }) => async (
 							startedAt,
 							lastUpdatedAt,
 							executionNumber,
-						} = jobExecutionSummary as Iot.JobExecutionSummary
+						} = jobExecutionSummary as JobExecutionSummary
 
 						const {
 							size,
@@ -60,8 +69,8 @@ export const listUpgradeFirmwareJobs = ({ iot }: { iot: Iot }) => async (
 
 						return {
 							jobId: `${jobId}`,
-							description: `${(job as Iot.Job).description}`,
-							status: status as Iot.JobExecutionStatus,
+							description: `${(job as Job).description}`,
+							status: status as JobExecutionStatus,
 							queuedAt: queuedAt,
 							startedAt: startedAt,
 							lastUpdatedAt: lastUpdatedAt,

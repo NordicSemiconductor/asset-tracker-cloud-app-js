@@ -1,36 +1,45 @@
-import { Iot } from 'aws-sdk'
+import {
+	DeleteCertificateCommand,
+	DeleteThingCommand,
+	DetachThingPrincipalCommand,
+	IoTClient,
+	ListThingPrincipalsCommand,
+	UpdateCertificateCommand,
+} from '@aws-sdk/client-iot'
 
-export const deleteIotThing = ({ iot }: { iot: Iot }) => async (
+export const deleteIotThing = ({ iot }: { iot: IoTClient }) => async (
 	thingName: string,
 ): Promise<void> => {
-	const { principals } = await iot.listThingPrincipals({ thingName }).promise()
+	const { principals } = await iot.send(
+		new ListThingPrincipalsCommand({ thingName }),
+	)
 	await Promise.all(
 		(principals ?? []).map(async (certificateArn) => {
 			const certificateId = certificateArn.split('/')[1]
 			await Promise.all([
-				iot
-					.detachThingPrincipal({
+				iot.send(
+					new DetachThingPrincipalCommand({
 						thingName,
 						principal: certificateArn,
-					})
-					.promise(),
-				iot
-					.updateCertificate({
+					}),
+				),
+				iot.send(
+					new UpdateCertificateCommand({
 						certificateId,
 						newStatus: 'INACTIVE',
-					})
-					.promise(),
+					}),
+				),
 			])
-			await iot
-				.deleteCertificate({
+			await iot.send(
+				new DeleteCertificateCommand({
 					certificateId,
-				})
-				.promise()
+				}),
+			)
 		}),
 	)
-	await iot
-		.deleteThing({
+	await iot.send(
+		new DeleteThingCommand({
 			thingName,
-		})
-		.promise()
+		}),
+	)
 }

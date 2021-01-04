@@ -1,19 +1,19 @@
-import { Iot } from 'aws-sdk'
+import { IoTClient, UpdateThingCommand } from '@aws-sdk/client-iot'
 
 export const updateThingAttributes = ({
 	iot,
 	thingName,
 }: {
-	iot: Iot
+	iot: IoTClient
 	thingName: string
 }) => async (attributes: { [key: string]: string }): Promise<void> => {
-	await iot
-		.updateThing({
+	await iot.send(
+		new UpdateThingCommand({
 			thingName,
 			attributePayload: {
 				attributes: attributes,
 				merge: true,
 			},
-		})
-		.promise()
+		}),
+	)
 }

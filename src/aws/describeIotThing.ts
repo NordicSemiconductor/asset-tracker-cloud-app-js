@@ -1,23 +1,28 @@
-import { Iot } from 'aws-sdk'
+import { DescribeThingCommand, IoTClient } from '@aws-sdk/client-iot'
 import memoize from 'memoize-one'
 
-export type ThingInfo = {
-	thingName: Iot.ThingName
-	thingId: Iot.ThingId
-	thingArn: Iot.ThingArn
-	attributes: Iot.Attributes
-	version: Iot.Version
-}
 export const describeIotThing = ({
 	iot,
 }: {
-	iot: Iot
-}): ((thingName: string) => Promise<ThingInfo>) =>
-	memoize(
-		async (thingName: string) =>
-			iot
-				.describeThing({
-					thingName,
-				})
-				.promise() as Promise<ThingInfo>,
-	)
+	iot: IoTClient
+}): ((
+	thingName: string,
+) => Promise<{
+	thingName: string
+	thingArn: string
+	version: number
+	attributes: Record<string, string>
+}>) =>
+	memoize(async (thingName: string) => {
+		const res = await iot.send(
+			new DescribeThingCommand({
+				thingName,
+			}),
+		)
+		return {
+			thingName: res.thingName as string,
+			thingArn: res.thingArn as string,
+			attributes: res.attributes as Record<string, string>,
+			version: res.version as number,
+		}
+	})

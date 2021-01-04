@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from 'react'
 import { IotConsumer } from '../App'
-import { Iot, IotData } from 'aws-sdk'
+import { IoTClient, ListThingsCommand } from '@aws-sdk/client-iot'
+import {
+	IoTDataPlaneClient,
+	GetThingShadowCommand,
+} from '@aws-sdk/client-iot-data-plane'
 import { Map, CatLocation } from '../../CatsMap/Map'
 
-const CatsMapLoader = ({ iot, iotData }: { iot: Iot; iotData: IotData }) => {
+const CatsMapLoader = ({
+	iot,
+	iotData,
+}: {
+	iot: IoTClient
+	iotData: IoTDataPlaneClient
+}) => {
 	const [cats, setCats] = useState([] as CatLocation[])
 
 	useEffect(() => {
 		let isCancelled = false
 		iot
-			.listThings()
-			.promise()
+			.send(new ListThingsCommand({}))
 			.then(async ({ things }) =>
 				Promise.all(
 					(things ?? []).map(async ({ thingName, attributes }) =>
 						iotData
-							.getThingShadow({ thingName: `${thingName}` })
-							.promise()
+							.send(new GetThingShadowCommand({ thingName: `${thingName}` }))
 							.then(({ payload }) => {
 								if (payload === undefined) {
 									return

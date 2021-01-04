@@ -6,7 +6,7 @@ import {
 	TimestreamQueryContextType,
 } from '../App'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { Iot } from 'aws-sdk'
+import { IoTClient, ListThingsCommand } from '@aws-sdk/client-iot'
 import { Loading } from '../../Loading/Loading'
 import { DisplayError } from '../../Error/Error'
 import { connectAndListenForMessages } from '../connectAndListenForMessages'
@@ -29,7 +29,7 @@ const ListCats = ({
 	snooze,
 	setButtonPresses,
 }: {
-	iot: Iot
+	iot: IoTClient
 	credentials: ICredentials
 	timestreamQueryContext: TimestreamQueryContextType
 	region: string
@@ -43,8 +43,7 @@ const ListCats = ({
 	useEffect(() => {
 		let isCancelled = false
 		iot
-			.listThings()
-			.promise()
+			.send(new ListThingsCommand({}))
 			.then(({ things }) => {
 				if (isCancelled) return
 				setCats(

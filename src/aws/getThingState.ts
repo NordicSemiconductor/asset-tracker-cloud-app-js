@@ -1,16 +1,20 @@
-import { IotData } from 'aws-sdk'
+import {
+	IoTDataPlaneClient,
+	GetThingShadowCommand,
+} from '@aws-sdk/client-iot-data-plane'
 import { ThingState } from '../@types/aws-device'
 import { Option, none, some } from 'fp-ts/lib/Option'
 
-export const getThingState = (iotData: IotData) => async (
+export const getThingState = (iotData: IoTDataPlaneClient) => async (
 	deviceId: string,
 ): Promise<Option<ThingState>> => {
 	try {
-		const { payload } = await iotData
-			.getThingShadow({
+		const { payload } = await iotData.send(
+			new GetThingShadowCommand({
 				thingName: deviceId,
-			})
-			.promise()
+			}),
+		)
+
 		if (payload === undefined) return none
 		const shadow = JSON.parse(payload.toString())
 		if (shadow.state === undefined) return none

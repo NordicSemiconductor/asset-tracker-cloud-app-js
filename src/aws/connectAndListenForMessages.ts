@@ -16,7 +16,7 @@ export const connectAndListenForMessages = async ({
 	region: string
 	mqttEndpoint: string
 }): Promise<device> =>
-	new Promise(resolve => {
+	new Promise((resolve) => {
 		const connectArgs = {
 			clientId,
 			region,
