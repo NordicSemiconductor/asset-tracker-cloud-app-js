@@ -69,7 +69,10 @@ switch (cloudFlavour) {
 				launch(
 					awsApp.boot({
 						identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID ?? '',
-						region: process.env.REACT_APP_REGION ?? '',
+						region:
+							process.env.REACT_APP_REGION ??
+							process.env.REACT_APP_MQTT_ENDPOINT?.split('.')[2] ??
+							'',
 						userPoolId: process.env.REACT_APP_USER_POOL_ID ?? '',
 						userPoolClientId: process.env.REACT_APP_USER_POOL_CLIENT_ID ?? '',
 						timestreamConfig: {
