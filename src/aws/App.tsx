@@ -4,10 +4,7 @@ import Amplify, { Auth } from 'aws-amplify'
 import { withAuthenticator } from 'aws-amplify-react'
 import { IoTClient } from '@aws-sdk/client-iot'
 import { IoTDataPlaneClient } from '@aws-sdk/client-iot-data-plane'
-import {
-	TimestreamQueryClient,
-	QueryCommand,
-} from '@aws-sdk/client-timestream-query'
+import { QueryCommand } from '@aws-sdk/client-timestream-query'
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 import { CatPage } from './Cat/Page'
@@ -18,7 +15,7 @@ import { ToggleNavigation } from '../Navigation/ToggleNavigation'
 import { GlobalStyle } from '../Styles'
 import { AboutPage } from './About/Page'
 import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
-import { parseResult } from '@bifravst/timestream-helpers'
+import { parseResult, queryClient } from '@bifravst/timestream-helpers'
 import { format } from 'date-fns'
 
 import '@aws-amplify/ui/dist/style.css'
@@ -104,7 +101,7 @@ export const boot = ({
 					})
 					const iotData = new IoTDataPlaneClient({
 						credentials: creds,
-						endpoint: mqttEndpoint,
+						endpoint: `https://${mqttEndpoint}`,
 						region,
 					})
 					setCredentials(c)
@@ -114,10 +111,13 @@ export const boot = ({
 						mqttEndpoint,
 						region,
 					})
-					const timestreamQuery = new TimestreamQueryClient({
-						region,
-						credentials: c,
-					})
+					const timestreamQuery = await queryClient(
+						{
+							region,
+							credentials: c,
+						},
+						{ defaultRegion: region },
+					)
 					setTimestreamQueryContext({
 						query: async <Result extends Record<string, any>>(
 							queryStringFn: (table: string) => string,

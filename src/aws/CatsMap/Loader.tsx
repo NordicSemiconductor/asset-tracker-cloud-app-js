@@ -6,6 +6,7 @@ import {
 	GetThingShadowCommand,
 } from '@aws-sdk/client-iot-data-plane'
 import { Map, CatLocation } from '../../CatsMap/Map'
+import { toUtf8 } from '@aws-sdk/util-utf8-browser'
 
 const CatsMapLoader = ({
 	iot,
@@ -29,7 +30,7 @@ const CatsMapLoader = ({
 								if (payload === undefined) {
 									return
 								}
-								const p = JSON.parse(payload.toString())
+								const p = JSON.parse(toUtf8(payload))
 								const { lat, lng } = p.state.reported.gps.v
 								if (lat !== undefined && lng !== undefined) {
 									return {
