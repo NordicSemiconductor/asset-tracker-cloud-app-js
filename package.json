@@ -38,7 +38,7 @@
     "@bifravst/timestream-helpers": "2.0.0",
     "@microsoft/signalr": "5.0.1",
     "aws-amplify": "3.3.14",
-    "aws-amplify-react": "4.2.17",
+    "aws-amplify-react": "4.2.18",
     "aws-iot-device-sdk": "2.2.6",
     "azure-iothub": "1.13.1",
     "date-fns": "2.16.1",
