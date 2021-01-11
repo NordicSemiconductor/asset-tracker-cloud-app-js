@@ -11,7 +11,7 @@ describe('toReportedWithReceivedAt', () => {
 				mvt: 3600,
 				gpst: 60,
 				celt: 600,
-				acct: 1,
+				acct: 0.1,
 			},
 			dev: {
 				v: {
@@ -143,7 +143,7 @@ describe('toReportedWithReceivedAt', () => {
 			mvt: { value: 3600, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			gpst: { value: 60, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			celt: { value: 600, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
-			acct: { value: 1, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
+			acct: { value: 0.1, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 		})
 		expect(r.dev).toEqual({
 			v: {

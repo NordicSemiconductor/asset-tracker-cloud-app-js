@@ -21,6 +21,8 @@ export const NumberConfigSetting = ({
 	onChange,
 	desired,
 	reported,
+	minimum,
+	maximum,
 }: {
 	label?: string
 	intro?: string
@@ -34,6 +36,8 @@ export const NumberConfigSetting = ({
 		value: number
 		receivedAt: Date
 	}
+	minimum?: number
+	maximum?: number
 }) => {
 	const [input, updateInput] = useState(`${desired ?? reported?.value}`)
 	return (
@@ -71,8 +75,9 @@ export const NumberConfigSetting = ({
 					name={id}
 					id={id}
 					placeholder={`e.g. "${example ?? 60}"`}
-					step={step ?? step}
-					min={0}
+					step={step}
+					min={minimum ?? 0}
+					max={maximum ?? Number.MAX_SAFE_INTEGER}
 					value={input}
 					onChange={({ target: { value } }) => {
 						updateInput(value)

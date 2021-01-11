@@ -247,24 +247,17 @@ export const Settings = ({
 					<NumberConfigSetting
 						label={'Accelerometer threshold'}
 						intro={
-							'Accelerometer threshold: minimal absolute value for and accelerometer reading to be considered movement.'
+							'Accelerometer threshold: minimal absolute value for and accelerometer reading to be considered movement. Range: 0 to 19.6133 m/s²'
 						}
 						id={'acct'}
-						example={2.5}
+						example={1.5}
 						step={0.1}
+						minimum={0}
+						maximum={19.6133}
 						unit={'m/s²'}
-						desired={
-							newDesired.acct === undefined ? undefined : newDesired.acct / 10
-						}
-						reported={
-							r.acct && {
-								...r.acct,
-								value: r.acct.value / 10,
-							}
-						}
-						onChange={updateConfigProperty('acct', (v) =>
-							Math.round(parseFloat(v) * 10),
-						)}
+						desired={newDesired.acct}
+						reported={r.acct}
+						onChange={updateConfigProperty('acct', parseFloat)}
 					/>
 				</fieldset>
 				<fieldset>
