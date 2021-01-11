@@ -96,7 +96,6 @@ export const CatMap = ({
 					)
 					.then((data) =>
 						data.map(({ objectValues, objectKeys, date, objectSource }) => {
-							console.log({ objectSource })
 							const pos = objectKeys.reduce(
 								(obj, k, i) => ({
 									...obj,
