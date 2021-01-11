@@ -29,6 +29,7 @@ import { CatMap } from './CatMap'
 import { HistoricalButtonPresses } from '../../HistoricalButtonPresses/HistoricalButtonPresses'
 import { CatLoader } from '../../Cat/CatLoader'
 import { left, right } from 'fp-ts/lib/Either'
+import { HttpRequest } from '@aws-sdk/protocol-http'
 
 export const CatActions = ({ catId }: { catId: string }) => {
 	const [deleted, setDeleted] = useState(false)
@@ -59,6 +60,17 @@ export const CatActions = ({ catId }: { catId: string }) => {
 											credentials,
 											region,
 										})
+										// FIXME: remove when https://github.com/aws/aws-sdk-js-v3/issues/1800 is fixed
+										s3.middlewareStack.add(
+											(next) => async (args) => {
+												delete (args.request as HttpRequest).headers[
+													'content-type'
+												]
+												return next(args)
+											},
+											{ step: 'build' },
+										)
+
 										const avatarUploader = uploadAvatar({
 											s3,
 											bucketName: avatarBucketName,
