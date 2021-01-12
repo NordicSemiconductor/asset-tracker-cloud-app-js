@@ -36,7 +36,7 @@
     "@bifravst/cell-geolocation-helpers": "1.3.26",
     "@bifravst/rsrp-bar": "2.1.8",
     "@bifravst/timestream-helpers": "2.2.0",
-    "@microsoft/signalr": "5.0.1",
+    "@microsoft/signalr": "5.0.2",
     "aws-amplify": "3.3.14",
     "aws-amplify-react": "4.2.18",
     "aws-iot-device-sdk": "2.2.6",
