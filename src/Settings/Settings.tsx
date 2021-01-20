@@ -151,11 +151,9 @@ export const Settings = ({
 				</Help>
 			</Alert>
 			<SettingsForm>
-				<fieldset>
+				<fieldset data-intro={'This sets the operation mode of the tracker.'}>
 					<legend>Mode</legend>
-					<FormGroup
-						data-intro={'This sets the operation mode of the Tracker.'}
-					>
+					<FormGroup>
 						<ButtonGroup>
 							<OutDatedWarning
 								desired={newDesired.act}
@@ -185,7 +183,7 @@ export const Settings = ({
 							<Button
 								color={'info'}
 								data-intro={
-									'In <em>passive</em> mode only if it detects movement.'
+									'In <em>Passive</em> mode, the tracker will wait for movement (triggered by the accelerometer) before sending an update to the cloud.'
 								}
 								outline={isActive}
 								onClick={() => {
@@ -197,7 +195,7 @@ export const Settings = ({
 							<Button
 								color={'success'}
 								data-intro={
-									'In <em>active</em> mode the tracker will continuously send updates.'
+									'In <em>Active</em> mode, the tracker will send an update in a configurable interval.'
 								}
 								outline={!isActive}
 								onClick={() => {
@@ -209,29 +207,25 @@ export const Settings = ({
 						</ButtonGroup>
 					</FormGroup>
 				</fieldset>
-				<fieldset>
-					<legend>Active Mode Settings</legend>
+				<fieldset data-intro={'How long to try to acquire a GPS fix.'}>
+					<legend>GPS Timeout</legend>
 					<NumberConfigSetting
-						label={'Active Wait Time'}
-						intro={
-							'In <em>active</em> mode: wait this long until sending the next update. The actual interval will be this time plus the time it takes to get a GPS fix.'
-						}
-						id={'actwt'}
-						desired={newDesired.actwt}
-						reported={r.actwt}
-						onChange={updateConfigProperty('actwt')}
+						id={'gpst'}
+						desired={newDesired.gpst}
+						reported={r.gpst}
+						example={60}
+						onChange={updateConfigProperty('gpst')}
 						minimum={1}
 						maximum={MAX_INT32}
-						example={60}
 					/>
 				</fieldset>
-				<fieldset>
+				<fieldset data-intro={'This configures the <em>passive</em> mode.'}>
 					<legend>Passive Mode Settings</legend>
 					<SideBySide>
 						<NumberConfigSetting
 							label={'Movement Resolution'}
 							intro={
-								'In <em>passive</em> mode: Time to wait after detecting movement before sending the next update'
+								'After detecting movement send an update and wait this amount of time until movement again can trigger the next update.'
 							}
 							id={'mvres'}
 							desired={newDesired.mvres}
@@ -243,9 +237,7 @@ export const Settings = ({
 						/>
 						<NumberConfigSetting
 							label={'Movement Timeout'}
-							intro={
-								'In <em>passive</em> mode: Send update at least this often'
-							}
+							intro={'Send updates to the cloud at least this often.'}
 							id={'mvt'}
 							example={3600}
 							desired={newDesired.mvt}
@@ -258,7 +250,7 @@ export const Settings = ({
 					<NumberConfigSetting
 						label={'Accelerometer threshold'}
 						intro={
-							'Accelerometer threshold: minimal absolute value for and accelerometer reading to be considered movement. Range: 0 to 19.6133 m/s²'
+							'Minimal absolute value for an accelerometer reading to be considered movement. Range: 0 to 19.6133 m/s².'
 						}
 						id={'acct'}
 						example={0.1}
@@ -271,35 +263,21 @@ export const Settings = ({
 						onChange={updateConfigProperty('acct', parseFloat)}
 					/>
 				</fieldset>
-				<fieldset>
-					<legend>Timeouts</legend>
-					<SideBySide>
-						<NumberConfigSetting
-							id={'gpst'}
-							label={'GPS Timeout'}
-							intro={'Timeout for GPS fix'}
-							desired={newDesired.gpst}
-							reported={r.gpst}
-							example={60}
-							onChange={updateConfigProperty('gpst')}
-							minimum={1}
-							maximum={MAX_INT32}
-						/>
-						{/*
-					FIXME: enable once https://github.com/bifravst/cat-tracker-fw/issues/25 is implemented
+				<fieldset data-intro={'This configures the <em>active</em> mode.'}>
+					<legend>Active Mode Settings</legend>
 					<NumberConfigSetting
-						id={'celt'}
-						label={'Cellular Timeout'}
-						intro={'Timeout for cellular establishing the connection'}
-						desired={newDesired.celt}
-						reported={r.celt}
-						example={600}
-						onChange={updateConfigProperty('celt')}
+						label={'Active Wait Time'}
+						intro={
+							'Wait this amount of seconds until sending the next update. The actual interval will be this time plus the time it takes to get a GPS fix.'
+						}
+						id={'actwt'}
+						desired={newDesired.actwt}
+						reported={r.actwt}
+						onChange={updateConfigProperty('actwt')}
 						minimum={1}
 						maximum={MAX_INT32}
+						example={60}
 					/>
-					*/}
-					</SideBySide>
 				</fieldset>
 				<FooterWithFullWidthButton>
 					<Button
