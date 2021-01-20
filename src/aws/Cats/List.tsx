@@ -37,7 +37,7 @@ const ListCats = ({
 } & ButtonWarningProps) => {
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState(
-		[] as { id: string; name: string; labels?: string[] }[],
+		[] as { id: string; name: string; labels?: string[]; isTest: boolean }[],
 	)
 	const [error, setError] = useState<Error>()
 
@@ -48,7 +48,6 @@ const ListCats = ({
 			.send(new ListThingsCommand({}))
 			.then(({ things }) => {
 				if (isCancelled) return
-				console.log(things)
 				setCats(
 					(things ?? []).map(({ thingName, attributes }) => ({
 						id: thingName ?? 'unknown',
@@ -56,6 +55,7 @@ const ListCats = ({
 						labels: Object.entries(attributes ?? {})
 							.filter(([name]) => name !== 'name')
 							.map(([name, value]) => `${name}:${value}`),
+						isTest: attributes?.test !== undefined,
 					})),
 				)
 				setLoading(false)

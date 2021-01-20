@@ -39,42 +39,51 @@ export const CatList = ({
 	cats,
 	showButtonWarning,
 	snooze,
+	filterTestDevices,
 }: {
-	cats: { id: string; name: string; labels?: string[] }[]
+	cats: { id: string; name: string; labels?: string[]; isTest?: boolean }[]
+	/**
+	 * Filter out
+	 */
+	filterTestDevices?: boolean
 } & ButtonWarningProps) => (
 	<Table>
 		<tbody>
-			{cats.map(({ id, name, labels }) => {
-				const showWarning = showButtonWarning(id)
-				const Widget = showWarning ? CatWithWarning : Cat
-				return (
-					<tr key={id}>
-						<Widget>
-							<Link to={`/cat/${id}`}>{name}</Link>
-							<span>
-								{labels && (
-									<Labels>
-										{labels.map((name) => (
-											<Badge pill={true} color={'info'}>
-												{name}
-											</Badge>
-										))}
-									</Labels>
-								)}
-								{showWarning && (
-									<ClearButton
-										title="Click to snooze alarm"
-										onClick={() => snooze(id)}
-									>
-										{emojify('🔴')}
-										<RelativeTime ts={showWarning} />
-									</ClearButton>
-								)}
-							</span>
-						</Widget>
-					</tr>
+			{cats
+				.filter(
+					({ isTest }) => (filterTestDevices ?? true ? !isTest : true), // This is so that test devices do not show up here
 				)
-			})}
+				.map(({ id, name, labels }) => {
+					const showWarning = showButtonWarning(id)
+					const Widget = showWarning ? CatWithWarning : Cat
+					return (
+						<tr key={id}>
+							<Widget>
+								<Link to={`/cat/${id}`}>{name}</Link>
+								<span>
+									{labels && (
+										<Labels>
+											{labels.map((name) => (
+												<Badge pill={true} color={'info'}>
+													{name}
+												</Badge>
+											))}
+										</Labels>
+									)}
+									{showWarning && (
+										<ClearButton
+											title="Click to snooze alarm"
+											onClick={() => snooze(id)}
+										>
+											{emojify('🔴')}
+											<RelativeTime ts={showWarning} />
+										</ClearButton>
+									)}
+								</span>
+							</Widget>
+						</tr>
+					)
+				})}
 		</tbody>
 	</Table>
 )
