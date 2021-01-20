@@ -36,7 +36,9 @@ const ListCats = ({
 	mqttEndpoint: string
 } & ButtonWarningProps) => {
 	const [loading, setLoading] = useState(true)
-	const [cats, setCats] = useState([] as { id: string; name: string }[])
+	const [cats, setCats] = useState(
+		[] as { id: string; name: string; labels?: string[] }[],
+	)
 	const [error, setError] = useState<Error>()
 
 	// Fetch list of devices
@@ -46,10 +48,14 @@ const ListCats = ({
 			.send(new ListThingsCommand({}))
 			.then(({ things }) => {
 				if (isCancelled) return
+				console.log(things)
 				setCats(
 					(things ?? []).map(({ thingName, attributes }) => ({
 						id: thingName ?? 'unknown',
 						name: attributes?.name ?? thingName ?? 'unknown',
+						labels: Object.entries(attributes ?? {})
+							.filter(([name]) => name !== 'name')
+							.map(([name, value]) => `${name}:${value}`),
 					})),
 				)
 				setLoading(false)
