@@ -12,6 +12,8 @@ import { default as introJs } from 'intro.js'
 
 const intro = introJs()
 
+const MAX_INT32 = 2147483647
+
 const SettingsForm = styled(Form)`
 	@media (min-width: ${mobileBreakpoint}) {
 		display: grid;
@@ -129,6 +131,7 @@ export const Settings = ({
 		window.localStorage.setItem('bifravst:settings:help', 'hidden')
 		setVisible(false)
 	}
+
 	return (
 		<>
 			<Alert color={'info'} isOpen={visible} toggle={onDismiss}>
@@ -217,6 +220,9 @@ export const Settings = ({
 						desired={newDesired.actwt}
 						reported={r.actwt}
 						onChange={updateConfigProperty('actwt')}
+						minimum={1}
+						maximum={MAX_INT32}
+						example={60}
 					/>
 				</fieldset>
 				<fieldset>
@@ -231,6 +237,9 @@ export const Settings = ({
 							desired={newDesired.mvres}
 							reported={r.mvres}
 							onChange={updateConfigProperty('mvres')}
+							minimum={1}
+							maximum={MAX_INT32}
+							example={300}
 						/>
 						<NumberConfigSetting
 							label={'Movement Timeout'}
@@ -242,6 +251,8 @@ export const Settings = ({
 							desired={newDesired.mvt}
 							reported={r.mvt}
 							onChange={updateConfigProperty('mvt')}
+							minimum={1}
+							maximum={MAX_INT32}
 						/>
 					</SideBySide>
 					<NumberConfigSetting
@@ -250,7 +261,7 @@ export const Settings = ({
 							'Accelerometer threshold: minimal absolute value for and accelerometer reading to be considered movement. Range: 0 to 19.6133 m/s²'
 						}
 						id={'acct'}
-						example={1.5}
+						example={0.1}
 						step={0.1}
 						minimum={0}
 						maximum={19.6133}
@@ -269,8 +280,10 @@ export const Settings = ({
 							intro={'Timeout for GPS fix'}
 							desired={newDesired.gpst}
 							reported={r.gpst}
-							example={180}
+							example={60}
 							onChange={updateConfigProperty('gpst')}
+							minimum={1}
+							maximum={MAX_INT32}
 						/>
 						{/*
 					FIXME: enable once https://github.com/bifravst/cat-tracker-fw/issues/25 is implemented
@@ -282,6 +295,8 @@ export const Settings = ({
 						reported={r.celt}
 						example={600}
 						onChange={updateConfigProperty('celt')}
+						minimum={1}
+						maximum={MAX_INT32}
 					/>
 					*/}
 					</SideBySide>

@@ -40,6 +40,8 @@ export const NumberConfigSetting = ({
 	maximum?: number
 }) => {
 	const [input, updateInput] = useState(`${desired ?? reported?.value}`)
+	const minValue = minimum ?? 0
+	const maxValue = maximum ?? Number.MAX_SAFE_INTEGER
 	return (
 		<FormGroup data-intro={intro} className={'number-config-setting'}>
 			{label !== undefined && <Label for={id}>{label}:</Label>}
@@ -76,10 +78,12 @@ export const NumberConfigSetting = ({
 					id={id}
 					placeholder={`e.g. "${example ?? 60}"`}
 					step={step}
-					min={minimum ?? 0}
-					max={maximum ?? Number.MAX_SAFE_INTEGER}
+					min={minValue}
+					max={maxValue}
 					value={input}
 					onChange={({ target: { value } }) => {
+						if (parseInt(value) < minValue) value = `${minValue}`
+						if (parseInt(value) > maxValue) value = `${maxValue}`
 						updateInput(value)
 						onChange(value)
 					}}
