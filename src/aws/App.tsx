@@ -15,7 +15,10 @@ import { ToggleNavigation } from '../Navigation/ToggleNavigation'
 import { GlobalStyle } from '../Styles'
 import { AboutPage } from './About/Page'
 import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
-import { parseResult, queryClient } from '@bifravst/timestream-helpers'
+import {
+	parseResult,
+	queryClient,
+} from '@nordicsemiconductor/timestream-helpers'
 import { format } from 'date-fns'
 
 import '@aws-amplify/ui/dist/style.css'

@@ -1,5 +1,5 @@
 {
-  "name": "@bifravst/app",
+  "name": "@nordicsemiconductor/app",
   "version": "0.0.0-development",
   "description": "Cat Tracker Web Application",
   "scripts": {
@@ -12,33 +12,33 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bifravst/app.git"
+    "url": "git+https://github.com/NordicSemiconductor/asset-tracker-cloud-app-js.git"
   },
   "bugs": {
-    "url": "https://github.com/bifravst/app/issues"
+    "url": "https://github.com/NordicSemiconductor/asset-tracker-cloud-app-js/issues"
   },
-  "homepage": "https://bifravst.github.io/",
+  "homepage": "https://github.com/NordicSemiconductor/asset-tracker-cloud-app-js#readme",
   "keywords": [
     "Cloud",
     "IoT",
-    "Bifravst",
-    "Asset Tracker",
-    "NordicSemiconductor"
+    "Asset Tracker Cloud Example",
+    "Nordic Semiconductor"
   ],
   "author": "Nordic Semiconductor ASA | nordicsemi.no",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@amcharts/amcharts4": "4.10.13",
-    "@aws-sdk/client-iot": "3.3.0",
-    "@aws-sdk/client-iot-data-plane": "3.3.0",
-    "@aws-sdk/client-s3": "3.3.0",
-    "@aws-sdk/util-utf8-browser": "3.1.0",
-    "@bifravst/cell-geolocation-helpers": "1.3.29",
-    "@bifravst/rsrp-bar": "2.1.8",
-    "@bifravst/timestream-helpers": "2.2.0",
+    "@amcharts/amcharts4": "4.10.14",
+    "@aws-sdk/client-iot": "3.4.1",
+    "@aws-sdk/client-iot-data-plane": "3.4.1",
+    "@aws-sdk/client-s3": "3.4.1",
+    "@aws-sdk/client-timestream-query": "^3.4.1",
+    "@aws-sdk/util-utf8-browser": "3.4.1",
     "@microsoft/signalr": "5.0.2",
-    "aws-amplify": "3.3.14",
-    "aws-amplify-react": "4.2.18",
+    "@nordicsemiconductor/cell-geolocation-helpers": "2.0.0",
+    "@nordicsemiconductor/rsrp-bar": "3.0.0",
+    "@nordicsemiconductor/timestream-helpers": "3.0.1",
+    "aws-amplify": "3.3.16",
+    "aws-amplify-react": "4.2.20",
     "aws-iot-device-sdk": "2.2.6",
     "azure-iothub": "1.13.1",
     "date-fns": "2.16.1",
@@ -53,10 +53,10 @@
     "leaflet": "1.7.1",
     "mcc-mnc-list": "1.1.3",
     "memoize-one": "5.1.1",
-    "msal": "1.4.4",
+    "msal": "1.4.5",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-leaflet": "3.0.5",
+    "react-leaflet": "3.1.0",
     "react-router-dom": "5.2.0",
     "reactstrap": "8.9.0",
     "styled-components": "5.2.1",
@@ -66,10 +66,10 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.12.7",
-    "@bifravst/code-style": "8.0.134",
-    "@bifravst/eslint-config-typescript": "5.0.90",
     "@commitlint/cli": "11.0.0",
     "@commitlint/config-angular": "11.0.0",
+    "@nordicsemiconductor/asset-tracker-cloud-code-style": "9.0.2",
+    "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "^7.0.0",
     "@types/aws-iot-device-sdk": "2.2.2",
     "@types/intro.js": "3.0.0",
     "@types/jest": "26.0.20",
@@ -83,10 +83,10 @@
     "@types/styled-components": "5.1.7",
     "@types/twemoji": "12.1.1",
     "@types/uuid": "8.3.0",
-    "@typescript-eslint/eslint-plugin": "4.14.1",
-    "@typescript-eslint/parser": "4.14.1",
+    "@typescript-eslint/eslint-plugin": "4.14.2",
+    "@typescript-eslint/parser": "4.14.2",
     "babel-eslint": "10.1.0",
-    "eslint": "7.18.0",
+    "eslint": "7.19.0",
     "eslint-config-react-app": "6.0.0",
     "eslint-plugin-flowtype": "5.2.0",
     "eslint-plugin-import": "2.22.1",
@@ -97,8 +97,8 @@
     "lint-staged": "10.5.3",
     "prettier": "2.2.1",
     "react-scripts": "4.0.1",
-    "snyk": "1.439.1",
-    "ts-jest": "26.4.4",
+    "snyk": "1.440.4",
+    "ts-jest": "26.5.0",
     "typescript": "4.1.3"
   },
   "husky": {

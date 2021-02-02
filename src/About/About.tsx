@@ -22,7 +22,9 @@ export const About = ({ config }: { config: ReactAppConfigType }) => (
 			<p>
 				Please also consider the{' '}
 				<a
-					href={'https://bifravst.github.io/'}
+					href={
+						'https://nordicsemiconductor.github.io/asset-tracker-cloud-docs/'
+					}
 					target="_blank"
 					rel="noopener noreferrer"
 				>

@@ -4,7 +4,7 @@ import { ReportedTime } from '../ReportedTime/ReportedTime'
 import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
 import { emojify } from '../Emojify/Emojify'
 import styled from 'styled-components'
-import { RSRP, RSRPBar } from '@bifravst/rsrp-bar'
+import { RSRP, RSRPBar } from '@nordicsemiconductor/rsrp-bar'
 import { identifyIssuer } from 'e118-iin-list'
 import { isSome, none } from 'fp-ts/lib/Option'
 

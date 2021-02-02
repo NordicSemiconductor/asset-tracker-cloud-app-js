@@ -100,7 +100,9 @@ export const List = ({
 					No cats, yet. Read more about how to create{' '}
 					<em>Device Credentials</em> for your cat trackers{' '}
 					<a
-						href={'https://bifravst.github.io/'}
+						href={
+							'https://nordicsemiconductor.github.io/asset-tracker-cloud-docs/'
+						}
 						target="_blank"
 						rel="noopener noreferrer"
 					>

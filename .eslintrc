@@ -1,5 +1,5 @@
 {
-  "extends": ["react-app", "@bifravst/eslint-config-typescript"],
+  "extends": ["react-app", "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript"],
   "overrides": [
     {
       "files": ["*.tsx"],
