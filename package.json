@@ -1,5 +1,5 @@
 {
-  "name": "@nordicsemiconductor/app",
+  "name": "@nordicsemiconductor/asset-tracker-cloud-app",
   "version": "0.0.0-development",
   "description": "Cat Tracker Web Application",
   "scripts": {
