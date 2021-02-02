@@ -28,7 +28,7 @@ const EventHandler = ({
 
 export const Map = ({ cats }: { cats: CatLocation[] }) => {
 	let zoom = 3
-	const userZoom = window.localStorage.getItem('bifravst:zoom')
+	const userZoom = window.localStorage.getItem('asset-tracker:zoom')
 	if (userZoom !== null) {
 		zoom = parseInt(userZoom, 10)
 	}
@@ -36,7 +36,7 @@ export const Map = ({ cats }: { cats: CatLocation[] }) => {
 		<MapContainer center={[63.4212859, 10.4370703]} zoom={zoom}>
 			<EventHandler
 				onZoomEnd={({ map }) => {
-					window.localStorage.setItem('bifravst:zoom', `${map.getZoom()}`)
+					window.localStorage.setItem('asset-tracker:zoom', `${map.getZoom()}`)
 				}}
 			/>
 			<TileLayer

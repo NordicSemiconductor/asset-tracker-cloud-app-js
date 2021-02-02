@@ -41,7 +41,7 @@ export const Collapsable = ({
 	onToggle?: (collapsed: boolean) => void
 }) => {
 	let initialState = initial ?? false
-	if (window.localStorage.getItem(`bifravst:toggle:${id}`) === '1') {
+	if (window.localStorage.getItem(`asset-tracker:toggle:${id}`) === '1') {
 		initialState = true
 	}
 	const [collapsed, setCollapsed] = useState(initialState)
@@ -51,7 +51,7 @@ export const Collapsable = ({
 		setCollapsed(state)
 
 		onToggle?.(state)
-		window.localStorage.setItem(`bifravst:toggle:${id}`, state ? '1' : '0')
+		window.localStorage.setItem(`asset-tracker:toggle:${id}`, state ? '1' : '0')
 	}
 
 	return (

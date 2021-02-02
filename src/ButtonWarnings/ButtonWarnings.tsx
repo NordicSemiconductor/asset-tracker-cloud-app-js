@@ -21,7 +21,7 @@ export const ButtonWarnings = ({
 
 	// Read/Set localstorage of button snoozes
 	useEffect(() => {
-		const snoozes = window.localStorage.getItem(`bifravst:catlist:snoozes`)
+		const snoozes = window.localStorage.getItem(`asset-tracker:catlist:snoozes`)
 		if (snoozes !== null) {
 			console.log(`Restoring`, JSON.parse(snoozes))
 			setButtonSnoozes(
@@ -53,7 +53,7 @@ export const ButtonWarnings = ({
 				}
 				console.log(`Storing`, JSON.stringify(u))
 				window.localStorage.setItem(
-					`bifravst:catlist:snoozes`,
+					`asset-tracker:catlist:snoozes`,
 					JSON.stringify(u),
 				)
 				return u

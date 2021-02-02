@@ -116,10 +116,10 @@ export const Cat = ({
 		if (!error) {
 			setTimeout(() => {
 				window.requestAnimationFrame(() => {
-					if (window.localStorage.getItem('bifravst:cat:intro') === null) {
+					if (window.localStorage.getItem('asset-tracker:cat:intro') === null) {
 						intro.start()
 						intro.onexit(() => {
-							window.localStorage.setItem('bifravst:cat:intro', 'done')
+							window.localStorage.setItem('asset-tracker:cat:intro', 'done')
 						})
 						console.log('Starting Intro.js')
 					}

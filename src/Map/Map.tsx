@@ -153,7 +153,7 @@ export const Map = ({
 	}[]
 }) => {
 	let zoom = 13
-	const userZoom = window.localStorage.getItem('bifravst:zoom')
+	const userZoom = window.localStorage.getItem('asset-tracker:zoom')
 	if (userZoom !== null) {
 		zoom = parseInt(userZoom, 10)
 	}
@@ -189,7 +189,10 @@ export const Map = ({
 			>
 				<EventHandler
 					onZoomEnd={({ map }) => {
-						window.localStorage.setItem('bifravst:zoom', `${map.getZoom()}`)
+						window.localStorage.setItem(
+							'asset-tracker:zoom',
+							`${map.getZoom()}`,
+						)
 						setMapZoom(map.getZoom())
 					}}
 				/>

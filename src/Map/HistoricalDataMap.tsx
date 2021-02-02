@@ -102,14 +102,15 @@ export const HistoricalDataMap = ({
 	let initialState = true
 
 	if (
-		window.localStorage.getItem(`bifravst:catmap:fetchPastPositions`) === '0'
+		window.localStorage.getItem(`asset-tracker:catmap:fetchPastPositions`) ===
+		'0'
 	) {
 		initialState = false
 	}
 	const [fetchHistoricalData, setFetchHistoricalData] = useState(initialState)
 
 	const storedNumPastPostions = window.localStorage.getItem(
-		'bifravst:catmap:numEntries',
+		'asset-tracker:catmap:numEntries',
 	)
 	const [numEntries, setNumEntries] = useState(
 		storedNumPastPostions !== null ? parseInt(storedNumPastPostions, 10) : 10,
@@ -127,11 +128,11 @@ export const HistoricalDataMap = ({
 				setNumEntries(numEntries)
 				setFetchHistoricalData(enabled)
 				window.localStorage.setItem(
-					`bifravst:catmap:fetchPastPositions`,
+					`asset-tracker:catmap:fetchPastPositions`,
 					enabled ? '1' : '0',
 				)
 				window.localStorage.setItem(
-					'bifravst:catmap:numEntries',
+					'asset-tracker:catmap:numEntries',
 					`${numEntries}`,
 				)
 			}}

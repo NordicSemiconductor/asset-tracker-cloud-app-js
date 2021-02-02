@@ -7,11 +7,13 @@ export const About = ({ config }: { config: ReactAppConfigType }) => (
 		<CardHeader>About</CardHeader>
 		<CardBody>
 			<p>
-				This is the web application of <em>Bifravst</em> which aims to provide a
-				concrete end-to-end sample for an IoT product in the asset tracker
-				space, a Cat Tracker. You can find the source code on{' '}
+				This is the web application of the <em>Asset Tracker Cloud Example</em>{' '}
+				which aims to provide a concrete end-to-end sample for an IoT product in
+				the asset tracker space, a Cat Tracker. You can find the source code on{' '}
 				<a
-					href={'https://github.com/bifravst'}
+					href={
+						'https://github.com/NordicSemiconductor/asset-tracker-cloud-app-js'
+					}
 					target="_blank"
 					rel="noopener noreferrer"
 				>
@@ -28,7 +30,7 @@ export const About = ({ config }: { config: ReactAppConfigType }) => (
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					Bifravst handbook
+					Asset Tracker Cloud Example handbook
 				</a>
 				.
 			</p>

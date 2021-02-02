@@ -124,11 +124,11 @@ export const Settings = ({
 			: r.act?.value === true
 
 	const [visible, setVisible] = useState(
-		window.localStorage.getItem('bifravst:settings:help') !== 'hidden',
+		window.localStorage.getItem('asset-tracker:settings:help') !== 'hidden',
 	)
 
 	const onDismiss = () => {
-		window.localStorage.setItem('bifravst:settings:help', 'hidden')
+		window.localStorage.setItem('asset-tracker:settings:help', 'hidden')
 		setVisible(false)
 	}
 
