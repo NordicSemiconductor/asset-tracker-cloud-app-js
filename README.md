@@ -13,6 +13,5 @@ The Cat Tracker Web Application is a reference single-page application (SPA)
 developed using [create-react-app](https://github.com/facebook/create-react-app)
 in [TypeScript](https://www.typescriptlang.org/).
 
-> :information_source: Read the complete Asset Tracker Cloud Example
-> documentation
-> [here](https://nordicsemiconductor.github.io/asset-tracker-cloud-docs/).
+> :information_source:
+> [Read the complete Asset Tracker Cloud Example documentation](https://nordicsemiconductor.github.io/asset-tracker-cloud-docs/).
