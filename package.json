@@ -97,7 +97,7 @@
     "lint-staged": "10.5.3",
     "prettier": "2.2.1",
     "react-scripts": "4.0.1",
-    "snyk": "1.440.4",
+    "snyk": "1.440.5",
     "ts-jest": "26.5.0",
     "typescript": "4.1.3"
   },
