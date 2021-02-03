@@ -34,7 +34,7 @@
     "@aws-sdk/client-timestream-query": "3.4.1",
     "@aws-sdk/util-utf8-browser": "3.4.1",
     "@microsoft/signalr": "5.0.2",
-    "@nordicsemiconductor/cell-geolocation-helpers": "2.0.2",
+    "@nordicsemiconductor/cell-geolocation-helpers": "2.0.3",
     "@nordicsemiconductor/rsrp-bar": "3.0.0",
     "@nordicsemiconductor/timestream-helpers": "3.0.1",
     "aws-amplify": "3.3.16",
