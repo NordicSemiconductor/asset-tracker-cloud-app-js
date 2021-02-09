@@ -40,7 +40,7 @@
     "@nordicsemiconductor/cell-geolocation-helpers": "2.0.3",
     "@nordicsemiconductor/rsrp-bar": "3.0.0",
     "@nordicsemiconductor/timestream-helpers": "3.0.1",
-    "aws-amplify": "3.3.17",
+    "aws-amplify": "3.3.18",
     "aws-amplify-react": "4.2.21",
     "aws-iot-device-sdk": "2.2.6",
     "azure-iothub": "1.13.1",
