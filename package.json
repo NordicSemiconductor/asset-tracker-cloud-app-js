@@ -35,6 +35,7 @@
     "@aws-sdk/client-iot-data-plane": "3.5.0",
     "@aws-sdk/client-s3": "3.5.0",
     "@aws-sdk/client-timestream-query": "3.5.0",
+    "@aws-sdk/protocol-http": "^3.5.0",
     "@aws-sdk/util-utf8-browser": "3.4.1",
     "@microsoft/signalr": "5.0.3",
     "@nordicsemiconductor/cell-geolocation-helpers": "2.0.3",
