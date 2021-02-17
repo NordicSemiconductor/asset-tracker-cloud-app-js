@@ -6,6 +6,7 @@ import { pipe } from 'fp-ts/lib/pipeable'
 import { ErrorInfo } from '../Error/ErrorInfo'
 import { DeviceTwin } from '../@types/azure-device'
 import { DeviceConfig } from '../@types/device-state'
+import { v4 } from 'uuid'
 
 const toQueryString = (obj: any): string => {
 	if (Object.keys(obj).length === 0) {
@@ -51,7 +52,7 @@ export type ApiClient = {
 		id: string
 		url: string
 		version: string
-	}) => Promise<Either<ErrorInfo, { success: boolean }>>
+	}) => Promise<Either<ErrorInfo, { success: boolean; jobId: string }>>
 	getSignalRConnectionInfo: () => Promise<
 		Either<ErrorInfo, { url: string; accessToken: string }>
 	>
@@ -255,16 +256,19 @@ export const fetchApiClient = ({
 			id: string
 			url: string
 			version: string
-		}): Promise<Either<ErrorInfo, { success: boolean }>> =>
-			pipe(
+		}): Promise<Either<ErrorInfo, { success: boolean; jobId: string }>> => {
+			const jobId = v4()
+			return pipe(
 				patch<{ success: boolean }>(`device/${id}`, {
 					firmware: {
 						fwVersion: version,
 						fwPackageURI: url,
+						jobId,
 					},
 				}),
-				TE.map(({ success }) => ({ success })),
-			)(),
+				TE.map(({ success }) => ({ success, jobId })),
+			)()
+		},
 		getSignalRConnectionInfo: get<{ url: string; accessToken: string }>(
 			'signalRConnectionInfo',
 		),
