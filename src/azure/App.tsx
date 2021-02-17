@@ -56,7 +56,7 @@ export const boot = ({
 	const apiScope = `https://${adB2cTenant}.onmicrosoft.com/api`
 	const scopes = [
 		`${apiScope}/user_impersonation`,
-		`${apiScope}/asset-tracker.admin`,
+		`${apiScope}/cat-tracker.admin`,
 	]
 	console.log('Token Scopes', scopes)
 
