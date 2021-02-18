@@ -39,14 +39,14 @@ export const Operator = ({ op }: { op?: Op }) => (
 )
 
 export const ConnectionInformation = ({
-	networkOperator,
+	networkMode,
 	rsrp,
 	mccmnc,
 	receivedAt,
 	reportedAt,
 	iccid,
 }: {
-	networkOperator?: string
+	networkMode?: string
 	iccid?: string
 	rsrp: number
 	mccmnc: number
@@ -65,9 +65,7 @@ export const ConnectionInformation = ({
 					<Operator op={filterOperator({ mccmnc: `${mccmnc}` })[0]} />
 				</>
 			</TextWithIcon>
-			<abbr title={'Network operator'}>
-				{emojify(`📶 ${networkOperator ?? '?'}`)}
-			</abbr>
+			<abbr title={'Network mode'}>{emojify(`📶 ${networkMode ?? '?'}`)}</abbr>
 			<abbr title={'SIM issuer'}>{emojify(`📱 ${simIssuer ?? '?'}`)}</abbr>
 			<ReportedTime receivedAt={receivedAt} reportedAt={reportedAt} />
 		</div>

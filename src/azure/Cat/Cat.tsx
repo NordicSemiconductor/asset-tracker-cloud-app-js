@@ -277,7 +277,7 @@ export const Cat = ({
 							rsrp={reportedWithTime.roam.v.value.rsrp}
 							receivedAt={reportedWithTime.roam.v.receivedAt}
 							reportedAt={new Date(reportedWithTime.roam.ts.value)}
-							networkOperator={reportedWithTime.dev.v.value.nw}
+							networkMode={reportedWithTime.dev.v.value.nw}
 							iccid={reportedWithTime.dev.v.value.iccid}
 						/>
 					</Toggle>
