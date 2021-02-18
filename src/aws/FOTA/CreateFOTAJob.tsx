@@ -53,15 +53,12 @@ export const CreateFOTAJob = ({
 							}}
 						/>
 					</p>
+					{upgradeFile && <p>Size: {upgradeFile.size} bytes</p>}
 				</FormGroup>
 			</fieldset>
 			{upgradeFile && (
 				<>
 					<fieldset>
-						<FormGroup>
-							<Label>Size</Label>
-							<p>{upgradeFile.size} bytes</p>
-						</FormGroup>
 						<FormGroup>
 							<Label for={'nextVersion'}>Firmware version</Label>
 							<Input

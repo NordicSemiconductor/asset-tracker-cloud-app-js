@@ -24,18 +24,6 @@ export const CreateReportedFOTAJobProgress = ({
 		<Form>
 			<fieldset>
 				<FormGroup>
-					<Label for={'nextVersion'}>Firmware version</Label>
-					<Input
-						type={'text'}
-						name={'nextVersion'}
-						id={'nextVersion'}
-						value={nextVersion}
-						onChange={({ target: { value } }) => {
-							setNextVersion(value)
-						}}
-					/>
-				</FormGroup>
-				<FormGroup>
 					<Label>Firmware file</Label>
 					<p>
 						<FilePicker
@@ -56,32 +44,43 @@ export const CreateReportedFOTAJobProgress = ({
 							}}
 						/>
 					</p>
+					{upgradeFile && <p>Size: {upgradeFile.size} bytes</p>}
 				</FormGroup>
 			</fieldset>
 			{upgradeFile && (
-				<fieldset>
-					<FormGroup>
-						<Label>Size</Label>
-						<p>{upgradeFile.size} bytes</p>
-					</FormGroup>
-				</fieldset>
+				<>
+					<fieldset>
+						<FormGroup>
+							<Label for={'nextVersion'}>Firmware version</Label>
+							<Input
+								type={'text'}
+								name={'nextVersion'}
+								id={'nextVersion'}
+								value={nextVersion}
+								onChange={({ target: { value } }) => {
+									setNextVersion(value)
+								}}
+							/>
+						</FormGroup>
+					</fieldset>
+					<FooterWithFullWidthButton>
+						<Button
+							color={'primary'}
+							disabled={upgradeFile === undefined || nextVersion.length === 0}
+							onClick={() => {
+								if (upgradeFile !== undefined) {
+									onJob({
+										file: upgradeFile,
+										version: nextVersion,
+									})
+								}
+							}}
+						>
+							Deploy upgrade
+						</Button>
+					</FooterWithFullWidthButton>
+				</>
 			)}
-			<FooterWithFullWidthButton>
-				<Button
-					color={'primary'}
-					disabled={upgradeFile === undefined || nextVersion.length === 0}
-					onClick={() => {
-						if (upgradeFile !== undefined) {
-							onJob({
-								file: upgradeFile,
-								version: nextVersion,
-							})
-						}
-					}}
-				>
-					Deploy upgrade
-				</Button>
-			</FooterWithFullWidthButton>
 		</Form>
 	)
 }
