@@ -12,9 +12,13 @@ const HistoricalDataChartDiv = styled.div`
 export const HistoricalDataChart = ({
 	data,
 	type,
+	min,
+	max,
 }: {
 	data: { date: Date; value: number }[]
 	type: 'line' | 'column'
+	min?: number
+	max?: number
 }) => {
 	const chartRef = useRef<am4charts.XYChart>()
 	const uuid = useRef<string>(v4())
@@ -33,6 +37,8 @@ export const HistoricalDataChart = ({
 			new am4charts.ValueAxis<am4charts.AxisRendererY>(),
 		)
 		valueAxes.fontSize = 10
+		valueAxes.min = min
+		valueAxes.max = max
 
 		const series = chart.series.push(
 			type === 'column'
@@ -53,7 +59,7 @@ export const HistoricalDataChart = ({
 		return () => {
 			chartRef.current?.dispose()
 		}
-	}, [data, type])
+	}, [data, type, min, max])
 
 	return <HistoricalDataChartDiv id={uuid.current} />
 }

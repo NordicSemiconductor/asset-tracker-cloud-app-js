@@ -30,6 +30,7 @@ import { HistoricalButtonPresses } from '../../HistoricalButtonPresses/Historica
 import { CatLoader } from '../../Cat/CatLoader'
 import { left, right } from 'fp-ts/lib/Either'
 import { HttpRequest } from '@aws-sdk/protocol-http'
+import { dbmToRSRP } from '@nordicsemiconductor/rsrp-bar'
 
 export const CatActions = ({ catId }: { catId: string }) => {
 	const [deleted, setDeleted] = useState(false)
@@ -252,6 +253,42 @@ export const CatActions = ({ catId }: { catId: string }) => {
 															)}
 														>
 															<Collapsable
+																id={'cat:roam'}
+																title={<h3>{emojify('📶 RSRP')}</h3>}
+															>
+																<HistoricalDataLoader<{
+																	date: Date
+																	value: number
+																}>
+																	timestreamQueryContext={
+																		timestreamQueryContext
+																	}
+																	deviceId={catId}
+																	QueryString={(table) => `
+																		SELECT
+																		time as date,
+																		-measure_value::double as value
+																		FROM ${table}
+																		WHERE deviceId='${catId}' 
+																		AND measure_name='roam.rsrp'
+																		ORDER BY time
+																		LIMIT 100
+																	`}
+																>
+																	{({ data }) => (
+																		<HistoricalDataChart
+																			data={data.map(({ value, date }) => ({
+																				date,
+																				value: -dbmToRSRP(value),
+																			}))}
+																			type={'column'}
+																			max={-70}
+																		/>
+																	)}
+																</HistoricalDataLoader>
+															</Collapsable>
+															<hr />
+															<Collapsable
 																id={'cat:bat'}
 																title={<h3>{emojify('🔋 Battery')}</h3>}
 															>
@@ -264,16 +301,17 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	}
 																	deviceId={catId}
 																	QueryString={(table) => `
-																	SELECT
-																	bin(time, 1h) as date,
-																	MIN(
-																		measure_value::double
-																	) / 1000 AS value
-																	FROM ${table}
-																	WHERE deviceId='${catId}' 
-																	AND measure_name='bat' 
-																	GROUP BY bin(time, 1h)
-																	ORDER BY bin(time, 1h)
+																		SELECT
+																		bin(time, 1h) as date,
+																		MIN(
+																			measure_value::double
+																		) / 1000 AS value
+																		FROM ${table}
+																		WHERE deviceId='${catId}' 
+																		AND measure_name='bat' 
+																		GROUP BY bin(time, 1h)
+																		ORDER BY bin(time, 1h)
+																		LIMIT 100
 																	`}
 																>
 																	{({ data }) => (
