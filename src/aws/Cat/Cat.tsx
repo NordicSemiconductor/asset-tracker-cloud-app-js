@@ -144,6 +144,14 @@ export const Cat = ({
 			metadata: state.metadata,
 		})
 
+	// Calculate the interval in which the device is expected to publish data
+	const expectedSendIntervalInSeconds =
+		(state?.reported.cfg?.act ?? true // default device mode is active
+			? state?.reported.cfg?.actwt ?? 120 // default active wait time is 120 seconds
+			: state?.reported.cfg?.mvt ?? 3600) + // default movement timeout is 3600
+		(state?.reported.cfg?.gpst ?? 60) + // default GPS timeout is 60 seconds
+		60 // add 1 minute for sending and processing
+
 	return (
 		<CatCard>
 			{state && catMap(state)}
@@ -165,6 +173,7 @@ export const Cat = ({
 									reportedAt={new Date(reportedWithReceived.roam.ts.value)}
 									networkMode={reportedWithReceived.dev?.v.value.nw}
 									iccid={reportedWithReceived.dev?.v.value.iccid}
+									dataStaleAfterSeconds={expectedSendIntervalInSeconds}
 								/>
 							</Toggle>
 						)}
@@ -184,6 +193,7 @@ export const Cat = ({
 									<ReportedTime
 										receivedAt={reportedWithReceived.gps.v.receivedAt}
 										reportedAt={new Date(reportedWithReceived.gps.ts.value)}
+										staleAfterSeconds={expectedSendIntervalInSeconds}
 									/>
 								</div>
 							</Toggle>
@@ -196,6 +206,7 @@ export const Cat = ({
 									<ReportedTime
 										receivedAt={reportedWithReceived.bat.v.receivedAt}
 										reportedAt={new Date(reportedWithReceived.bat.ts.value)}
+										staleAfterSeconds={expectedSendIntervalInSeconds}
 									/>
 								</div>
 							</Toggle>
@@ -210,6 +221,7 @@ export const Cat = ({
 									<ReportedTime
 										receivedAt={reportedWithReceived.env.v.receivedAt}
 										reportedAt={new Date(reportedWithReceived.env.ts.value)}
+										staleAfterSeconds={expectedSendIntervalInSeconds}
 									/>
 								</div>
 							</Toggle>
@@ -273,6 +285,7 @@ export const Cat = ({
 								device={reportedWithReceived.dev}
 								roaming={reportedWithReceived.roam}
 								appV={reportedWithReceived.dev?.v?.value?.appV}
+								dataStaleAfterSeconds={expectedSendIntervalInSeconds}
 							/>
 						</Collapsable>
 					</>
@@ -307,6 +320,7 @@ export const Cat = ({
 							<ReportedTime
 								reportedAt={new Date(reported.acc.ts)}
 								receivedAt={reportedWithReceived.acc.v.receivedAt}
+								staleAfterSeconds={expectedSendIntervalInSeconds}
 							/>
 						</Collapsable>
 					</>

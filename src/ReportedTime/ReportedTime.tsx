@@ -8,8 +8,37 @@ const OutDatedSpan = styled.span`
 	margin-left: 0.5rem;
 `
 
-export const ReportedTime = (props: { reportedAt: Date; receivedAt: Date }) => {
-	const { reportedAt, receivedAt, ...restProps } = props
+const Warning = styled.abbr`
+	padding: 0.25rem;
+`
+
+const OldWarning = ({
+	reportIsOld,
+	staleAfterSeconds,
+}: {
+	staleAfterSeconds: number
+	reportIsOld: boolean
+}) => {
+	if (!reportIsOld) return null
+	return (
+		<Warning
+			title={`The device is expected to report updates roughly every ${staleAfterSeconds} seconds, but the data is older.`}
+		>
+			{emojify('⚠️')}
+		</Warning>
+	)
+}
+
+export const ReportedTime = ({
+	reportedAt,
+	receivedAt,
+	staleAfterSeconds,
+	...restProps
+}: {
+	reportedAt: Date
+	receivedAt: Date
+	staleAfterSeconds: number
+}) => {
 	const reportedTimeIsOutDated =
 		(receivedAt.getTime() - reportedAt.getTime()) / 1000 > 300
 	const relativeTimesHaveDiff =
@@ -21,7 +50,8 @@ export const ReportedTime = (props: { reportedAt: Date; receivedAt: Date }) => {
 			includeSeconds: true,
 			addSuffix: true,
 		})
-	const reportIsOld = (Date.now() - reportedAt.getTime()) / 1000 > 3600
+	const reportIsOld =
+		(Date.now() - reportedAt.getTime()) / 1000 > staleAfterSeconds
 	try {
 		return (
 			<span className={'reportedTime'} {...restProps}>
@@ -33,6 +63,10 @@ export const ReportedTime = (props: { reportedAt: Date; receivedAt: Date }) => {
 						<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
 					</OutDatedSpan>
 				)}
+				<OldWarning
+					reportIsOld={reportIsOld}
+					staleAfterSeconds={staleAfterSeconds}
+				/>
 			</span>
 		)
 	} catch {
@@ -40,6 +74,10 @@ export const ReportedTime = (props: { reportedAt: Date; receivedAt: Date }) => {
 			<span className={'reportedTime'} {...restProps}>
 				{emojify('☁️ ')}
 				<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
+				<OldWarning
+					reportIsOld={reportIsOld}
+					staleAfterSeconds={staleAfterSeconds}
+				/>
 			</span>
 		)
 	}

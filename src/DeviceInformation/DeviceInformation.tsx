@@ -33,10 +33,12 @@ export const DeviceInfo = ({
 	device,
 	roaming,
 	appV,
+	dataStaleAfterSeconds,
 }: {
 	device: ReportedDeviceInformation
 	roaming?: ReportedRoamingInformation
 	appV?: string
+	dataStaleAfterSeconds: number
 }) => (
 	<div>
 		<h4>Hard- and Software</h4>
@@ -88,6 +90,7 @@ export const DeviceInfo = ({
 		<StyledReportedTime
 			receivedAt={roaming?.v.receivedAt ?? device.v.receivedAt}
 			reportedAt={new Date(roaming?.ts.value ?? device.ts.value)}
+			staleAfterSeconds={dataStaleAfterSeconds}
 		/>
 	</div>
 )

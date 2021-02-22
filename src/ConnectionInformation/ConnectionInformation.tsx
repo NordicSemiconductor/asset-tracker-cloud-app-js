@@ -45,6 +45,7 @@ export const ConnectionInformation = ({
 	receivedAt,
 	reportedAt,
 	iccid,
+	dataStaleAfterSeconds,
 }: {
 	networkMode?: string
 	iccid?: string
@@ -52,6 +53,7 @@ export const ConnectionInformation = ({
 	mccmnc: number
 	receivedAt: Date
 	reportedAt: Date
+	dataStaleAfterSeconds: number
 }) => {
 	const maybeSimIssuer = iccid !== undefined ? identifyIssuer(iccid) : none
 	const simIssuer = isSome(maybeSimIssuer)
@@ -67,7 +69,11 @@ export const ConnectionInformation = ({
 			</TextWithIcon>
 			<abbr title={'Network mode'}>{emojify(`📶 ${networkMode ?? '?'}`)}</abbr>
 			<abbr title={'SIM issuer'}>{emojify(`📱 ${simIssuer ?? '?'}`)}</abbr>
-			<ReportedTime receivedAt={receivedAt} reportedAt={reportedAt} />
+			<ReportedTime
+				receivedAt={receivedAt}
+				reportedAt={reportedAt}
+				staleAfterSeconds={dataStaleAfterSeconds}
+			/>
 		</div>
 	)
 }
