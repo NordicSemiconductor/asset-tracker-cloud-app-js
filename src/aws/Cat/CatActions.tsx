@@ -271,7 +271,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		FROM ${table}
 																		WHERE deviceId='${catId}' 
 																		AND measure_name='roam.rsrp'
-																		ORDER BY time
+																		ORDER BY time DESC
 																		LIMIT 100
 																	`}
 																>
@@ -310,7 +310,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		WHERE deviceId='${catId}' 
 																		AND measure_name='bat' 
 																		GROUP BY bin(time, 1h)
-																		ORDER BY bin(time, 1h)
+																		ORDER BY bin(time, 1h) DESC
 																		LIMIT 100
 																	`}
 																>
