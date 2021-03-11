@@ -56,9 +56,6 @@ export const ConnectionInformation = ({
 	dataStaleAfterSeconds: number
 }) => {
 	const maybeSimIssuer = iccid !== undefined ? identifyIssuer(iccid) : none
-	const simIssuer = isSome(maybeSimIssuer)
-		? maybeSimIssuer.value.companyName
-		: false
 	return (
 		<div className={'info connection-information'}>
 			<TextWithIcon icon={SignalQuality({ rsrp })}>
@@ -68,7 +65,13 @@ export const ConnectionInformation = ({
 				</>
 			</TextWithIcon>
 			<abbr title={'Network mode'}>{emojify(`📶 ${networkMode ?? '?'}`)}</abbr>
-			<abbr title={'SIM issuer'}>{emojify(`📱 ${simIssuer ?? '?'}`)}</abbr>
+			<abbr title={'SIM issuer'}>
+				{emojify(
+					`📱 ${
+						isSome(maybeSimIssuer) ? maybeSimIssuer.value.companyName : '?'
+					}`,
+				)}
+			</abbr>
 			<ReportedTime
 				receivedAt={receivedAt}
 				reportedAt={reportedAt}

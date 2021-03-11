@@ -180,13 +180,13 @@ export const Cat = ({
 						{reportedWithReceived?.gps && (
 							<Toggle>
 								<div className={'info'}>
-									{reportedWithReceived.gps.v.value.spd &&
+									{reportedWithReceived.gps.v.value.spd !== undefined &&
 										emojify(
 											` 🏃${Math.round(
 												reportedWithReceived.gps.v.value.spd,
 											)}m/s`,
 										)}
-									{reportedWithReceived.gps.v.value.alt &&
+									{reportedWithReceived.gps.v.value.alt !== undefined &&
 										emojify(
 											`✈️ ${Math.round(reportedWithReceived.gps.v.value.alt)}m`,
 										)}
