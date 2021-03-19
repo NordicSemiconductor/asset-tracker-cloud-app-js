@@ -28,7 +28,7 @@
   "author": "Nordic Semiconductor ASA | nordicsemi.no",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@amcharts/amcharts4": "4.10.16",
+    "@amcharts/amcharts4": "4.10.17",
     "@aws-sdk/client-iot": "3.9.0",
     "@aws-sdk/client-iot-data-plane": "3.9.0",
     "@aws-sdk/client-s3": "3.9.0",
