@@ -1,6 +1,5 @@
-import { createBrowserHistory } from 'history'
 import React, { useState, useEffect } from 'react'
-import { Redirect, Route, Router } from 'react-router-dom'
+import { Redirect, Route, BrowserRouter as Router } from 'react-router-dom'
 import { NavbarBrandContextProvider } from '../Navigation/NavbarBrand'
 import { ToggleNavigation } from '../Navigation/ToggleNavigation'
 import { GlobalStyle } from '../Styles'
@@ -99,8 +98,6 @@ export const boot = ({
 				})
 		})
 
-	const history = createBrowserHistory()
-
 	return () => {
 		const [accessToken, setAccessToken] = useState<AuthResponse | undefined>(
 			getTokenFromLocalStorage(ACCESS_TOKEN),
@@ -127,47 +124,47 @@ export const boot = ({
 		}, [accessToken])
 
 		return (
-			<SolutionConfigContext.Provider
-				value={{
-					apiEndpoint,
-					clientId,
-				}}
-			>
-				<Router history={history}>
-					<GlobalStyle />
-					<NavbarBrandContextProvider>
-						<ToggleNavigation
-							loggedIn={accessToken !== undefined}
-							onLogout={() => {
-								window.localStorage.clear()
-								setAccessToken(undefined)
-								setError(undefined)
-								userAgentApplication.logout()
+			<Router>
+				<GlobalStyle />
+				<NavbarBrandContextProvider>
+					<ToggleNavigation
+						loggedIn={accessToken !== undefined}
+						onLogout={() => {
+							window.localStorage.clear()
+							setAccessToken(undefined)
+							setError(undefined)
+							userAgentApplication.logout()
+						}}
+					/>
+					{accessToken === undefined && (
+						<Login
+							onLogin={() => {
+								acquireAccessToken()
+									.then((token) => {
+										setAccessToken(token)
+										window.localStorage.setItem(
+											ACCESS_TOKEN,
+											JSON.stringify(token),
+										)
+									})
+									.catch(setError)
 							}}
 						/>
-						{accessToken === undefined && (
-							<Login
-								onLogin={() => {
-									acquireAccessToken()
-										.then((token) => {
-											setAccessToken(token)
-											window.localStorage.setItem(
-												ACCESS_TOKEN,
-												JSON.stringify(token),
-											)
-										})
-										.catch(setError)
-								}}
-							/>
-						)}
-						{error !== undefined && <ErrorComponent error={error} />}
-						{accessToken && (
-							<AccessTokenContext.Provider value={accessToken}>
-								<ApiClientContext.Provider
-									value={fetchApiClient({
-										endpoint: apiEndpoint,
-										token: accessToken.accessToken,
-									})}
+					)}
+					{error !== undefined && <ErrorComponent error={error} />}
+					{accessToken && (
+						<AccessTokenContext.Provider value={accessToken}>
+							<ApiClientContext.Provider
+								value={fetchApiClient({
+									endpoint: apiEndpoint,
+									token: accessToken.accessToken,
+								})}
+							>
+								<SolutionConfigContext.Provider
+									value={{
+										apiEndpoint,
+										clientId,
+									}}
 								>
 									<Route
 										exact
@@ -178,12 +175,12 @@ export const boot = ({
 									<Route exact path="/cats" component={CatsPage} />
 									<Route exact path="/cat/:catId" component={CatPage} />
 									<Route exact path="/cats-on-map" component={CatsMapPage} />
-								</ApiClientContext.Provider>
-							</AccessTokenContext.Provider>
-						)}
-					</NavbarBrandContextProvider>
-				</Router>
-			</SolutionConfigContext.Provider>
+								</SolutionConfigContext.Provider>
+							</ApiClientContext.Provider>
+						</AccessTokenContext.Provider>
+					)}
+				</NavbarBrandContextProvider>
+			</Router>
 		)
 	}
 }
