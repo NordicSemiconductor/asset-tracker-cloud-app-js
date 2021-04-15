@@ -75,7 +75,7 @@
     "@types/aws-iot-device-sdk": "2.2.2",
     "@types/intro.js": "3.0.1",
     "@types/jest": "26.0.22",
-    "@types/node": "14.14.40",
+    "@types/node": "14.14.41",
     "@types/react": "17.0.3",
     "@types/react-dom": "17.0.3",
     "@types/react-leaflet": "2.8.1",
