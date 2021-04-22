@@ -31,8 +31,8 @@ export const About = ({ config }: { config: ReactAppConfigType }) => (
 					rel="noopener noreferrer"
 				>
 					nRF Asset Tracker
-				</a>
-				.
+				</a>{' '}
+				documentation.
 			</p>
 			<dl>
 				<dt>Version</dt>
