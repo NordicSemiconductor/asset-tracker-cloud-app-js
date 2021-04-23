@@ -361,6 +361,7 @@ export const Cat = ({
 					<Settings
 						reported={reportedWithTime.cfg}
 						desired={cat.state.desired?.cfg}
+						key={JSON.stringify(cat.state.desired?.cfg ?? {})}
 						onSave={(config) => {
 							apiClient.setDeviceConfig(cat.id, config).catch((error) => {
 								setError(error)

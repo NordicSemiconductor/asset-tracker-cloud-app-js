@@ -251,6 +251,7 @@ export const Cat = ({
 							<Settings
 								reported={reportedWithReceived?.cfg}
 								desired={state.desired?.cfg}
+								key={JSON.stringify(state?.desired?.cfg ?? {})}
 								onSave={(config) => {
 									updateDeviceConfig(config)
 										.catch(setError)
