@@ -6,7 +6,11 @@ import {
 	TimestreamQueryContextType,
 } from '../App'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { IoTClient, ListThingsCommand } from '@aws-sdk/client-iot'
+import {
+	IoTClient,
+	ListThingsCommand,
+	ThingAttribute,
+} from '@aws-sdk/client-iot'
 import { Loading } from '../../Loading/Loading'
 import { DisplayError } from '../../Error/Error'
 import { connectAndListenForMessages } from '../connectAndListenForMessages'
@@ -18,6 +22,31 @@ import {
 	ButtonWarningProps,
 } from '../../ButtonWarnings/ButtonWarnings'
 import { CatList } from '../../CatList/CatList'
+
+const fetchPaginated = ({
+	iot,
+	items,
+	limit,
+}: {
+	iot: IoTClient
+	items?: ThingAttribute[]
+	limit?: number
+}) => async (args?: { startKey?: string }): Promise<ThingAttribute[]> => {
+	const { things, nextToken } = await iot.send(
+		new ListThingsCommand({
+			nextToken: args?.startKey,
+		}),
+	)
+	if (things === undefined) return items ?? []
+	const newItems = [...(items ?? []), ...things]
+	if (nextToken === undefined) return newItems
+	if (newItems.length > (limit ?? 100)) return newItems
+	return fetchPaginated({
+		iot,
+		items: newItems,
+		limit,
+	})({ startKey: nextToken })
+}
 
 const ListCats = ({
 	iot,
@@ -44,12 +73,12 @@ const ListCats = ({
 	// Fetch list of devices
 	useEffect(() => {
 		let isCancelled = false
-		iot
-			.send(new ListThingsCommand({}))
-			.then(({ things }) => {
+		fetchPaginated({ iot })()
+			.then((things) => {
 				if (isCancelled) return
-				setCats(
-					(things ?? []).map(({ thingName, attributes }) => ({
+				setCats((cats) => [
+					...cats,
+					...(things ?? []).map(({ thingName, attributes }) => ({
 						id: thingName ?? 'unknown',
 						name: attributes?.name ?? thingName ?? 'unknown',
 						labels: Object.entries(attributes ?? {})
@@ -57,7 +86,7 @@ const ListCats = ({
 							.map(([name, value]) => `${name}:${value}`),
 						isTest: attributes?.test !== undefined,
 					})),
-				)
+				])
 				setLoading(false)
 			})
 			.catch((err) => {
