@@ -71,7 +71,7 @@
     "@commitlint/cli": "12.1.4",
     "@commitlint/config-angular": "12.1.4",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "9.0.2",
-    "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "7.0.20",
+    "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "7.0.21",
     "@types/aws-iot-device-sdk": "2.2.2",
     "@types/intro.js": "3.0.1",
     "@types/jest": "26.0.23",
