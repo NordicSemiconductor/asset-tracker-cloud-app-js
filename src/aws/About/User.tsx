@@ -40,7 +40,7 @@ export const User = ({ identityId }: { identityId: string }) => {
 							<dt>E-Mail</dt>
 							<dd>
 								<code>
-									{user.find(attr => attr.getName() === 'email')?.getValue()}
+									{user.find((attr) => attr.getName() === 'email')?.getValue()}
 								</code>
 							</dd>
 						</>

@@ -19,7 +19,7 @@ export function CatLoader<
 		name?: string
 		avatar?: string
 		version: number
-	}
+	},
 >({
 	catId,
 	children,

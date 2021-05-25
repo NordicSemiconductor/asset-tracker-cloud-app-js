@@ -123,70 +123,75 @@ export const fetchApiClient = ({
 	const iotHubRequestHeaders = new Headers()
 	iotHubRequestHeaders.append('Authorization', 'Bearer ' + token)
 	iotHubRequestHeaders.append('Content-Type', 'application/json')
-	const get = <A extends { [key: string]: any }>(
-		resource: string,
-		query?: { [key: string]: any },
-	) => async (): Promise<Either<ErrorInfo, A>> =>
-		handleResponse(
-			fetch(
-				`${endpoint}/api/${resource}${
-					query !== undefined ? toQueryString(query) : ''
-				}`,
-				{
-					method: 'GET',
+	const get =
+		<A extends { [key: string]: any }>(
+			resource: string,
+			query?: { [key: string]: any },
+		) =>
+		async (): Promise<Either<ErrorInfo, A>> =>
+			handleResponse(
+				fetch(
+					`${endpoint}/api/${resource}${
+						query !== undefined ? toQueryString(query) : ''
+					}`,
+					{
+						method: 'GET',
+						headers: iotHubRequestHeaders,
+					},
+				),
+			)
+
+	const patch =
+		<A extends { [key: string]: any }>(
+			resource: string,
+			properties: { [key: string]: any },
+		) =>
+		async (): Promise<Either<ErrorInfo, A>> =>
+			handleResponse(
+				fetch(`${endpoint}/api/${resource}`, {
+					method: 'PATCH',
 					headers: iotHubRequestHeaders,
-				},
-			),
-		)
+					body: JSON.stringify(properties),
+				}),
+			)
 
-	const patch = <A extends { [key: string]: any }>(
-		resource: string,
-		properties: { [key: string]: any },
-	) => async (): Promise<Either<ErrorInfo, A>> =>
-		handleResponse(
-			fetch(`${endpoint}/api/${resource}`, {
-				method: 'PATCH',
-				headers: iotHubRequestHeaders,
-				body: JSON.stringify(properties),
-			}),
-		)
+	const post =
+		<A extends { [key: string]: any }>(
+			resource: string,
+			properties: { [key: string]: any },
+		) =>
+		async (): Promise<Either<ErrorInfo, A>> =>
+			handleResponse(
+				fetch(`${endpoint}/api/${resource}`, {
+					method: 'POST',
+					headers: iotHubRequestHeaders,
+					body: JSON.stringify(properties),
+				}),
+			)
 
-	const post = <A extends { [key: string]: any }>(
-		resource: string,
-		properties: { [key: string]: any },
-	) => async (): Promise<Either<ErrorInfo, A>> =>
-		handleResponse(
-			fetch(`${endpoint}/api/${resource}`, {
-				method: 'POST',
-				headers: iotHubRequestHeaders,
-				body: JSON.stringify(properties),
-			}),
-		)
+	const del️ =
+		<A extends { [key: string]: any }>(resource: string) =>
+		async (): Promise<Either<ErrorInfo, A>> =>
+			handleResponse(
+				fetch(`${endpoint}/api/${resource}`, {
+					method: 'DELETE',
+					headers: iotHubRequestHeaders,
+				}),
+			)
 
-	const del️ = <A extends { [key: string]: any }>(
-		resource: string,
-	) => async (): Promise<Either<ErrorInfo, A>> =>
-		handleResponse(
-			fetch(`${endpoint}/api/${resource}`, {
-				method: 'DELETE',
-				headers: iotHubRequestHeaders,
-			}),
-		)
-
-	const postRaw = <A extends { [key: string]: any }>(
-		resource: string,
-		body: any,
-	) => async (): Promise<Either<ErrorInfo, A>> => {
-		const iotHubRequestHeaders = new Headers()
-		iotHubRequestHeaders.append('Authorization', 'Bearer ' + token)
-		return handleResponse(
-			fetch(`${endpoint}/api/${resource}`, {
-				method: 'POST',
-				headers: iotHubRequestHeaders,
-				body,
-			}),
-		)
-	}
+	const postRaw =
+		<A extends { [key: string]: any }>(resource: string, body: any) =>
+		async (): Promise<Either<ErrorInfo, A>> => {
+			const iotHubRequestHeaders = new Headers()
+			iotHubRequestHeaders.append('Authorization', 'Bearer ' + token)
+			return handleResponse(
+				fetch(`${endpoint}/api/${resource}`, {
+					method: 'POST',
+					headers: iotHubRequestHeaders,
+					body,
+				}),
+			)
+		}
 	return {
 		listDevices: get<{ deviceId: string; name?: string }[]>('devices'),
 		getDevice: async (id: string): Promise<Either<ErrorInfo, Device>> => {

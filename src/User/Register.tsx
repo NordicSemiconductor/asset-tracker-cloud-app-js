@@ -35,14 +35,14 @@ export const Register = ({
 
 	const isValid = isRight(
 		pipe(
-			(input => {
+			((input) => {
 				const i = RegisterInput.decode(input)
 				if (isRight(i)) {
 					return i
 				}
 				return left(new Error('Validation failed'))
 			})(input),
-			chain(input => StringEquals(input.password)(input.password2)),
+			chain((input) => StringEquals(input.password)(input.password2)),
 		),
 	)
 

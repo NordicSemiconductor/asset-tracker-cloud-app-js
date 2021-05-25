@@ -10,13 +10,13 @@ import { StackConfigConsumer, CredentialsConsumer } from '../App'
 export const AboutPage = () => (
 	<Main>
 		<ReactAppConfigConsumer>
-			{config => <About config={config} />}
+			{(config) => <About config={config} />}
 		</ReactAppConfigConsumer>
 		<CredentialsConsumer>
 			{({ identityId }) => <User identityId={identityId} />}
 		</CredentialsConsumer>
 		<StackConfigConsumer>
-			{config => <Configuration config={config} />}
+			{(config) => <Configuration config={config} />}
 		</StackConfigConsumer>
 		<Cache />
 	</Main>

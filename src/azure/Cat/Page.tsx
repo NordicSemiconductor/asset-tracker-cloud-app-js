@@ -9,10 +9,10 @@ import { Device } from '../api'
 export const CatPage = (props: CatRouteProps) => (
 	<Main>
 		<ApiClientConsumer>
-			{apiClient => (
+			{(apiClient) => (
 				<CatLoader<Device>
 					catId={props.match.params.catId}
-					loader={async catId => apiClient.getDevice(catId)}
+					loader={async (catId) => apiClient.getDevice(catId)}
 				>
 					{(cat, update) => (
 						<Cat cat={cat} update={update} apiClient={apiClient} />

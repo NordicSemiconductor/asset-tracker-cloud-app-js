@@ -91,9 +91,7 @@ export const HistoricalDataMap = ({
 	cat: CatInfo
 	deviceLocation?: Location
 	cellLocation?: CellLocation
-	fetchHistory: (
-		numEntries: number,
-	) => Promise<
+	fetchHistory: (numEntries: number) => Promise<
 		{
 			location: Location
 		}[]

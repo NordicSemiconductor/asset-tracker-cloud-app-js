@@ -9,13 +9,13 @@ import { ReactAppConfigConsumer } from '../..'
 export const AboutPage = () => (
 	<Main>
 		<ReactAppConfigConsumer>
-			{config => <About config={config} />}
+			{(config) => <About config={config} />}
 		</ReactAppConfigConsumer>
 		<AccessTokenConsumer>
-			{credentials => <User accessToken={credentials} />}
+			{(credentials) => <User accessToken={credentials} />}
 		</AccessTokenConsumer>
 		<SolutionConfigConsumer>
-			{config => <Configuration config={config} />}
+			{(config) => <Configuration config={config} />}
 		</SolutionConfigConsumer>
 	</Main>
 )

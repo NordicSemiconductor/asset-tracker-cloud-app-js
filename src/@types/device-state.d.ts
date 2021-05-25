@@ -79,7 +79,8 @@ export type ReportedBattery = MakeReceivedProperty<Battery>
 export type ReportedAccelerometer = MakeReceivedProperty<Accelerometer>
 export type ReportedEnvironment = MakeReceivedProperty<Environment>
 export type ReportedDeviceInformation = MakeReceivedProperty<DeviceInformation>
-export type ReportedRoamingInformation = MakeReceivedProperty<RoamingInformation>
+export type ReportedRoamingInformation =
+	MakeReceivedProperty<RoamingInformation>
 
 export type ReportedState = {
 	cfg?: ReportedConfigState

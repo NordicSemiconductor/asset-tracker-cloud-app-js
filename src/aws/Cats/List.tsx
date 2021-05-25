@@ -23,30 +23,32 @@ import {
 } from '../../ButtonWarnings/ButtonWarnings'
 import { CatList } from '../../CatList/CatList'
 
-const fetchPaginated = ({
-	iot,
-	items,
-	limit,
-}: {
-	iot: IoTClient
-	items?: ThingAttribute[]
-	limit?: number
-}) => async (args?: { startKey?: string }): Promise<ThingAttribute[]> => {
-	const { things, nextToken } = await iot.send(
-		new ListThingsCommand({
-			nextToken: args?.startKey,
-		}),
-	)
-	if (things === undefined) return items ?? []
-	const newItems = [...(items ?? []), ...things]
-	if (nextToken === undefined) return newItems
-	if (newItems.length > (limit ?? 100)) return newItems
-	return fetchPaginated({
+const fetchPaginated =
+	({
 		iot,
-		items: newItems,
+		items,
 		limit,
-	})({ startKey: nextToken })
-}
+	}: {
+		iot: IoTClient
+		items?: ThingAttribute[]
+		limit?: number
+	}) =>
+	async (args?: { startKey?: string }): Promise<ThingAttribute[]> => {
+		const { things, nextToken } = await iot.send(
+			new ListThingsCommand({
+				nextToken: args?.startKey,
+			}),
+		)
+		if (things === undefined) return items ?? []
+		const newItems = [...(items ?? []), ...things]
+		if (nextToken === undefined) return newItems
+		if (newItems.length > (limit ?? 100)) return newItems
+		return fetchPaginated({
+			iot,
+			items: newItems,
+			limit,
+		})({ startKey: nextToken })
+	}
 
 const ListCats = ({
 	iot,
@@ -158,7 +160,7 @@ const ListCats = ({
 					...data.reduce(
 						(p, { deviceId, ts }) => ({
 							...p,
-							[deviceId]: (ts as unknown) as Date,
+							[deviceId]: ts as unknown as Date,
 						}),
 						{} as DeviceDateMap,
 					),

@@ -78,48 +78,50 @@ export const createJob = async ({
 	}
 }
 
-export const upgradeFirmware = ({
-	s3,
-	iot,
-	bucketName,
-}: {
-	s3: S3Client
-	iot: IoTClient
-	bucketName: string
-}) => async ({
-	file,
-	thingArn,
-	version,
-	targetBoard,
-}: {
-	file: File
-	thingArn: string
-	version: string
-	targetBoard: string
-}): Promise<DeviceUpgradeFirmwareJob> => {
-	const jobId = v4()
-	const data = await new Promise<Buffer>((resolve) => {
-		const reader = new FileReader()
-		reader.onload = (e: any) => resolve(e.target.result)
-		reader.readAsArrayBuffer(file)
-	})
-	await s3.send(
-		new PutObjectCommand({
-			Bucket: bucketName,
-			Key: jobId,
-			Body: data,
-			ContentLength: file.size,
-			ContentType: 'text/octet-stream',
-		}),
-	)
-
-	return createJob({
+export const upgradeFirmware =
+	({
+		s3,
 		iot,
+		bucketName,
+	}: {
+		s3: S3Client
+		iot: IoTClient
+		bucketName: string
+	}) =>
+	async ({
 		file,
 		thingArn,
 		version,
 		targetBoard,
-		jobId,
-		bucketName,
-	})
-}
+	}: {
+		file: File
+		thingArn: string
+		version: string
+		targetBoard: string
+	}): Promise<DeviceUpgradeFirmwareJob> => {
+		const jobId = v4()
+		const data = await new Promise<Buffer>((resolve) => {
+			const reader = new FileReader()
+			reader.onload = (e: any) => resolve(e.target.result)
+			reader.readAsArrayBuffer(file)
+		})
+		await s3.send(
+			new PutObjectCommand({
+				Bucket: bucketName,
+				Key: jobId,
+				Body: data,
+				ContentLength: file.size,
+				ContentType: 'text/octet-stream',
+			}),
+		)
+
+		return createJob({
+			iot,
+			file,
+			thingArn,
+			version,
+			targetBoard,
+			jobId,
+			bucketName,
+		})
+	}

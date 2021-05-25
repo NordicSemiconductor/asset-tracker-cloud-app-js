@@ -257,10 +257,12 @@ export const Cat = ({
 							)
 							.then((res) => {
 								if (isLeft(res)) return []
-								const location = (res.right.result as {
-									v: { lat: number; lng: number }
-									ts: string
-								}[]).map(({ v: { lat, lng }, ts }) => ({
+								const location = (
+									res.right.result as {
+										v: { lat: number; lng: number }
+										ts: string
+									}[]
+								).map(({ v: { lat, lng }, ts }) => ({
 									position: { lat, lng },
 									ts: new Date(ts),
 								}))

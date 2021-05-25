@@ -59,13 +59,11 @@ switch (cloudFlavour) {
 	default:
 		import('./aws/App')
 			.then((awsApp) => {
-				const [
-					timestreamDb,
-					timestreamTable,
-				] = process.env.REACT_APP_HISTORICALDATA_TABLE_INFO?.split('|') ?? [
-					'',
-					'',
-				]
+				const [timestreamDb, timestreamTable] =
+					process.env.REACT_APP_HISTORICALDATA_TABLE_INFO?.split('|') ?? [
+						'',
+						'',
+					]
 				launch(
 					awsApp.boot({
 						identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID ?? '',

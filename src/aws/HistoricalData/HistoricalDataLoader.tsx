@@ -33,7 +33,7 @@ export const HistoricalDataLoader = <T extends Record<string, any>>({
 					return
 				}
 				console.debug('[Historical Data]', data)
-				setData((data as unknown) as T[])
+				setData(data as unknown as T[])
 			})
 			.catch(setError)
 

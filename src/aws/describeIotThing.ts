@@ -5,9 +5,7 @@ export const describeIotThing = ({
 	iot,
 }: {
 	iot: IoTClient
-}): ((
-	thingName: string,
-) => Promise<{
+}): ((thingName: string) => Promise<{
 	thingName: string
 	thingArn: string
 	version: number

@@ -148,7 +148,7 @@ export const CatMap = ({
 									pos.alt.source,
 									pos.spd.source,
 								].includes('batch'),
-								ts: (date as unknown) as Date,
+								ts: date as unknown as Date,
 							}
 							return l
 						}),
@@ -201,7 +201,7 @@ export const CatMap = ({
 										)
 										const l: Roaming = {
 											roaming,
-											ts: (date as unknown) as Date,
+											ts: date as unknown as Date,
 										}
 										return l
 									},

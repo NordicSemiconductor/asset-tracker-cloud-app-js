@@ -109,14 +109,12 @@ export const Settings = ({
 		}
 	}
 
-	const updateConfigProperty = (
-		property: string,
-		parser?: (v: string) => number,
-	) => (value: string) => {
-		updateConfig({
-			[property]: parser !== undefined ? parser(value) : parseInt(value, 10),
-		})
-	}
+	const updateConfigProperty =
+		(property: string, parser?: (v: string) => number) => (value: string) => {
+			updateConfig({
+				[property]: parser !== undefined ? parser(value) : parseInt(value, 10),
+			})
+		}
 
 	const isActive =
 		newDesired.act !== undefined

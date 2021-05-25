@@ -186,12 +186,12 @@ export const boot = ({
 }
 
 const AccessTokenContext = React.createContext<AuthResponse>(
-	(undefined as unknown) as AuthResponse,
+	undefined as unknown as AuthResponse,
 )
 export const AccessTokenConsumer = AccessTokenContext.Consumer
 
 const ApiClientContext = React.createContext<ApiClient>(
-	(undefined as unknown) as ApiClient,
+	undefined as unknown as ApiClient,
 )
 export const ApiClientConsumer = ApiClientContext.Consumer
 
