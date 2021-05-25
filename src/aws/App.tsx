@@ -84,16 +84,15 @@ export const boot = ({
 
 	const App = ({ authData }: { authData: CognitoUser }) => {
 		const [credentials, setCredentials] = useState<ICredentials>()
-		const [iot, setIot] = useState<{
-			iot: IoTClient
-			iotData: IoTDataPlaneClient
-			mqttEndpoint: string
-			region: string
-		}>()
-		const [
-			timestreamQueryContext,
-			setTimestreamQueryContext,
-		] = useState<TimestreamQueryContextType>()
+		const [iot, setIot] =
+			useState<{
+				iot: IoTClient
+				iotData: IoTDataPlaneClient
+				mqttEndpoint: string
+				region: string
+			}>()
+		const [timestreamQueryContext, setTimestreamQueryContext] =
+			useState<TimestreamQueryContextType>()
 		useEffect(() => {
 			Auth.currentCredentials()
 				.then(async (creds) => {
@@ -140,12 +139,18 @@ export const boot = ({
 								})
 								.catch((error) => {
 									// Highlight error
-									const rx = /The query syntax is invalid at line ([0-9]+):([0-9]+)/
-									const m = rx.exec(error.message)
-									if (m) {
+									const querySyntaxRx =
+										/The query syntax is invalid at line ([0-9]+):([0-9]+)/
+									const querySyntaxErrorMatch = querySyntaxRx.exec(
+										error.message,
+									)
+									const columnDoesNotExistRx = /Column '([^']+)' does not exist/
+									const columnDoesNotExistErrorMatch =
+										columnDoesNotExistRx.exec(error.message)
+									if (querySyntaxErrorMatch) {
 										const lines = QueryString.split('\n')
-										const line = parseInt(m[1], 10)
-										const col = parseInt(m[2], 10)
+										const line = parseInt(querySyntaxErrorMatch[1], 10)
+										const col = parseInt(querySyntaxErrorMatch[2], 10)
 										const indent = (s: string) => `   ${s}`
 										console.error('[Timestream]', {
 											timestreamQuery: [
@@ -155,6 +160,12 @@ export const boot = ({
 											].join('\n'),
 											error,
 										})
+									} else if (columnDoesNotExistErrorMatch) {
+										console.warn(
+											'[Timestream]',
+											`${error.message}. This can happen if the data that the query expects does not exist yet in the database.`,
+											{ QueryString },
+										)
 									} else {
 										console.error('[Timestream]', {
 											timestreamQuery: QueryString,
@@ -251,8 +262,8 @@ const IotContext = React.createContext<{
 	mqttEndpoint: string
 	region: string
 }>({
-	iot: (undefined as unknown) as IoTClient,
-	iotData: (undefined as unknown) as IoTDataPlaneClient,
+	iot: undefined as unknown as IoTClient,
+	iotData: undefined as unknown as IoTDataPlaneClient,
 	mqttEndpoint: '',
 	region: '',
 })
