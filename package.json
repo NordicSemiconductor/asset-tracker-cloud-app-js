@@ -94,11 +94,12 @@
     "eslint-plugin-react": "7.23.2",
     "eslint-plugin-react-hooks": "4.2.0",
     "husky": "6.0.0",
+    "jest": "27.0.1",
     "lint-staged": "11.0.0",
     "pinst": "2.1.6",
     "prettier": "2.3.0",
     "react-scripts": "4.0.3",
-    "ts-jest": "26.5.6",
+    "ts-jest": "27.0.0",
     "typescript": "4.2.4"
   },
   "lint-staged": {
@@ -133,21 +134,7 @@
     "not op_mini all"
   ],
   "jest": {
-    "testURL": "http://localhost",
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json"
-    ],
-    "transform": {
-      ".+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": ".+\\.spec\\.ts$",
-    "globals": {
-      "ts-jest": {
-        "diagnostics": true
-      }
-    }
+    "preset": "ts-jest"
   },
   "babelMacros": {
     "styledComponents": {
