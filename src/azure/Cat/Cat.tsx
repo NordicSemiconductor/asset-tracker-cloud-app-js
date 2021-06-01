@@ -32,6 +32,9 @@ import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
 import { HistoricalDataChart } from '../../HistoricalData/HistoricalDataChart'
 import { HistoricalButtonPresses } from '../../HistoricalButtonPresses/HistoricalButtonPresses'
 import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
+import { pipe } from 'fp-ts/lib/function'
+import * as TE from 'fp-ts/lib/TaskEither'
+import { SignalRDisabledWarning } from '../SignalRDisabledWarning'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -58,6 +61,7 @@ export const Cat = ({
 		: []
 
 	const [deleted, setDeleted] = useState(false)
+	const [realtimeUpdatesDisabled, setRealtimeUpdatesDisabled] = useState(false)
 	const [deleting, setDeleting] = useState(false)
 	const [error, setError] = useState<ErrorInfo>()
 	const [cellLocation, setCellLocation] = useState<CellLocation>()
@@ -66,8 +70,12 @@ export const Cat = ({
 	useEffect(() => {
 		let isCancelled = false
 		let connection: signalR.HubConnection
-		connect(apiClient)
-			.then((c) => {
+
+		void pipe(
+			connect(apiClient),
+			// eslint-disable-next-line
+			TE.map((c) => {
+				console.log('connected')
 				connection = c
 				c.on(`deviceState:${cat.id}`, (data) => {
 					if (!isCancelled) {
@@ -78,8 +86,15 @@ export const Cat = ({
 						})
 					}
 				})
-			})
-			.catch(setError)
+			}),
+			TE.mapLeft((error) => {
+				if (error.type === 'LimitExceededError') {
+					setRealtimeUpdatesDisabled(true)
+				}
+				console.error(error)
+			}),
+		)()
+
 		return () => {
 			isCancelled = true
 
@@ -245,6 +260,7 @@ export const Cat = ({
 
 	return (
 		<CatCard>
+			{realtimeUpdatesDisabled && <SignalRDisabledWarning />}
 			<CatMapContainer>
 				<HistoricalDataMap
 					deviceLocation={deviceLocation}

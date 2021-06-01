@@ -53,8 +53,9 @@ export type ApiClient = {
 		url: string
 		version: string
 	}) => Promise<Either<ErrorInfo, { success: boolean; jobId: string }>>
-	getSignalRConnectionInfo: () => Promise<
-		Either<ErrorInfo, { url: string; accessToken: string }>
+	getSignalRConnectionInfo: TE.TaskEither<
+		ErrorInfo,
+		{ url: string; accessToken: string }
 	>
 	queryHistoricalDeviceData: (
 		query: string,

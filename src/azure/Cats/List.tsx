@@ -9,6 +9,9 @@ import { connect } from '../signalr'
 import * as signalR from '@microsoft/signalr'
 import { DeviceDateMap } from '../../ButtonWarnings/ButtonWarnings'
 import { CatList } from '../../CatList/CatList'
+import { pipe } from 'fp-ts/lib/function'
+import * as TE from 'fp-ts/lib/TaskEither'
+import { SignalRDisabledWarning } from '../SignalRDisabledWarning'
 
 export const List = ({
 	apiClient,
@@ -24,6 +27,7 @@ export const List = ({
 	const [loading, setLoading] = useState(true)
 	const [cats, setCats] = useState([] as { id: string; name: string }[])
 	const [error, setError] = useState<ErrorInfo>()
+	const [realtimeUpdatesDisabled, setRealtimeUpdatesDisabled] = useState(false)
 
 	// Fetch cats
 	useEffect(() => {
@@ -59,8 +63,10 @@ export const List = ({
 	useEffect(() => {
 		let isCancelled = false
 		let connection: signalR.HubConnection
-		connect(apiClient)
-			.then((c) => {
+		void pipe(
+			connect(apiClient),
+			// eslint-disable-next-line
+			TE.map((c) => {
 				connection = c
 				c.on(`deviceMessage:btn`, (data) => {
 					// FIXME: Implement button state
@@ -72,11 +78,16 @@ export const List = ({
 						}))
 					}
 				})
-			})
-			.catch(setError)
+			}),
+			TE.mapLeft((error) => {
+				if (error.type === 'LimitExceededError') {
+					setRealtimeUpdatesDisabled(true)
+				}
+				console.error(error)
+			}),
+		)()
 		return () => {
 			isCancelled = true
-
 			connection?.stop().catch(console.error)
 		}
 	}, [apiClient, setButtonPresses])
@@ -92,6 +103,7 @@ export const List = ({
 	return (
 		<Card data-intro="This lists your cats. Click on one to see its details.">
 			<CardHeader>Cats</CardHeader>
+			{realtimeUpdatesDisabled && <SignalRDisabledWarning />}
 			{cats.length > 0 && (
 				<CatList {...{ showButtonWarning, snooze, setButtonPresses, cats }} />
 			)}
