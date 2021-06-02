@@ -75,7 +75,6 @@ export const Cat = ({
 			connect(apiClient),
 			// eslint-disable-next-line
 			TE.map((c) => {
-				console.log('connected')
 				connection = c
 				c.on(`deviceState:${cat.id}`, (data) => {
 					if (!isCancelled) {
