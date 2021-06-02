@@ -106,7 +106,6 @@ export const Cat = ({
 	useEffect(() => {
 		if (roamingInfo === undefined) return
 		let removed = false
-		console.log({ roamingInfo })
 
 		const locatCell = async (cell: {
 			cell: number

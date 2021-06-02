@@ -70,7 +70,6 @@ export const List = ({
 				connection = c
 				c.on(`deviceMessage:btn`, (data) => {
 					// FIXME: Implement button state
-					console.log(data)
 					if (!isCancelled) {
 						setButtonPresses((presses) => ({
 							...presses,
