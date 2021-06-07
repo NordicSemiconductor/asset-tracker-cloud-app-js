@@ -354,38 +354,6 @@ export const CatActions = ({ catId }: { catId: string }) => {
 															</Collapsable>
 															<hr />
 															<Collapsable
-																id={'cat:act'}
-																title={<h3>{emojify('🏋️ Activity')}</h3>}
-															>
-																<HistoricalDataLoader<{
-																	date: Date
-																	value: number
-																}>
-																	timestreamQueryContext={
-																		timestreamQueryContext
-																	}
-																	deviceId={catId}
-																	QueryString={(table) => `
-																		SELECT
-																		SUM(measure_value::double) AS value,
-																		time AS date
-																		FROM ${table}
-																		WHERE deviceId='${catId}' 
-																		AND measure_name IN ('acc.x', 'acc.y', 'acc.z')
-																		GROUP BY time
-																		ORDER BY time DESC
-																		LIMIT 100`}
-																>
-																	{({ data }) => (
-																		<HistoricalDataChart
-																			data={data}
-																			type={'column'}
-																		/>
-																	)}
-																</HistoricalDataLoader>
-															</Collapsable>
-															<hr />
-															<Collapsable
 																id={'cat:button'}
 																title={<h3>{emojify('🚨 Button')}</h3>}
 															>
