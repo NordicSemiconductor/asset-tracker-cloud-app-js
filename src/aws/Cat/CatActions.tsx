@@ -281,7 +281,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																				date,
 																				value: -dbmToRSRP(value),
 																			}))}
-																			type={'column'}
+																			type={'line'}
 																			max={-70}
 																		/>
 																	)}
