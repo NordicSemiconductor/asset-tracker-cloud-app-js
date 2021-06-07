@@ -16,6 +16,7 @@ import { mobileBreakpoint } from '../Styles'
 import { FormGroup } from 'reactstrap'
 import { formatDistanceToNow } from 'date-fns'
 import { SignalQuality } from '../ConnectionInformation/ConnectionInformation'
+import { nullOrUndefined } from '../util/nullOrUndefined'
 
 const MapContainerContainer = styled.div`
 	> .leaflet-container {
@@ -284,12 +285,24 @@ export const Map = ({
 									>
 										<Popup position={{ lat, lng }}>
 											<HistoryInfo>
-												<dt>Accuracy</dt>
-												<dd>{accuracy} m</dd>
-												<dt>Speed</dt>
-												<dd>{speed} m/s</dd>
-												<dt>Heading</dt>
-												<dd>{heading}°</dd>
+												{!nullOrUndefined(accuracy) && (
+													<>
+														<dt>Accuracy</dt>
+														<dd>{accuracy} m</dd>
+													</>
+												)}
+												{!nullOrUndefined(speed) && (
+													<>
+														<dt>Speed</dt>
+														<dd>{speed} m/s</dd>
+													</>
+												)}
+												{!nullOrUndefined(heading) && (
+													<>
+														<dt>Heading</dt>
+														<dd>{heading}°</dd>
+													</>
+												)}
 												<dt>Time</dt>
 												<dd>
 													<time dateTime={new Date(ts).toISOString()}>
