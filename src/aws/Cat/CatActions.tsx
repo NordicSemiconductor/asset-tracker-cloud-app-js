@@ -252,6 +252,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																/>
 															)}
 														>
+															<hr />
 															<Collapsable
 																id={'cat:roam'}
 																title={<h3>{emojify('📶 RSRP')}</h3>}

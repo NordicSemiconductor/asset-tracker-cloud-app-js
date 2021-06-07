@@ -439,7 +439,6 @@ export const Cat = ({
 						</Collapsable>
 					</>
 				)}
-
 				<hr />
 				<Collapsable id={'cat:roam'} title={<h3>{emojify('📶 RSRP')}</h3>}>
 					<HistoricalDataLoader
