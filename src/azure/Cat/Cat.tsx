@@ -34,6 +34,7 @@ import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
 import { pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { SignalRDisabledWarning } from '../SignalRDisabledWarning'
+import { dbmToRSRP } from '@nordicsemiconductor/rsrp-bar'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -438,6 +439,29 @@ export const Cat = ({
 						</Collapsable>
 					</>
 				)}
+
+				<hr />
+				<Collapsable id={'cat:roam'} title={<h3>{emojify('📶 RSRP')}</h3>}>
+					<HistoricalDataLoader
+						apiClient={apiClient}
+						QueryString={`SELECT c.deviceUpdate.properties.reported.roam.v.rsrp AS v, c.deviceUpdate.properties.reported.roam.ts AS ts FROM c WHERE c.deviceId = "${cat.id}" AND c.deviceUpdate.properties.reported.roam != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100`}
+						formatFields={({
+							v,
+							ts,
+						}: {
+							v: number
+							ts: string
+						}): { value: number; date: Date } => ({
+							value: -dbmToRSRP(-v),
+							date: new Date(ts),
+						})}
+					>
+						{({ data }) => (
+							<HistoricalDataChart data={data} type={'line'} max={-70} />
+						)}
+					</HistoricalDataLoader>
+				</Collapsable>
+				<hr />
 				<Collapsable id={'cat:bat'} title={<h3>{emojify('🔋 Battery')}</h3>}>
 					<HistoricalDataLoader
 						apiClient={apiClient}
