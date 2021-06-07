@@ -68,6 +68,10 @@ export const DeviceInfo = ({
 			</dd>
 			{roaming && (
 				<>
+					<dt>RSRP</dt>
+					<dd>
+						<code>{roaming.v.value.rsrp}</code>
+					</dd>
 					<dt>MCC/MNC</dt>
 					<dd>
 						<code>{roaming.v.value.mccmnc}</code>
