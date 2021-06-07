@@ -139,6 +139,8 @@ const HeadingMarker = ({
 	</MapConsumer>
 )
 
+const toFixed = (n: number): string => n.toFixed(2).replace(/(\.00)|(0)$/, '')
+
 export const Map = ({
 	deviceLocation,
 	cellLocation,
@@ -288,19 +290,19 @@ export const Map = ({
 												{!nullOrUndefined(accuracy) && (
 													<>
 														<dt>Accuracy</dt>
-														<dd>{accuracy} m</dd>
+														<dd>{toFixed(accuracy as number)} m</dd>
 													</>
 												)}
 												{!nullOrUndefined(speed) && (
 													<>
 														<dt>Speed</dt>
-														<dd>{speed} m/s</dd>
+														<dd>{toFixed(speed as number)} m/s</dd>
 													</>
 												)}
 												{!nullOrUndefined(heading) && (
 													<>
 														<dt>Heading</dt>
-														<dd>{heading}°</dd>
+														<dd>{toFixed(heading as number)}°</dd>
 													</>
 												)}
 												<dt>Time</dt>
