@@ -4,7 +4,6 @@ import {
 	Battery,
 	DeviceInformation,
 	RoamingInformation,
-	Accelerometer,
 	Environment,
 	MakeReceivedProperty,
 	ReportedState,
@@ -57,7 +56,6 @@ export type DeviceTwinReported = {
 	bat?: Battery
 	dev?: DeviceInformation
 	roam?: RoamingInformation
-	acc?: Accelerometer
 	env?: Environment
 	firmware?: AzureFOTAJobProgress
 	$metadata: PropertyMetadata & {
@@ -66,7 +64,6 @@ export type DeviceTwinReported = {
 		bat?: PropertyMetadata & MakePropertyMetadata<Battery>
 		dev?: PropertyMetadata & MakePropertyMetadata<DeviceInformation>
 		roam?: PropertyMetadata & MakePropertyMetadata<RoamingInformation>
-		acc?: PropertyMetadata & MakePropertyMetadata<Accelerometer>
 		env?: PropertyMetadata & MakePropertyMetadata<Environment>
 		firmware?: PropertyMetadata & MakePropertyMetadata<AzureFOTAJobProgress>
 	}

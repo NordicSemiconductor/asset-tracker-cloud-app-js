@@ -11,7 +11,6 @@ import { emojify } from '../../Emojify/Emojify'
 import { ReportedTime } from '../../ReportedTime/ReportedTime'
 import { Collapsable } from '../../Collapsable/Collapsable'
 import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
-import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDiagram'
 import { CatCard } from '../../Cat/CatCard'
 import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
 import { ThingState } from '../../@types/aws-device'
@@ -310,23 +309,6 @@ export const Cat = ({
 						</Collapsable>
 					</>
 				)}
-				{reported?.acc && reportedWithReceived?.acc && (
-					<>
-						<hr />
-						<Collapsable
-							id={'cat:motion'}
-							title={<h3>{emojify('🏃 Motion')}</h3>}
-						>
-							<AccelerometerDiagram values={reported.acc.v} />
-							<ReportedTime
-								reportedAt={new Date(reported.acc.ts)}
-								receivedAt={reportedWithReceived.acc.v.receivedAt}
-								staleAfterSeconds={expectedSendIntervalInSeconds}
-							/>
-						</Collapsable>
-					</>
-				)}
-				<hr />
 				{children}
 			</CardBody>
 		</CatCard>

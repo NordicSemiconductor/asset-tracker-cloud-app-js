@@ -4,7 +4,6 @@ import {
 	Battery,
 	DeviceInformation,
 	RoamingInformation,
-	Accelerometer,
 	Environment,
 	ReportedState,
 	MakeReceivedProperty,
@@ -22,7 +21,6 @@ export type ReportedThingState = {
 	bat?: Battery
 	dev?: AWSDeviceInformation
 	roam?: RoamingInformation
-	acc?: Accelerometer
 	env?: Environment
 }
 

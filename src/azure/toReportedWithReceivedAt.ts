@@ -56,11 +56,6 @@ export const toReportedWithReceivedAt = (
 					dev: toReceivedProps(reported.dev, $metadata.dev),
 			  }
 			: undefined),
-		...(reported.acc !== undefined && $metadata.acc !== undefined
-			? {
-					acc: toReceivedProps(reported.acc, $metadata.acc),
-			  }
-			: undefined),
 		...(reported.env !== undefined && $metadata.env !== undefined
 			? {
 					env: toReceivedProps(reported.env, $metadata.env),

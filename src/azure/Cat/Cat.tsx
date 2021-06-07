@@ -25,7 +25,6 @@ import {
 } from '../toReportedWithReceivedAt'
 import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
 import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
-import { AccelerometerDiagram } from '../../AccelerometerDiagram/AccelerometerDiagram'
 import { FOTA } from '../FOTA/FOTA'
 import { Jobs } from '../FOTA/FOTAJob'
 import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
@@ -439,23 +438,6 @@ export const Cat = ({
 						</Collapsable>
 					</>
 				)}
-				{reportedWithTime?.acc && (
-					<>
-						<hr />
-						<Collapsable
-							id={'cat:motion'}
-							title={<h3>{emojify('🏃 Motion')}</h3>}
-						>
-							<AccelerometerDiagram values={reportedWithTime.acc.v.value} />
-							<ReportedTime
-								reportedAt={new Date(reportedWithTime.acc.ts.value)}
-								receivedAt={reportedWithTime.acc.v.receivedAt}
-								staleAfterSeconds={expectedSendIntervalInSeconds}
-							/>
-						</Collapsable>
-					</>
-				)}
-				<hr />
 				<Collapsable id={'cat:bat'} title={<h3>{emojify('🔋 Battery')}</h3>}>
 					<HistoricalDataLoader
 						apiClient={apiClient}
@@ -494,25 +476,6 @@ export const Cat = ({
 						})}
 					>
 						{({ data }) => <HistoricalDataChart data={data} type={'line'} />}
-					</HistoricalDataLoader>
-				</Collapsable>
-				<hr />
-				<Collapsable id={'cat:act'} title={<h3>{emojify('🏋️ Activity')}</h3>}>
-					<HistoricalDataLoader
-						apiClient={apiClient}
-						QueryString={`SELECT c.deviceUpdate.properties.reported.acc.v AS v, c.deviceUpdate.properties.reported.acc.ts AS ts FROM c WHERE c.deviceId = "${cat.id}" AND  c.deviceUpdate.properties.reported.acc.v != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100`}
-						formatFields={({
-							v: { x, y, z },
-							ts,
-						}: {
-							v: { x: number; y: number; z: number }
-							ts: string
-						}): { value: number; date: Date } => ({
-							value: Math.abs(x) + Math.abs(y) + Math.abs(z),
-							date: new Date(ts),
-						})}
-					>
-						{({ data }) => <HistoricalDataChart data={data} type={'column'} />}
 					</HistoricalDataLoader>
 				</Collapsable>
 				<hr />
