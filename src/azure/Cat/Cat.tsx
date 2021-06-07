@@ -273,13 +273,32 @@ export const Cat = ({
 								if (isLeft(res)) return []
 								const location = (
 									res.right.result as {
-										v: { lat: number; lng: number }
+										v: {
+											lat: number
+											lng: number
+											hdg: number
+											spd: number
+											alt: number
+											acc: number
+										}
 										ts: string
 									}[]
-								).map(({ v: { lat, lng }, ts }) => ({
-									position: { lat, lng },
-									ts: new Date(ts),
-								}))
+								).map(
+									({
+										v: {
+											lat,
+											lng,
+											spd: speed,
+											hdg: heading,
+											alt: altitude,
+											acc: accuracy,
+										},
+										ts,
+									}) => ({
+										position: { lat, lng, speed, heading, altitude, accuracy },
+										ts: new Date(ts),
+									}),
+								)
 								return location.map((location) => ({ location }))
 							})
 					}
