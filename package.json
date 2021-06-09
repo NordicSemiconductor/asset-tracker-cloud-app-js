@@ -67,7 +67,7 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-chaining": "7.14.2",
+    "@babel/plugin-proposal-optional-chaining": "7.14.5",
     "@commitlint/cli": "12.1.4",
     "@commitlint/config-angular": "12.1.4",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "9.0.4",
