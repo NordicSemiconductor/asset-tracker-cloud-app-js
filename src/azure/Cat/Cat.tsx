@@ -103,6 +103,7 @@ export const Cat = ({
 
 	// Fetch cell geolocation
 	const roamingInfo = cat.state.reported.roam
+	const devInfo = cat.state.reported.dev
 	useEffect(() => {
 		if (roamingInfo === undefined) return
 		let removed = false
@@ -111,6 +112,7 @@ export const Cat = ({
 			cell: number
 			area: number
 			mccmnc: number
+			nw: 'ltem' | 'nbiot'
 		}): Promise<
 			Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
 		> => {
@@ -127,7 +129,10 @@ export const Cat = ({
 			})
 		}
 
-		void locatCell(roamingInfo.v)
+		void locatCell({
+			...roamingInfo.v,
+			nw: devInfo?.v.nw.includes('NB-IoT') ? 'nbiot' : 'ltem',
+		})
 			.then((res) => {
 				if (isRight(res) && !removed) {
 					console.debug('[Cell Geolocation]', res.right)
@@ -138,7 +143,7 @@ export const Cat = ({
 		return () => {
 			removed = true
 		}
-	}, [roamingInfo, apiClient])
+	}, [roamingInfo, devInfo, apiClient])
 
 	if (deleting) {
 		return (

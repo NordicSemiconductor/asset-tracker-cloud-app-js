@@ -9,10 +9,12 @@ export const geolocateCell =
 			area,
 			mccmnc,
 			cell,
+			nw,
 		}: {
 			area: number
 			mccmnc: number
 			cell: number
+			nw: 'ltem' | 'nbiot'
 		},
 		retryCount = 0,
 	): Promise<Either<string, Location>> =>
@@ -24,6 +26,7 @@ export const geolocateCell =
 					area,
 					mccmnc,
 					cell,
+					nw,
 				})
 					.map(
 						([key, value]) =>
@@ -53,7 +56,7 @@ export const geolocateCell =
 						)
 						setTimeout(async () => {
 							const geolocation = await geolocateCell(geolocationApiEndpoint)(
-								{ area, mccmnc, cell },
+								{ area, mccmnc, cell, nw },
 								retryCount + 1,
 							)
 							resolve(geolocation)

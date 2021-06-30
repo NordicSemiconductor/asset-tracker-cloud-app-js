@@ -64,6 +64,7 @@ export type ApiClient = {
 		cell: number
 		area: number
 		mccmnc: number
+		nw: 'ltem' | 'nbiot'
 	}) => Promise<
 		Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
 	>
@@ -286,6 +287,7 @@ export const fetchApiClient = ({
 			cell: number
 			area: number
 			mccmnc: number
+			nw: 'ltem' | 'nbiot'
 		}): Promise<
 			Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
 		> =>
