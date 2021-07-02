@@ -29,6 +29,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@amcharts/amcharts4": "4.10.20",
+    "@aws-sdk/client-dynamodb": "3.19.0",
     "@aws-sdk/client-iot": "3.19.0",
     "@aws-sdk/client-iot-data-plane": "3.19.0",
     "@aws-sdk/client-s3": "3.19.0",

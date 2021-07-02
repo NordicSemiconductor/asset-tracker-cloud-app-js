@@ -84,6 +84,8 @@ switch (cloudFlavour) {
 						geolocationApiEndpoint: (
 							process.env.REACT_APP_GEOLOCATION_API_URL ?? ''
 						).replace(/\/+$/, ''),
+						nCellMeasReportTableName:
+							process.env.REACT_APP_NCELLMEAS_STORAGE_TABLE_NAME ?? '',
 					}),
 				)
 			})

@@ -31,6 +31,8 @@ import { CatLoader } from '../../Cat/CatLoader'
 import { left, right } from 'fp-ts/lib/Either'
 import { HttpRequest } from '@aws-sdk/protocol-http'
 import { dbmToRSRP } from '@nordicsemiconductor/rsrp-bar'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import { getNeighboringCellMeasurementReport } from '../getNeighboringCellMeasurementReport'
 
 export const CatActions = ({ catId }: { catId: string }) => {
 	const [deleted, setDeleted] = useState(false)
@@ -50,6 +52,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 				avatarBucketName,
 				fotaBucketName,
 				geolocationApiEndpoint,
+				nCellMeasReportTableName,
 			}) => (
 				<TimestreamQueryConsumer>
 					{(timestreamQueryContext) => (
@@ -110,6 +113,14 @@ export const CatActions = ({ catId }: { catId: string }) => {
 										const describeThing = describeIotThing({ iot })
 
 										const deleteCat = deleteIotThing({ iot })
+
+										const getNcellmeas = getNeighboringCellMeasurementReport({
+											dynamoDB: new DynamoDBClient({
+												credentials,
+												region,
+											}),
+											tableName: nCellMeasReportTableName,
+										})
 
 										return (
 											<CatLoader<{
@@ -251,6 +262,9 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	}
 																/>
 															)}
+															getNeighboringCellMeasurementReport={async () =>
+																getNcellmeas({ deviceId: cat.id })
+															}
 														>
 															<hr />
 															<Collapsable

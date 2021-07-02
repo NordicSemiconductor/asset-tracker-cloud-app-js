@@ -37,7 +37,7 @@ export const ReportedTime = ({
 }: {
 	reportedAt: Date
 	receivedAt: Date
-	staleAfterSeconds: number
+	staleAfterSeconds?: number
 }) => {
 	const reportedTimeIsOutDated =
 		(receivedAt.getTime() - reportedAt.getTime()) / 1000 > 300
@@ -51,7 +51,8 @@ export const ReportedTime = ({
 			addSuffix: true,
 		})
 	const reportIsOld =
-		(Date.now() - reportedAt.getTime()) / 1000 > staleAfterSeconds
+		(Date.now() - reportedAt.getTime()) / 1000 >
+		(staleAfterSeconds ?? Number.MAX_SAFE_INTEGER)
 	try {
 		return (
 			<span className={'reportedTime'} {...restProps}>
@@ -63,10 +64,12 @@ export const ReportedTime = ({
 						<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
 					</OutDatedSpan>
 				)}
-				<OldWarning
-					reportIsOld={reportIsOld}
-					staleAfterSeconds={staleAfterSeconds}
-				/>
+				{staleAfterSeconds !== undefined && (
+					<OldWarning
+						reportIsOld={reportIsOld}
+						staleAfterSeconds={staleAfterSeconds}
+					/>
+				)}
 			</span>
 		)
 	} catch {
@@ -74,10 +77,12 @@ export const ReportedTime = ({
 			<span className={'reportedTime'} {...restProps}>
 				{emojify('☁️ ')}
 				<RelativeTime ts={receivedAt} key={receivedAt.toISOString()} />
-				<OldWarning
-					reportIsOld={reportIsOld}
-					staleAfterSeconds={staleAfterSeconds}
-				/>
+				{staleAfterSeconds !== undefined && (
+					<OldWarning
+						reportIsOld={reportIsOld}
+						staleAfterSeconds={staleAfterSeconds}
+					/>
+				)}
 			</span>
 		)
 	}

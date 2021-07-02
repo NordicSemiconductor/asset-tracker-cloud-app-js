@@ -80,3 +80,24 @@ export type ReportedState = {
 	roam?: ReportedRoamingInformation
 	env?: ReportedEnvironment
 }
+
+export type NCellMeasReport = {
+	mcc: number
+	mnc: number
+	cid: number
+	tac: number
+	earfcn: number
+	timingAdvance: number
+	age: number
+	rsrp: number
+	rsrq: number
+	nmr?: {
+		earfcn: number
+		pci: number
+		timeDiff: number
+		rsrp: number
+		rsrq: number
+	}[]
+	reportedAt: Date
+	receivedAt: Date
+}

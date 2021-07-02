@@ -44,6 +44,7 @@ export type StackConfigContextType = {
 		db: string
 		table: string
 	}
+	nCellMeasReportTableName: string
 }
 
 export const boot = ({
@@ -57,6 +58,7 @@ export const boot = ({
 	avatarBucketName,
 	fotaBucketName,
 	geolocationApiEndpoint,
+	nCellMeasReportTableName,
 }: {
 	identityPoolId: string
 	userIotPolicyArn: string
@@ -71,6 +73,7 @@ export const boot = ({
 	avatarBucketName: string
 	fotaBucketName: string
 	geolocationApiEndpoint: string
+	nCellMeasReportTableName: string
 }) => {
 	Amplify.configure({
 		Auth: {
@@ -84,13 +87,12 @@ export const boot = ({
 
 	const App = ({ authData }: { authData: CognitoUser }) => {
 		const [credentials, setCredentials] = useState<ICredentials>()
-		const [iot, setIot] =
-			useState<{
-				iot: IoTClient
-				iotData: IoTDataPlaneClient
-				mqttEndpoint: string
-				region: string
-			}>()
+		const [iot, setIot] = useState<{
+			iot: IoTClient
+			iotData: IoTDataPlaneClient
+			mqttEndpoint: string
+			region: string
+		}>()
 		const [timestreamQueryContext, setTimestreamQueryContext] =
 			useState<TimestreamQueryContextType>()
 		useEffect(() => {
@@ -217,6 +219,7 @@ export const boot = ({
 								userPoolClientId,
 								mqttEndpoint,
 								timestreamConfig,
+								nCellMeasReportTableName,
 							}}
 						>
 							<CredentialsContext.Provider value={credentials}>
@@ -287,5 +290,6 @@ const StackConfigContext = React.createContext<StackConfigContextType>({
 		db: '',
 		table: '',
 	},
+	nCellMeasReportTableName: '',
 })
 export const StackConfigConsumer = StackConfigContext.Consumer
