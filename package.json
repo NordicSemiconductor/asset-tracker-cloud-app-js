@@ -39,7 +39,7 @@
     "@microsoft/signalr": "5.0.7",
     "@nordicsemiconductor/cell-geolocation-helpers": "3.0.8",
     "@nordicsemiconductor/rsrp-bar": "3.0.1",
-    "@nordicsemiconductor/timestream-helpers": "3.1.14",
+    "@nordicsemiconductor/timestream-helpers": "3.1.15",
     "aws-amplify": "3.4.3",
     "aws-amplify-react": "4.2.35",
     "aws-iot-device-sdk": "2.2.8",
