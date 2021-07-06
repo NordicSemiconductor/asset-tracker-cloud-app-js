@@ -75,7 +75,7 @@
     "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "8.0.1",
     "@types/aws-iot-device-sdk": "2.2.2",
     "@types/intro.js": "3.0.1",
-    "@types/jest": "26.0.23",
+    "@types/jest": "26.0.24",
     "@types/node": "16.0.0",
     "@types/react": "17.0.13",
     "@types/react-dom": "17.0.8",
