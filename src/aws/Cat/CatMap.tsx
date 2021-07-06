@@ -22,7 +22,14 @@ export const CatMap = ({
 
 	useEffect(() => {
 		let isCancelled = false
-		if (reported.roam) {
+		if (
+			reported.roam?.v !== undefined &&
+			typeof reported.roam.v === 'object' &&
+			'area' in reported.roam.v &&
+			'mccmnc' in reported.roam.v &&
+			'cell' in reported.roam.v &&
+			'nw' in reported.roam.v
+		) {
 			const { v, ts } = reported.roam
 			geolocateCell(geolocationApiEndpoint)({
 				...v,
@@ -49,7 +56,12 @@ export const CatMap = ({
 
 	let deviceLocation: Location | undefined = undefined
 
-	if (reported.gps !== undefined) {
+	if (
+		reported.gps?.v !== undefined &&
+		typeof reported.gps.v === 'object' &&
+		'lat' in reported.gps.v &&
+		'lng' in reported.gps.v
+	) {
 		deviceLocation = {
 			ts: new Date(reported.gps.ts),
 			position: {
@@ -97,64 +109,69 @@ export const CatMap = ({
 							GROUP BY measureGroup, time
 							ORDER BY time DESC`,
 					)
-					.then((data) =>
-						data.map(({ objectValues, objectKeys, date, objectSource }) => {
-							const pos = objectKeys.reduce(
-								(obj, k, i) => ({
-									...obj,
-									[k.split('.')[1]]: {
-										v: objectValues[i],
-										source: objectSource[i],
-									},
-								}),
-								{} as {
-									lat: {
-										v: number
-										source?: 'batch'
+					.then(
+						(data) =>
+							data
+								.map(({ objectValues, objectKeys, date, objectSource }) => {
+									const pos = objectKeys.reduce(
+										(obj, k, i) => ({
+											...obj,
+											[k.split('.')[1]]: {
+												v: objectValues[i],
+												source: objectSource[i],
+											},
+										}),
+										{} as {
+											lat: {
+												v: number
+												source?: 'batch'
+											}
+											lng: {
+												v: number
+												source?: 'batch'
+											}
+											acc: {
+												v: number
+												source?: 'batch'
+											}
+											alt: {
+												v: number
+												source?: 'batch'
+											}
+											hdg: {
+												v: number
+												source?: 'batch'
+											}
+											spd: {
+												v: number
+												source?: 'batch'
+											}
+										},
+									)
+									if (typeof pos !== 'object') return undefined
+									if (!('lat' in pos) || !('lng' in pos)) return undefined
+									const l: Location = {
+										position: {
+											lat: pos.lat.v,
+											lng: pos.lng.v,
+											accuracy: pos.acc.v,
+											heading: pos.hdg.v,
+											altitude: pos.alt.v,
+											speed: pos.spd.v,
+										},
+										batch: [
+											pos.lat.source,
+											pos.lng.source,
+											pos.acc.source,
+											pos.hdg.source,
+											pos.alt.source,
+											pos.spd.source,
+										].includes('batch'),
+										ts: date as unknown as Date,
 									}
-									lng: {
-										v: number
-										source?: 'batch'
-									}
-									acc: {
-										v: number
-										source?: 'batch'
-									}
-									alt: {
-										v: number
-										source?: 'batch'
-									}
-									hdg: {
-										v: number
-										source?: 'batch'
-									}
-									spd: {
-										v: number
-										source?: 'batch'
-									}
-								},
-							)
-							const l: Location = {
-								position: {
-									lat: pos.lat.v,
-									lng: pos.lng.v,
-									accuracy: pos.acc.v,
-									heading: pos.hdg.v,
-									altitude: pos.alt.v,
-									speed: pos.spd.v,
-								},
-								batch: [
-									pos.lat.source,
-									pos.lng.source,
-									pos.acc.source,
-									pos.hdg.source,
-									pos.alt.source,
-									pos.spd.source,
-								].includes('batch'),
-								ts: date as unknown as Date,
-							}
-							return l
-						}),
+									return l
+								})
+								.filter((l) => l) as Location[],
 					)
 					.then(async (locations) => {
 						if (!locations.length)
