@@ -260,6 +260,9 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	geolocationApiEndpoint={
 																		geolocationApiEndpoint
 																	}
+																	getNeighboringCellMeasurementReport={async () =>
+																		getNcellmeas({ deviceId: cat.id })
+																	}
 																/>
 															)}
 															getNeighboringCellMeasurementReport={async () =>

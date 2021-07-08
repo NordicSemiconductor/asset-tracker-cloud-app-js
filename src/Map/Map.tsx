@@ -144,11 +144,13 @@ const toFixed = (n: number): string => n.toFixed(2).replace(/(\.00)|(0)$/, '')
 export const Map = ({
 	deviceLocation,
 	cellLocation,
+	neighboringCellGeoLocation,
 	label,
 	history,
 }: {
 	deviceLocation?: Location
 	cellLocation?: CellLocation
+	neighboringCellGeoLocation?: CellLocation
 	label: string
 	history?: {
 		location: Location
@@ -162,24 +164,17 @@ export const Map = ({
 	}
 	const [mapZoom, setMapZoom] = useState(zoom)
 
-	if (!cellLocation && !deviceLocation) return <NoMap />
+	if (!cellLocation && !deviceLocation && !neighboringCellGeoLocation)
+		return <NoMap />
 
-	// Hide the cell location circle if the GPS location exists and is not older than 5 minutes
-	const cellLocationIsMoreUpToDate =
-		cellLocation &&
-		((deviceLocation &&
-			cellLocation.ts.getTime() - 10 * 60 * 1000 >
-				deviceLocation.ts.getTime()) ||
-			!deviceLocation)
-
-	let center: Location = cellLocation ?? (deviceLocation as Location)
+	// FIXME: improve centering for three locations
+	let center: Location =
+		neighboringCellGeoLocation ?? cellLocation ?? (deviceLocation as Location)
 	if (
 		(cellLocation !== undefined &&
 			deviceLocation !== undefined &&
 			deviceLocation.ts.getTime() > cellLocation.ts.getTime()) ||
-		(deviceLocation !== undefined &&
-			cellLocationIsMoreUpToDate !== undefined &&
-			!cellLocationIsMoreUpToDate)
+		deviceLocation !== undefined
 	) {
 		center = deviceLocation
 	}
@@ -206,19 +201,24 @@ export const Map = ({
 				<Marker position={center.position}>
 					<Popup>{label}</Popup>
 				</Marker>
-				{deviceLocation?.position.accuracy !== undefined &&
-					cellLocationIsMoreUpToDate !== undefined &&
-					!cellLocationIsMoreUpToDate && (
-						<Circle
-							center={deviceLocation.position}
-							radius={deviceLocation.position.accuracy}
-						/>
-					)}
-				{cellLocation && cellLocationIsMoreUpToDate && (
+				{deviceLocation?.position.accuracy !== undefined && (
+					<Circle
+						center={deviceLocation.position}
+						radius={deviceLocation.position.accuracy}
+					/>
+				)}
+				{cellLocation && (
 					<Circle
 						center={cellLocation.position}
 						radius={cellLocation.position.accuracy}
 						color={'#F6C270'}
+					/>
+				)}
+				{neighboringCellGeoLocation && (
+					<Circle
+						center={neighboringCellGeoLocation.position}
+						radius={neighboringCellGeoLocation.position.accuracy}
+						color={'#E56399'}
 					/>
 				)}
 				{deviceLocation?.position.heading !== undefined && (
