@@ -6,20 +6,24 @@ import { isRight } from 'fp-ts/lib/Either'
 import { CatInfo } from './Cat'
 import { ThingState } from '../../@types/aws-device'
 import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
+import { NCellMeasReport } from '../../@types/device-state'
+import { isSome, Option } from 'fp-ts/lib/Option'
 
 export const CatMap = ({
 	timestreamQueryContext,
 	cat,
 	state: { reported },
 	geolocationApiEndpoint,
+	getNeighboringCellMeasurementReport,
 }: {
 	timestreamQueryContext: TimestreamQueryContextType
 	cat: CatInfo
 	state: ThingState
 	geolocationApiEndpoint: string
+	getNeighboringCellMeasurementReport: () => Promise<Option<NCellMeasReport>>
 }) => {
+	// Cell geolocation
 	const [cellLocation, setCellLocation] = useState<CellLocation>()
-
 	useEffect(() => {
 		let isCancelled = false
 		if (
@@ -33,7 +37,7 @@ export const CatMap = ({
 			const { v, ts } = reported.roam
 			geolocateCell(geolocationApiEndpoint)({
 				...v,
-				nw: reported.dev?.v.nw.includes('NB-IoT') ? 'nbiot' : 'ltem',
+				nw: reported.dev?.v?.nw?.includes('NB-IoT') ? 'nbiot' : 'ltem',
 			})
 				.then((geolocation) => {
 					if (isCancelled) return
@@ -53,6 +57,26 @@ export const CatMap = ({
 			isCancelled = true
 		}
 	}, [reported, geolocationApiEndpoint])
+
+	// Neighboring cell geolocation
+	const [neighboringCellGeoLocation, setNeighboringCellGeoLocation] =
+		useState<CellLocation>()
+	useEffect(() => {
+		void getNeighboringCellMeasurementReport().then(
+			(maybeNeighborCellMeasurementReport) => {
+				if (isSome(maybeNeighborCellMeasurementReport)) {
+					if (maybeNeighborCellMeasurementReport.value.position !== undefined) {
+						setNeighboringCellGeoLocation({
+							position: maybeNeighborCellMeasurementReport.value.position,
+							ts: maybeNeighborCellMeasurementReport.value.reportedAt,
+						})
+					} else {
+						// FIXME: use REST api to resolve cell
+					}
+				}
+			},
+		)
+	}, [getNeighboringCellMeasurementReport])
 
 	let deviceLocation: Location | undefined = undefined
 
@@ -79,6 +103,7 @@ export const CatMap = ({
 		<HistoricalDataMap
 			deviceLocation={deviceLocation}
 			cellLocation={cellLocation}
+			neighboringCellGeoLocation={neighboringCellGeoLocation}
 			cat={cat}
 			fetchHistory={async (numEntries) =>
 				timestreamQueryContext

@@ -1,17 +1,16 @@
-import {
-	AttributeValue,
-	DynamoDBClient,
-	QueryCommand,
-} from '@aws-sdk/client-dynamodb'
+import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb'
 import { none, Option, some } from 'fp-ts/lib/Option'
 import { NCellMeasReport } from '../@types/device-state'
+import { unmarshall } from '@aws-sdk/util-dynamodb'
 
 export const getNeighboringCellMeasurementReport =
 	({ dynamoDB, tableName }: { dynamoDB: DynamoDBClient; tableName: string }) =>
 	async ({
 		deviceId,
+		limit,
 	}: {
 		deviceId: string
+		limit?: number
 	}): Promise<Option<NCellMeasReport>> => {
 		const res = await dynamoDB.send(
 			new QueryCommand({
@@ -26,40 +25,62 @@ export const getNeighboringCellMeasurementReport =
 					},
 				},
 				ScanIndexForward: false,
-				Limit: 1,
+				Limit: limit ?? 1,
 			}),
 		)
 		if (res.Items === undefined || res.Items.length === 0) return none
-		const reportData = res.Items[0].report.M as {
-			[key: string]: AttributeValue
+		const report = unmarshall(res.Items[0]) as {
+			reportId: string
+			roam: {
+				v: {
+					nw: string
+				}
+			}
+			deviceId: string
+			report: {
+				area: number
+				adv: number
+				nmr: {
+					rsrp: number
+					cell: number
+					rsrq: number
+					earfcn: number
+				}[]
+				mnc: number
+				rsrq: number
+				rsrp: number
+				mcc: number
+				cell: number
+				earfcn: number
+				ts: number
+			}
+			timestamp: number
+			unresolved?: boolean
+			lat?: number
+			lng?: number
+			accuracy?: number
 		}
-		const report: NCellMeasReport = {
-			mcc: parseInt(reportData.mcc.N as string, 10),
-			mnc: parseInt(reportData.mnc.N as string, 10),
-			cid: parseInt(reportData.cid.N as string, 10),
-			tac: parseInt(reportData.tac.N as string, 10),
-			earfcn: parseInt(reportData.earfcn.N as string, 10),
-			timingAdvance: parseInt(reportData.timingAdvance.N as string, 10),
-			age: parseInt(reportData.age.N as string, 10),
-			rsrp: parseInt(reportData.rsrp.N as string, 10),
-			rsrq: parseInt(reportData.rsrq.N as string, 10),
-			nmr: (
-				reportData?.nmr?.L as
-					| {
-							M: {
-								[key: string]: AttributeValue
-							}
-					  }[]
-					| undefined
-			)?.map(({ M }) => ({
-				earfcn: parseInt(M.earfcn.N as string, 10),
-				pci: parseInt(M.pci.N as string, 10),
-				timeDiff: parseInt(M.timeDiff.N as string, 10),
-				rsrp: parseInt(M.rsrp.N as string, 10),
-				rsrq: parseInt(M.rsrq.N as string, 10),
-			})),
-			receivedAt: new Date(parseInt(res.Items[0].timestamp.N as string, 10)),
-			reportedAt: new Date(parseInt(reportData.ts.N as string, 10)),
-		}
-		return some(report)
+		return some({
+			mcc: report.report.mcc,
+			mnc: report.report.mnc,
+			cell: report.report.cell,
+			area: report.report.area,
+			earfcn: report.report.earfcn,
+			adv: report.report.adv,
+			rsrp: report.report.rsrp,
+			rsrq: report.report.rsrq,
+			nmr: report.report.nmr,
+			reportedAt: new Date(report.timestamp),
+			receivedAt: new Date(report.report.ts),
+			position:
+				report.lat !== undefined &&
+				report.lng !== undefined &&
+				report.accuracy !== undefined
+					? {
+							lat: report.lat,
+							lng: report.lng,
+							accuracy: report.accuracy,
+					  }
+					: undefined,
+		})
 	}

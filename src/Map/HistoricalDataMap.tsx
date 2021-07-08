@@ -6,6 +6,7 @@ import { Settings } from './Settings'
 const LoadHistoricalMapData = ({
 	cat,
 	deviceLocation,
+	neighboringCellGeoLocation,
 	cellLocation,
 	fetchHistory,
 	numEntries,
@@ -15,6 +16,7 @@ const LoadHistoricalMapData = ({
 	cat: CatInfo
 	deviceLocation?: Location
 	cellLocation?: CellLocation
+	neighboringCellGeoLocation?: CellLocation
 	numEntries: number
 	fetchHistoricalData: boolean
 	fetchHistory: (numEntries: number) => Promise<{ location: Location }[]>
@@ -57,6 +59,7 @@ const LoadHistoricalMapData = ({
 		<Map
 			deviceLocation={deviceLocation}
 			cellLocation={cellLocation}
+			neighboringCellGeoLocation={neighboringCellGeoLocation}
 			label={cat.id}
 		/>
 	)
@@ -74,6 +77,7 @@ const LoadHistoricalMapData = ({
 			<Map
 				deviceLocation={deviceLocation}
 				cellLocation={cellLocation}
+				neighboringCellGeoLocation={neighboringCellGeoLocation}
 				label={cat.id}
 				history={history}
 			/>
@@ -86,10 +90,12 @@ export const HistoricalDataMap = ({
 	cat,
 	deviceLocation,
 	cellLocation,
+	neighboringCellGeoLocation,
 	fetchHistory,
 }: {
 	cat: CatInfo
 	deviceLocation?: Location
+	neighboringCellGeoLocation?: CellLocation
 	cellLocation?: CellLocation
 	fetchHistory: (numEntries: number) => Promise<
 		{
@@ -118,6 +124,7 @@ export const HistoricalDataMap = ({
 		<LoadHistoricalMapData
 			cat={cat}
 			deviceLocation={deviceLocation}
+			neighboringCellGeoLocation={neighboringCellGeoLocation}
 			cellLocation={cellLocation}
 			fetchHistory={fetchHistory}
 			numEntries={numEntries}
