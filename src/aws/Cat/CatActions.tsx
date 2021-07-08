@@ -34,6 +34,7 @@ import { dbmToRSRP } from '@nordicsemiconductor/rsrp-bar'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { getNeighboringCellMeasurementReport } from '../getNeighboringCellMeasurementReport'
 import { NeighborCellMeasurementsReport } from '../../DeviceInformation/NeighborCellMeasurementsReport'
+import { CollapsedContextProvider } from '../../Collapsable/CollapsedContext'
 
 export const CatActions = ({ catId }: { catId: string }) => {
 	const [deleted, setDeleted] = useState(false)
@@ -153,153 +154,160 @@ export const CatActions = ({ catId }: { catId: string }) => {
 											>
 												{(cat, update) => {
 													return (
-														<Cat
-															cat={cat}
-															credentials={credentials}
-															getThingState={async () =>
-																getThingState(iotData)(catId)
-															}
-															listenForStateChange={async ({ onNewState }) =>
-																connectAndListenForStateChange({
-																	clientId: `user-${
-																		credentials.identityId
-																	}-${Date.now()}`,
-																	credentials,
-																	deviceId: catId,
-																	onNewState,
-																	region,
-																	mqttEndpoint,
-																}).then((connection) => () => connection.end())
-															}
-															updateDeviceConfig={async (cfg) =>
-																updateThingConfig(iotData)(catId)(cfg).then(
-																	() => {
-																		update({
-																			...cat,
-																			version: ++cat.version,
-																		})
-																	},
-																)
-															}
-															listUpgradeJobs={async () =>
-																listUpgradeJobs(catId)
-															}
-															cancelUpgradeJob={async ({
-																jobId,
-																force,
-															}: {
-																jobId: string
-																force: boolean
-															}) =>
-																cancelUpgradeJob({
-																	deviceId: catId,
+														<CollapsedContextProvider>
+															<Cat
+																cat={cat}
+																credentials={credentials}
+																getThingState={async () =>
+																	getThingState(iotData)(catId)
+																}
+																listenForStateChange={async ({ onNewState }) =>
+																	connectAndListenForStateChange({
+																		clientId: `user-${
+																			credentials.identityId
+																		}-${Date.now()}`,
+																		credentials,
+																		deviceId: catId,
+																		onNewState,
+																		region,
+																		mqttEndpoint,
+																	}).then(
+																		(connection) => () => connection.end(),
+																	)
+																}
+																updateDeviceConfig={async (cfg) =>
+																	updateThingConfig(iotData)(catId)(cfg).then(
+																		() => {
+																			update({
+																				...cat,
+																				version: ++cat.version,
+																			})
+																		},
+																	)
+																}
+																listUpgradeJobs={async () =>
+																	listUpgradeJobs(catId)
+																}
+																cancelUpgradeJob={async ({
 																	jobId,
 																	force,
-																})
-															}
-															deleteUpgradeJob={async ({
-																jobId,
-																executionNumber,
-															}: {
-																jobId: string
-																executionNumber: number
-															}) =>
-																deleteUpgradeJob({
-																	deviceId: catId,
-																	jobId,
-																	executionNumber,
-																})
-															}
-															cloneUpgradeJob={async ({
-																jobId,
-															}: {
-																jobId: string
-															}) =>
-																describeThing(catId).then(
-																	async ({ thingArn }) =>
-																		cloneUpgradeJob({
-																			thingArn,
-																			jobId,
-																		}),
-																)
-															}
-															onCreateUpgradeJob={async (args) =>
-																describeThing(catId).then(
-																	async ({ thingArn }) =>
-																		createUpgradeJob({
-																			...args,
-																			thingArn: thingArn,
-																		}),
-																)
-															}
-															onAvatarChange={(avatar) => {
-																// Display image directly
-																const reader = new FileReader()
-																reader.onload = (e: any) => {
-																	update({
-																		...cat,
-																		avatar: e.target.result,
+																}: {
+																	jobId: string
+																	force: boolean
+																}) =>
+																	cancelUpgradeJob({
+																		deviceId: catId,
+																		jobId,
+																		force,
 																	})
 																}
-																reader.readAsDataURL(avatar)
-
-																avatarUploader(avatar)
-																	.then(async (url) =>
-																		attributeUpdater({ avatar: url }),
-																	)
-																	.catch(console.error)
-															}}
-															onNameChange={(name) => {
-																attributeUpdater({ name }).catch(console.error)
-															}}
-															catMap={(state) => (
-																<CatMap
-																	timestreamQueryContext={
-																		timestreamQueryContext
-																	}
-																	cat={cat}
-																	state={state}
-																	geolocationApiEndpoint={
-																		geolocationApiEndpoint
-																	}
-																	neighboringCellGeolocationApiEndpoint={
-																		neighboringCellGeolocationApiEndpoint
-																	}
-																	getNeighboringCellMeasurementReport={async () =>
-																		getNcellmeas({ deviceId: cat.id })
-																	}
-																/>
-															)}
-														>
-															<hr />
-															<Collapsable
-																id={'cat:ncell'}
-																title={
-																	<h3>
-																		{emojify('🗧 Neighboring Cell Measurement')}
-																	</h3>
+																deleteUpgradeJob={async ({
+																	jobId,
+																	executionNumber,
+																}: {
+																	jobId: string
+																	executionNumber: number
+																}) =>
+																	deleteUpgradeJob({
+																		deviceId: catId,
+																		jobId,
+																		executionNumber,
+																	})
 																}
-															>
-																<NeighborCellMeasurementsReport
-																	getNeighboringCellMeasurementReport={async () =>
-																		getNcellmeas({ deviceId: cat.id })
+																cloneUpgradeJob={async ({
+																	jobId,
+																}: {
+																	jobId: string
+																}) =>
+																	describeThing(catId).then(
+																		async ({ thingArn }) =>
+																			cloneUpgradeJob({
+																				thingArn,
+																				jobId,
+																			}),
+																	)
+																}
+																onCreateUpgradeJob={async (args) =>
+																	describeThing(catId).then(
+																		async ({ thingArn }) =>
+																			createUpgradeJob({
+																				...args,
+																				thingArn: thingArn,
+																			}),
+																	)
+																}
+																onAvatarChange={(avatar) => {
+																	// Display image directly
+																	const reader = new FileReader()
+																	reader.onload = (e: any) => {
+																		update({
+																			...cat,
+																			avatar: e.target.result,
+																		})
 																	}
-																/>
-															</Collapsable>
-															<hr />
-															<Collapsable
-																id={'cat:roam'}
-																title={<h3>{emojify('📶 RSRP')}</h3>}
+																	reader.readAsDataURL(avatar)
+
+																	avatarUploader(avatar)
+																		.then(async (url) =>
+																			attributeUpdater({ avatar: url }),
+																		)
+																		.catch(console.error)
+																}}
+																onNameChange={(name) => {
+																	attributeUpdater({ name }).catch(
+																		console.error,
+																	)
+																}}
+																catMap={(state) => (
+																	<CatMap
+																		timestreamQueryContext={
+																			timestreamQueryContext
+																		}
+																		cat={cat}
+																		state={state}
+																		geolocationApiEndpoint={
+																			geolocationApiEndpoint
+																		}
+																		neighboringCellGeolocationApiEndpoint={
+																			neighboringCellGeolocationApiEndpoint
+																		}
+																		getNeighboringCellMeasurementReport={async () =>
+																			getNcellmeas({ deviceId: cat.id })
+																		}
+																	/>
+																)}
 															>
-																<HistoricalDataLoader<{
-																	date: Date
-																	value: number
-																}>
-																	timestreamQueryContext={
-																		timestreamQueryContext
+																<hr />
+																<Collapsable
+																	id={'cat:ncell'}
+																	title={
+																		<h3>
+																			{emojify(
+																				'🗧 Neighboring Cell Measurement',
+																			)}
+																		</h3>
 																	}
-																	deviceId={catId}
-																	QueryString={(table) => `
+																>
+																	<NeighborCellMeasurementsReport
+																		getNeighboringCellMeasurementReport={async () =>
+																			getNcellmeas({ deviceId: cat.id })
+																		}
+																	/>
+																</Collapsable>
+																<hr />
+																<Collapsable
+																	id={'cat:roam'}
+																	title={<h3>{emojify('📶 RSRP')}</h3>}
+																>
+																	<HistoricalDataLoader<{
+																		date: Date
+																		value: number
+																	}>
+																		timestreamQueryContext={
+																			timestreamQueryContext
+																		}
+																		deviceId={catId}
+																		QueryString={(table) => `
 																		SELECT
 																		time as date,
 																		-measure_value::double as value
@@ -309,33 +317,33 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		ORDER BY time DESC
 																		LIMIT 100
 																	`}
+																	>
+																		{({ data }) => (
+																			<HistoricalDataChart
+																				data={data.map(({ value, date }) => ({
+																					date,
+																					value: -dbmToRSRP(value),
+																				}))}
+																				type={'line'}
+																				max={-70}
+																			/>
+																		)}
+																	</HistoricalDataLoader>
+																</Collapsable>
+																<hr />
+																<Collapsable
+																	id={'cat:bat'}
+																	title={<h3>{emojify('🔋 Battery')}</h3>}
 																>
-																	{({ data }) => (
-																		<HistoricalDataChart
-																			data={data.map(({ value, date }) => ({
-																				date,
-																				value: -dbmToRSRP(value),
-																			}))}
-																			type={'line'}
-																			max={-70}
-																		/>
-																	)}
-																</HistoricalDataLoader>
-															</Collapsable>
-															<hr />
-															<Collapsable
-																id={'cat:bat'}
-																title={<h3>{emojify('🔋 Battery')}</h3>}
-															>
-																<HistoricalDataLoader<{
-																	date: Date
-																	value: number
-																}>
-																	timestreamQueryContext={
-																		timestreamQueryContext
-																	}
-																	deviceId={catId}
-																	QueryString={(table) => `
+																	<HistoricalDataLoader<{
+																		date: Date
+																		value: number
+																	}>
+																		timestreamQueryContext={
+																			timestreamQueryContext
+																		}
+																		deviceId={catId}
+																		QueryString={(table) => `
 																		SELECT
 																		bin(time, 1h) as date,
 																		MIN(
@@ -348,58 +356,58 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		ORDER BY bin(time, 1h) DESC
 																		LIMIT 100
 																	`}
+																	>
+																		{({ data }) => (
+																			<HistoricalDataChart
+																				data={data}
+																				type={'line'}
+																			/>
+																		)}
+																	</HistoricalDataLoader>
+																</Collapsable>
+																<hr />
+																<Collapsable
+																	id={'cat:environment'}
+																	title={<h3>{emojify('🌡️ Temperature')}</h3>}
 																>
-																	{({ data }) => (
-																		<HistoricalDataChart
-																			data={data}
-																			type={'line'}
-																		/>
-																	)}
-																</HistoricalDataLoader>
-															</Collapsable>
-															<hr />
-															<Collapsable
-																id={'cat:environment'}
-																title={<h3>{emojify('🌡️ Temperature')}</h3>}
-															>
-																<HistoricalDataLoader<{
-																	date: Date
-																	value: number
-																}>
-																	timestreamQueryContext={
-																		timestreamQueryContext
-																	}
-																	deviceId={catId}
-																	QueryString={(table) => `SELECT
+																	<HistoricalDataLoader<{
+																		date: Date
+																		value: number
+																	}>
+																		timestreamQueryContext={
+																			timestreamQueryContext
+																		}
+																		deviceId={catId}
+																		QueryString={(table) => `SELECT
 																	time as date, measure_value::double AS value
 																	FROM ${table}
 																	WHERE deviceId='${catId}' 
 																	AND measure_name='env.temp' 
 																	ORDER BY time DESC
 																	LIMIT 100`}
+																	>
+																		{({ data }) => (
+																			<HistoricalDataChart
+																				data={data}
+																				type={'line'}
+																			/>
+																		)}
+																	</HistoricalDataLoader>
+																</Collapsable>
+																<hr />
+																<Collapsable
+																	id={'cat:button'}
+																	title={<h3>{emojify('🚨 Button')}</h3>}
 																>
-																	{({ data }) => (
-																		<HistoricalDataChart
-																			data={data}
-																			type={'line'}
-																		/>
-																	)}
-																</HistoricalDataLoader>
-															</Collapsable>
-															<hr />
-															<Collapsable
-																id={'cat:button'}
-																title={<h3>{emojify('🚨 Button')}</h3>}
-															>
-																<HistoricalDataLoader<{
-																	date: Date
-																	value: number
-																}>
-																	timestreamQueryContext={
-																		timestreamQueryContext
-																	}
-																	deviceId={catId}
-																	QueryString={(table) => `		
+																	<HistoricalDataLoader<{
+																		date: Date
+																		value: number
+																	}>
+																		timestreamQueryContext={
+																			timestreamQueryContext
+																		}
+																		deviceId={catId}
+																		QueryString={(table) => `		
 																	SELECT measure_value::double AS value, time as date
 																	FROM ${table}
 																	WHERE deviceId='${catId}' 
@@ -407,29 +415,30 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	ORDER BY time DESC
 																	LIMIT 10
 																	`}
+																	>
+																		{({ data }) => (
+																			<HistoricalButtonPresses data={data} />
+																		)}
+																	</HistoricalDataLoader>
+																</Collapsable>
+																<hr />
+																<Collapsable
+																	id={'cat:dangerzone'}
+																	title={<h3>{emojify('☠️ Danger Zone')}</h3>}
 																>
-																	{({ data }) => (
-																		<HistoricalButtonPresses data={data} />
-																	)}
-																</HistoricalDataLoader>
-															</Collapsable>
-															<hr />
-															<Collapsable
-																id={'cat:dangerzone'}
-																title={<h3>{emojify('☠️ Danger Zone')}</h3>}
-															>
-																<DeleteCat
-																	catId={catId}
-																	onDelete={() => {
-																		deleteCat(catId)
-																			.then(() => {
-																				setDeleted(true)
-																			})
-																			.catch(console.error)
-																	}}
-																/>
-															</Collapsable>
-														</Cat>
+																	<DeleteCat
+																		catId={catId}
+																		onDelete={() => {
+																			deleteCat(catId)
+																				.then(() => {
+																					setDeleted(true)
+																				})
+																				.catch(console.error)
+																		}}
+																	/>
+																</Collapsable>
+															</Cat>
+														</CollapsedContextProvider>
 													)
 												}}
 											</CatLoader>

@@ -18,6 +18,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { SignalQuality } from '../ConnectionInformation/ConnectionInformation'
 import { nullOrUndefined } from '../util/nullOrUndefined'
 import { centerOnLatestLocation } from './centerOnLatestLocation'
+import { MapSettingsType } from './Settings'
 
 const MapContainerContainer = styled.div`
 	> .leaflet-container {
@@ -30,19 +31,21 @@ export const CatMapContainer = styled.div`
 `
 
 export const SettingsFormGroup = styled(FormGroup)`
-	position: absolute;
-	padding: 0.5rem 0.5rem 0.5rem 2rem;
-	background-color: #ffffffaf;
+	position: relative;
+	padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+	background-color: #f7f7f7;
 	top: 0;
 	right: 0;
 	z-index: 999;
 	display: flex;
-	align-items: center;
+	flex-wrap: wrap;
+	border-bottom: 1px solid #dcdcdc;
 	@media (min-width: ${mobileBreakpoint}) {
 		top: auto;
 		right: auto;
 		bottom: 0;
 		z-index: 10000;
+		border-bottom: 1px solid #dcdcdc;
 	}
 	input[type='number'] {
 		width: 70px;
@@ -148,6 +151,7 @@ export const Map = ({
 	neighboringCellGeoLocation,
 	label,
 	history,
+	enabledLayers,
 }: {
 	deviceLocation?: Location
 	cellLocation?: CellLocation
@@ -157,6 +161,7 @@ export const Map = ({
 		location: Location
 		roaming?: Roaming
 	}[]
+	enabledLayers: MapSettingsType['enabledLayers']
 }) => {
 	let zoom = 13
 	const userZoom = window.localStorage.getItem('asset-tracker:zoom')
@@ -201,27 +206,28 @@ export const Map = ({
 				<Marker position={center}>
 					<Popup>{label}</Popup>
 				</Marker>
+
 				{deviceLocation?.position.accuracy !== undefined && (
 					<Circle
 						center={deviceLocation.position}
 						radius={deviceLocation.position.accuracy}
 					/>
 				)}
-				{cellLocation && (
+				{cellLocation && enabledLayers.SinglecellLocations &&  (
 					<Circle
 						center={cellLocation.position}
 						radius={cellLocation.position.accuracy}
 						color={'#F6C270'}
 					/>
 				)}
-				{neighboringCellGeoLocation && (
+				{neighboringCellGeoLocation && enabledLayers.MulticellLocations &&(
 					<Circle
 						center={neighboringCellGeoLocation.position}
 						radius={neighboringCellGeoLocation.position.accuracy}
 						color={'#E56399'}
 					/>
 				)}
-				{deviceLocation?.position.heading !== undefined && (
+				{deviceLocation?.position.heading !== undefined && enabledLayers.Headings && (
 					<HeadingMarker
 						position={deviceLocation.position}
 						heading={deviceLocation.position.heading}
@@ -260,7 +266,7 @@ export const Map = ({
 											dashArray={'10'}
 										/>
 									)}
-									{heading !== undefined && (
+									{heading !== undefined && enabledLayers.Headings && (
 										<HeadingMarker
 											position={{ lat, lng }}
 											heading={heading}

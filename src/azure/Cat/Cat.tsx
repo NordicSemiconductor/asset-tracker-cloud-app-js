@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { ApiClient, Device } from '../api'
 import { CatCard } from '../../Cat/CatCard'
-import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
+import {
+	MobileOnlyCatHeader,
+	CatPersonalization,
+} from '../../Cat/CatPersonality'
 import { CardHeader, CardBody, Alert, Card } from 'reactstrap'
 import { emojify } from '../../Emojify/Emojify'
 import { Collapsable } from '../../Collapsable/Collapsable'
@@ -310,14 +313,14 @@ export const Cat = ({
 				/>
 			</CatMapContainer>
 			<CardHeader>
-				<CatHeader
+				<MobileOnlyCatHeader
 					{...{
 						cat,
 						isNameValid,
 						onAvatarChange,
 						onNameChange,
 					}}
-				></CatHeader>
+				></MobileOnlyCatHeader>
 				{reportedWithTime.roam?.v && reportedWithTime.dev?.v && (
 					<Toggle>
 						<ConnectionInformation
