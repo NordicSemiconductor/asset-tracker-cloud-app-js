@@ -12,7 +12,11 @@ import { ReportedTime } from '../../ReportedTime/ReportedTime'
 import { Collapsable } from '../../Collapsable/Collapsable'
 import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
 import { CatCard } from '../../Cat/CatCard'
-import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
+import { CollapsedContextConsumer } from '../../Collapsable/CollapsedContext'
+import {
+	MobileOnlyCatHeader,
+	CatPersonalization,
+} from '../../Cat/CatPersonality'
 import { ThingState } from '../../@types/aws-device'
 import { DeviceConfig } from '../../@types/device-state'
 import { Settings } from '../../Settings/Settings'
@@ -155,12 +159,18 @@ export const Cat = ({
 		<CatCard>
 			{state && catMap(state)}
 			<CardHeader>
-				<CatHeader
-					cat={cat}
-					isNameValid={isNameValid}
-					onAvatarChange={onAvatarChange}
-					onNameChange={onNameChange}
-				/>
+				<CollapsedContextConsumer>
+					{({ visible: showCat }) =>
+						showCat ? (
+							<MobileOnlyCatHeader
+								cat={cat}
+								isNameValid={isNameValid}
+								onAvatarChange={onAvatarChange}
+								onNameChange={onNameChange}
+							/>
+						) : null
+					}
+				</CollapsedContextConsumer>
 				{reported && (
 					<>
 						{reportedWithReceived?.roam !== undefined && (

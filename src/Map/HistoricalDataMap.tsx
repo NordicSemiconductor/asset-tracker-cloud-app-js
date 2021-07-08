@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { CatInfo } from '../aws/Cat/Cat'
+import { CollapsedContextConsumer } from '../Collapsable/CollapsedContext'
 import { Location, CellLocation, Map, CatMapContainer } from './Map'
-import { Settings } from './Settings'
+import { MapSettings } from './Settings'
+import { MapSettingsType } from './Settings'
+import { ShowSettingsButton } from './ShowSettingsButton'
 
 const LoadHistoricalMapData = ({
 	cat,
@@ -10,6 +13,7 @@ const LoadHistoricalMapData = ({
 	cellLocation,
 	fetchHistory,
 	numEntries,
+	visibleMapLayers,
 	fetchHistoricalData,
 	onSettings,
 }: {
@@ -18,11 +22,13 @@ const LoadHistoricalMapData = ({
 	cellLocation?: CellLocation
 	neighboringCellGeoLocation?: CellLocation
 	numEntries: number
+	visibleMapLayers: MapSettingsType['enabledLayers']
 	fetchHistoricalData: boolean
 	fetchHistory: (numEntries: number) => Promise<{ location: Location }[]>
-	onSettings: (args: { enabled: boolean; numEntries: number }) => void
+	onSettings: (args: MapSettingsType) => void
 }) => {
 	const [history, setHistory] = useState<{ location: Location }[]>()
+	const [showSettings, setShowSettings] = useState(false)
 
 	useEffect(() => {
 		let isCancelled = false
@@ -47,42 +53,58 @@ const LoadHistoricalMapData = ({
 		}
 	}, [fetchHistory, numEntries, fetchHistoricalData])
 
-	const settings = (
-		<Settings
-			enabled={fetchHistoricalData}
-			numEntries={numEntries}
-			onSettings={onSettings}
+
+	const settings = showSettings ? (
+		<MapSettings
+			initial={{
+				numEntries,
+				enabledLayers: visibleMapLayers,
+			}}
+			onSettings={(newSettings) => {
+				onSettings(newSettings)
+				if (newSettings.enabledLayers.FetchHistory === false) setHistory([])
+			}}
 		/>
-	)
+	) : null
 
-	const mapWithoutHistoricalData = (
-		<Map
-			deviceLocation={deviceLocation}
-			cellLocation={cellLocation}
-			neighboringCellGeoLocation={neighboringCellGeoLocation}
-			label={cat.id}
-		/>
-	)
-
-	if (history === undefined)
-		return (
-			<CatMapContainer>
-				{mapWithoutHistoricalData}
-				{settings}
-			</CatMapContainer>
-		)
-
-	return (
-		<CatMapContainer>
+	const map =
+		history === undefined ? (
+			<Map
+				deviceLocation={deviceLocation}
+				cellLocation={cellLocation}
+				neighboringCellGeoLocation={neighboringCellGeoLocation}
+				label={cat.id}
+				enabledLayers={visibleMapLayers}
+			/>
+		) : (
 			<Map
 				deviceLocation={deviceLocation}
 				cellLocation={cellLocation}
 				neighboringCellGeoLocation={neighboringCellGeoLocation}
 				label={cat.id}
 				history={history}
+				enabledLayers={visibleMapLayers}
 			/>
-			{settings}
-		</CatMapContainer>
+		)
+
+	return (
+		<CollapsedContextConsumer>
+			{({ setVisible: setMobileAvatarVisble }) => (
+				<>
+					<CatMapContainer>
+						{map}
+						<ShowSettingsButton
+							initial={false}
+							onToggle={(visible) => {
+								setShowSettings(visible)
+								setMobileAvatarVisble(!visible)
+							}}
+						/>
+					</CatMapContainer>
+					{settings}
+				</>
+			)}
+		</CollapsedContextConsumer>
 	)
 }
 
@@ -103,22 +125,46 @@ export const HistoricalDataMap = ({
 		}[]
 	>
 }) => {
-	let initialState = true
-
+	// By default, fetch historical positions
+	let fetchPastPositions = true
 	if (
 		window.localStorage.getItem(`asset-tracker:catmap:fetchPastPositions`) ===
 		'0'
 	) {
-		initialState = false
+		// override from user setting in local storage
+		fetchPastPositions = false
 	}
-	const [fetchHistoricalData, setFetchHistoricalData] = useState(initialState)
+	const [fetchHistoricalData, setFetchHistoricalData] =
+		useState(fetchPastPositions)
 
+	// How many historical positions to fetch, defaults to 10
 	const storedNumPastPostions = window.localStorage.getItem(
 		'asset-tracker:catmap:numEntries',
 	)
 	const [numEntries, setNumEntries] = useState(
 		storedNumPastPostions !== null ? parseInt(storedNumPastPostions, 10) : 10,
 	)
+
+	// Which map layers to show
+	let visibleMapLayerDefaultState = {
+		FetchHistory: true,
+		Headings: true,
+		MulticellLocations: true,
+		SinglecellLocations: true,
+	}
+	const userVisibleMapLayerDefaultState = window.localStorage.getItem(
+		`asset-tracker:catmap:visibleMapLayers`,
+	)
+	if (userVisibleMapLayerDefaultState !== null) {
+		try {
+			visibleMapLayerDefaultState = JSON.parse(userVisibleMapLayerDefaultState)
+		} catch {
+			// pass
+		}
+	}
+	const [visibleMapLayers, setVisibleMapLayers] = useState<
+		MapSettingsType['enabledLayers']
+	>(visibleMapLayerDefaultState)
 
 	return (
 		<LoadHistoricalMapData
@@ -128,17 +174,25 @@ export const HistoricalDataMap = ({
 			cellLocation={cellLocation}
 			fetchHistory={fetchHistory}
 			numEntries={numEntries}
+			visibleMapLayers={visibleMapLayers}
 			fetchHistoricalData={fetchHistoricalData}
-			onSettings={({ enabled, numEntries }) => {
+			onSettings={({ enabledLayers, numEntries }) => {
 				setNumEntries(numEntries)
-				setFetchHistoricalData(enabled)
-				window.localStorage.setItem(
-					`asset-tracker:catmap:fetchPastPositions`,
-					enabled ? '1' : '0',
-				)
 				window.localStorage.setItem(
 					'asset-tracker:catmap:numEntries',
 					`${numEntries}`,
+				)
+
+				setVisibleMapLayers(enabledLayers)
+				window.localStorage.setItem(
+					`asset-tracker:catmap:visibleMapLayers`,
+					JSON.stringify(enabledLayers),
+				)
+
+				setFetchHistoricalData(enabledLayers.FetchHistory)
+				window.localStorage.setItem(
+					`asset-tracker:catmap:fetchPastPositions`,
+					enabledLayers.FetchHistory ? '1' : '0',
 				)
 			}}
 		/>
