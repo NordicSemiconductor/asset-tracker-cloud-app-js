@@ -8,18 +8,21 @@ import { ThingState } from '../../@types/aws-device'
 import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
 import { NCellMeasReport } from '../../@types/device-state'
 import { isSome, Option } from 'fp-ts/lib/Option'
+import { geolocatNeighboringCellReport } from '../geolocatNeighboringCellReport'
 
 export const CatMap = ({
 	timestreamQueryContext,
 	cat,
 	state: { reported },
 	geolocationApiEndpoint,
+	neighboringCellGeolocationApiEndpoint,
 	getNeighboringCellMeasurementReport,
 }: {
 	timestreamQueryContext: TimestreamQueryContextType
 	cat: CatInfo
 	state: ThingState
 	geolocationApiEndpoint: string
+	neighboringCellGeolocationApiEndpoint: string
 	getNeighboringCellMeasurementReport: () => Promise<Option<NCellMeasReport>>
 }) => {
 	// Cell geolocation
@@ -62,6 +65,7 @@ export const CatMap = ({
 	const [neighboringCellGeoLocation, setNeighboringCellGeoLocation] =
 		useState<CellLocation>()
 	useEffect(() => {
+		let isCancelled = false
 		void getNeighboringCellMeasurementReport().then(
 			(maybeNeighborCellMeasurementReport) => {
 				if (isSome(maybeNeighborCellMeasurementReport)) {
@@ -71,12 +75,35 @@ export const CatMap = ({
 							ts: maybeNeighborCellMeasurementReport.value.reportedAt,
 						})
 					} else {
-						// FIXME: use REST api to resolve cell
+						geolocatNeighboringCellReport(
+							neighboringCellGeolocationApiEndpoint,
+						)({
+							reportId: maybeNeighborCellMeasurementReport.value.reportId,
+						})
+							.then((geolocation) => {
+								if (isCancelled) return
+								if (isRight(geolocation)) {
+									const l: CellLocation = {
+										ts: maybeNeighborCellMeasurementReport.value.reportedAt,
+										position: geolocation.right,
+									}
+									setNeighboringCellGeoLocation(l)
+								}
+							})
+							.catch((err) => {
+								console.error('[neighboringCellGeolocation]', err)
+							})
 					}
 				}
 			},
 		)
-	}, [getNeighboringCellMeasurementReport])
+		return () => {
+			isCancelled = true
+		}
+	}, [
+		getNeighboringCellMeasurementReport,
+		neighboringCellGeolocationApiEndpoint,
+	])
 
 	let deviceLocation: Location | undefined = undefined
 

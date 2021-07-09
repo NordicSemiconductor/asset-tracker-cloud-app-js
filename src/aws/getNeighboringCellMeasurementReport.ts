@@ -60,7 +60,9 @@ export const getNeighboringCellMeasurementReport =
 			lng?: number
 			accuracy?: number
 		}
+		console.log(report)
 		return some({
+			reportId: report.reportId,
 			mcc: report.report.mcc,
 			mnc: report.report.mnc,
 			cell: report.report.cell,

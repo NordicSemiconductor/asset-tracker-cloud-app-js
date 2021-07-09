@@ -82,6 +82,7 @@ export type ReportedState = {
 }
 
 export type NCellMeasReport = {
+	reportId: string
 	mcc: number
 	mnc: number
 	cell: number

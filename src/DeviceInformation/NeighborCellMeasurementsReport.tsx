@@ -30,8 +30,6 @@ export const NeighborCellMeasurementsReport = ({
 	if (report === undefined) return null
 	return (
 		<>
-			<hr />
-			<h4>Neighbor Cell Measurement</h4>
 			<pre>{JSON.stringify(report, null, 2)}</pre>
 			<StyledReportedTime
 				receivedAt={report.receivedAt}
