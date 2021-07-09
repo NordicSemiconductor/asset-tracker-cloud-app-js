@@ -14,11 +14,10 @@ import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
 import { CatCard } from '../../Cat/CatCard'
 import { CatHeader, CatPersonalization } from '../../Cat/CatPersonality'
 import { ThingState } from '../../@types/aws-device'
-import { DeviceConfig, NCellMeasReport } from '../../@types/device-state'
+import { DeviceConfig } from '../../@types/device-state'
 import { Settings } from '../../Settings/Settings'
 import { toReportedWithReceivedAt } from '../toReportedWithReceivedAt'
 import { Option, isSome } from 'fp-ts/lib/Option'
-import { NeighborCellMeasurementsReport } from '../../DeviceInformation/NeighborCellMeasurementsReport'
 
 const intro = introJs()
 
@@ -46,7 +45,6 @@ export const Cat = ({
 	updateDeviceConfig,
 	listenForStateChange,
 	catMap,
-	getNeighboringCellMeasurementReport,
 }: {
 	onAvatarChange: (avatar: Blob) => void
 	onNameChange: (name: string) => void
@@ -69,7 +67,6 @@ export const Cat = ({
 		onNewState: (newState: ThingState) => void
 	}) => Promise<() => void>
 	catMap: (state: ThingState) => React.ReactElement<any>
-	getNeighboringCellMeasurementReport: () => Promise<Option<NCellMeasReport>>
 }) => {
 	const [state, setState] = useState<ThingState>()
 	const [error, setError] = useState<Error>()
@@ -289,11 +286,6 @@ export const Cat = ({
 								roaming={reportedWithReceived.roam}
 								appV={reportedWithReceived.dev?.v?.value?.appV}
 								dataStaleAfterSeconds={expectedSendIntervalInSeconds}
-							/>
-							<NeighborCellMeasurementsReport
-								getNeighboringCellMeasurementReport={
-									getNeighboringCellMeasurementReport
-								}
 							/>
 						</Collapsable>
 					</>

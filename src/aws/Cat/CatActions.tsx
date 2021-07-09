@@ -33,6 +33,7 @@ import { HttpRequest } from '@aws-sdk/protocol-http'
 import { dbmToRSRP } from '@nordicsemiconductor/rsrp-bar'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { getNeighboringCellMeasurementReport } from '../getNeighboringCellMeasurementReport'
+import { NeighborCellMeasurementsReport } from '../../DeviceInformation/NeighborCellMeasurementsReport'
 
 export const CatActions = ({ catId }: { catId: string }) => {
 	const [deleted, setDeleted] = useState(false)
@@ -52,6 +53,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 				avatarBucketName,
 				fotaBucketName,
 				geolocationApiEndpoint,
+				neighboringCellGeolocationApiEndpoint,
 				nCellMeasReportTableName,
 			}) => (
 				<TimestreamQueryConsumer>
@@ -260,15 +262,30 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																	geolocationApiEndpoint={
 																		geolocationApiEndpoint
 																	}
+																	neighboringCellGeolocationApiEndpoint={
+																		neighboringCellGeolocationApiEndpoint
+																	}
 																	getNeighboringCellMeasurementReport={async () =>
 																		getNcellmeas({ deviceId: cat.id })
 																	}
 																/>
 															)}
-															getNeighboringCellMeasurementReport={async () =>
-																getNcellmeas({ deviceId: cat.id })
-															}
 														>
+															<hr />
+															<Collapsable
+																id={'cat:ncell'}
+																title={
+																	<h3>
+																		{emojify('🗧 Neighboring Cell Measurement')}
+																	</h3>
+																}
+															>
+																<NeighborCellMeasurementsReport
+																	getNeighboringCellMeasurementReport={async () =>
+																		getNcellmeas({ deviceId: cat.id })
+																	}
+																/>
+															</Collapsable>
 															<hr />
 															<Collapsable
 																id={'cat:roam'}

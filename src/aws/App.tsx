@@ -37,6 +37,7 @@ export type StackConfigContextType = {
 	avatarBucketName: string
 	fotaBucketName: string
 	geolocationApiEndpoint: string
+	neighboringCellGeolocationApiEndpoint: string
 	userPoolId: string
 	userPoolClientId: string
 	mqttEndpoint: string
@@ -58,6 +59,7 @@ export const boot = ({
 	avatarBucketName,
 	fotaBucketName,
 	geolocationApiEndpoint,
+	neighboringCellGeolocationApiEndpoint,
 	nCellMeasReportTableName,
 }: {
 	identityPoolId: string
@@ -73,6 +75,7 @@ export const boot = ({
 	avatarBucketName: string
 	fotaBucketName: string
 	geolocationApiEndpoint: string
+	neighboringCellGeolocationApiEndpoint: string
 	nCellMeasReportTableName: string
 }) => {
 	Amplify.configure({
@@ -215,6 +218,7 @@ export const boot = ({
 								avatarBucketName,
 								fotaBucketName,
 								geolocationApiEndpoint,
+								neighboringCellGeolocationApiEndpoint,
 								userPoolId,
 								userPoolClientId,
 								mqttEndpoint,
@@ -283,6 +287,7 @@ const StackConfigContext = React.createContext<StackConfigContextType>({
 	avatarBucketName: '',
 	fotaBucketName: '',
 	geolocationApiEndpoint: '',
+	neighboringCellGeolocationApiEndpoint: '',
 	userPoolId: '',
 	userPoolClientId: '',
 	mqttEndpoint: '',
