@@ -176,6 +176,10 @@ export const Map = ({
 		deviceLocation,
 		cellLocation,
 		neighboringCellGeoLocation,
+		...(history?.map(({ location }) => ({
+			position: location.position,
+			ts: location.ts,
+		})) ?? []),
 	])
 
 	return (
