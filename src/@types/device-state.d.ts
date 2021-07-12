@@ -99,6 +99,7 @@ export type NCellMeasReport = {
 	}[]
 	reportedAt: Date
 	receivedAt: Date
+	unresolved?: boolean
 	position?: {
 		lat: number
 		lng: number

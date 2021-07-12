@@ -17,6 +17,7 @@ import { FormGroup } from 'reactstrap'
 import { formatDistanceToNow } from 'date-fns'
 import { SignalQuality } from '../ConnectionInformation/ConnectionInformation'
 import { nullOrUndefined } from '../util/nullOrUndefined'
+import { centerOnLatestLocation } from './centerOnLatestLocation'
 
 const MapContainerContainer = styled.div`
 	> .leaflet-container {
@@ -164,27 +165,22 @@ export const Map = ({
 	}
 	const [mapZoom, setMapZoom] = useState(zoom)
 
-	if (!cellLocation && !deviceLocation && !neighboringCellGeoLocation)
-		return <NoMap />
-
-	// FIXME: improve centering for three locations
-	let center: Location =
-		neighboringCellGeoLocation ?? cellLocation ?? (deviceLocation as Location)
 	if (
-		(cellLocation !== undefined &&
-			deviceLocation !== undefined &&
-			deviceLocation.ts.getTime() > cellLocation.ts.getTime()) ||
-		deviceLocation !== undefined
-	) {
-		center = deviceLocation
-	}
+		[deviceLocation, cellLocation, neighboringCellGeoLocation, history].filter(
+			(l) => l !== undefined,
+		).length === 0
+	)
+		return <NoMap /> // No location data at all to display
+
+	const center = centerOnLatestLocation([
+		deviceLocation,
+		cellLocation,
+		neighboringCellGeoLocation,
+	])
 
 	return (
 		<MapContainerContainer>
-			<MapContainer
-				center={[center.position.lat, center.position.lng]}
-				zoom={zoom}
-			>
+			<MapContainer center={[center.lat, center.lng]} zoom={zoom}>
 				<EventHandler
 					onZoomEnd={({ map }) => {
 						window.localStorage.setItem(
@@ -198,7 +194,7 @@ export const Map = ({
 					attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 				/>
-				<Marker position={center.position}>
+				<Marker position={center}>
 					<Popup>{label}</Popup>
 				</Marker>
 				{deviceLocation?.position.accuracy !== undefined && (
