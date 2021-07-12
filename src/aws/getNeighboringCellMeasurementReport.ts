@@ -60,7 +60,6 @@ export const getNeighboringCellMeasurementReport =
 			lng?: number
 			accuracy?: number
 		}
-		console.log(report)
 		return some({
 			reportId: report.reportId,
 			mcc: report.report.mcc,
@@ -74,6 +73,7 @@ export const getNeighboringCellMeasurementReport =
 			nmr: report.report.nmr,
 			reportedAt: new Date(report.timestamp),
 			receivedAt: new Date(report.report.ts),
+			unresolved: report.unresolved,
 			position:
 				report.lat !== undefined &&
 				report.lng !== undefined &&

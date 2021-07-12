@@ -32,10 +32,12 @@ export const CatMap = ({
 		if (
 			reported.roam?.v !== undefined &&
 			typeof reported.roam.v === 'object' &&
+			reported.dev?.v !== undefined &&
+			typeof reported.dev.v === 'object' &&
 			'area' in reported.roam.v &&
 			'mccmnc' in reported.roam.v &&
 			'cell' in reported.roam.v &&
-			'nw' in reported.roam.v
+			'nw' in reported.dev.v
 		) {
 			const { v, ts } = reported.roam
 			geolocateCell(geolocationApiEndpoint)({
@@ -74,7 +76,9 @@ export const CatMap = ({
 							position: maybeNeighborCellMeasurementReport.value.position,
 							ts: maybeNeighborCellMeasurementReport.value.reportedAt,
 						})
-					} else {
+					} else if (
+						maybeNeighborCellMeasurementReport.value.unresolved === undefined // This report has not yet been resolved
+					) {
 						geolocatNeighboringCellReport(
 							neighboringCellGeolocationApiEndpoint,
 						)({
