@@ -281,14 +281,11 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																<Collapsable
 																	id={'cat:ncell'}
 																	title={
-																		<h3>
-																			{emojify(
-																				'🗧 Neighboring Cell Measurement',
-																			)}
-																		</h3>
+																		<h3>{emojify('🗧 Neighboring cells')}</h3>
 																	}
 																>
 																	<NeighborCellMeasurementsReport
+																		key={cat.version}
 																		getNeighboringCellMeasurementReport={async () =>
 																			getNcellmeas({ deviceId: cat.id })
 																		}

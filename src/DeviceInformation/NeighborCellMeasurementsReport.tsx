@@ -3,6 +3,7 @@ import { ReportedTime } from '../ReportedTime/ReportedTime'
 import { NCellMeasReport } from '../@types/device-state'
 import { isSome, Option } from 'fp-ts/lib/Option'
 import styled from 'styled-components'
+import { DeviceInformationDl } from './DeviceInformation'
 
 const StyledReportedTime = styled(ReportedTime)`
 	font-size: 85%;
@@ -30,7 +31,33 @@ export const NeighborCellMeasurementsReport = ({
 	if (report === undefined) return null
 	return (
 		<>
-			<pre>{JSON.stringify(report, null, 2)}</pre>
+			{(report.nmr?.length ?? 0) === 0 && <p>No neighboring cells found.</p>}
+			{(report.nmr?.length ?? 0) > 0 && (
+				<ol>
+					{report.nmr?.map((cell, k) => (
+						<li key={k}>
+							<DeviceInformationDl>
+								<dt>RSRP</dt>
+								<dd>
+									<code>{cell.rsrp}</code>
+								</dd>
+								<dt>RSRQ</dt>
+								<dd>
+									<code>{cell.rsrq}</code>
+								</dd>
+								<dt>CellID</dt>
+								<dd>
+									<code>{cell.cell}</code>
+								</dd>
+								<dt>EARFCN</dt>
+								<dd>
+									<code>{cell.earfcn}</code>
+								</dd>
+							</DeviceInformationDl>
+						</li>
+					))}
+				</ol>
+			)}
 			<StyledReportedTime
 				receivedAt={report.receivedAt}
 				reportedAt={report.reportedAt}
