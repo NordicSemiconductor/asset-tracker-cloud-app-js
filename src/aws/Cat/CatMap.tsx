@@ -71,24 +71,32 @@ export const CatMap = ({
 		void getNeighboringCellMeasurementReport().then(
 			(maybeNeighborCellMeasurementReport) => {
 				if (isSome(maybeNeighborCellMeasurementReport)) {
-					if (maybeNeighborCellMeasurementReport.value.position !== undefined) {
+					const { position, nmr, unresolved, reportId, reportedAt } =
+						maybeNeighborCellMeasurementReport.value
+					if (position !== undefined) {
 						setNeighboringCellGeoLocation({
-							position: maybeNeighborCellMeasurementReport.value.position,
-							ts: maybeNeighborCellMeasurementReport.value.reportedAt,
+							position: position,
+							ts: reportedAt,
 						})
+					} else if ((nmr?.length ?? 0) === 0) {
+						// No neighboring cells
+						console.debug(
+							'[neighboringCellGeolocation]',
+							`Report ${reportId} has no neighboring cells`,
+						)
 					} else if (
-						maybeNeighborCellMeasurementReport.value.unresolved === undefined // This report has not yet been resolved
+						unresolved === undefined // This report has not yet been resolved
 					) {
 						geolocatNeighboringCellReport(
 							neighboringCellGeolocationApiEndpoint,
 						)({
-							reportId: maybeNeighborCellMeasurementReport.value.reportId,
+							reportId: reportId,
 						})
 							.then((geolocation) => {
 								if (isCancelled) return
 								if (isRight(geolocation)) {
 									const l: CellLocation = {
-										ts: maybeNeighborCellMeasurementReport.value.reportedAt,
+										ts: reportedAt,
 										position: geolocation.right,
 									}
 									setNeighboringCellGeoLocation(l)
