@@ -65,7 +65,7 @@ export const getNeighboringCellMeasurementReport =
 					earfcn: number
 					ts: number
 				}
-				timestamp: number
+				timestamp: string
 				unresolved?: boolean
 				lat?: number
 				lng?: number
