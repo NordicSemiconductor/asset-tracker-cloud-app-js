@@ -171,9 +171,12 @@ export const Map = ({
 	const [mapZoom, setMapZoom] = useState(zoom)
 
 	if (
-		[deviceLocation, cellLocation, neighboringCellGeoLocation, history].filter(
-			(l) => l !== undefined,
-		).length === 0
+		[
+			deviceLocation,
+			cellLocation,
+			neighboringCellGeoLocation,
+			...(history ?? []),
+		].filter((l) => l !== undefined).length === 0
 	)
 		return <NoMap /> // No location data at all to display
 
@@ -213,27 +216,28 @@ export const Map = ({
 						radius={deviceLocation.position.accuracy}
 					/>
 				)}
-				{cellLocation && enabledLayers.SinglecellLocations &&  (
+				{cellLocation && enabledLayers.SinglecellLocations && (
 					<Circle
 						center={cellLocation.position}
 						radius={cellLocation.position.accuracy}
 						color={'#F6C270'}
 					/>
 				)}
-				{neighboringCellGeoLocation && enabledLayers.MulticellLocations &&(
+				{neighboringCellGeoLocation && enabledLayers.MulticellLocations && (
 					<Circle
 						center={neighboringCellGeoLocation.position}
 						radius={neighboringCellGeoLocation.position.accuracy}
 						color={'#E56399'}
 					/>
 				)}
-				{deviceLocation?.position.heading !== undefined && enabledLayers.Headings && (
-					<HeadingMarker
-						position={deviceLocation.position}
-						heading={deviceLocation.position.heading}
-						mapZoom={mapZoom}
-					/>
-				)}
+				{deviceLocation?.position.heading !== undefined &&
+					enabledLayers.Headings && (
+						<HeadingMarker
+							position={deviceLocation.position}
+							heading={deviceLocation.position.heading}
+							mapZoom={mapZoom}
+						/>
+					)}
 				{deviceLocation &&
 					history?.map(
 						(
