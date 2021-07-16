@@ -6,6 +6,7 @@ export type DeviceConfig = {
 	gpst: number
 	celt: number
 	acct: number
+	nod: array
 }
 
 export type Gps = {
