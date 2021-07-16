@@ -50,9 +50,9 @@ export const geolocateCell =
 								: 60000
 						console.debug(
 							'[geolocateCell]',
-							`Location currently not available, will try again at ${
-								retryInMs / 1000
-							} seconds.`,
+							`Location currently not available, will try again in ${Math.round(
+								retryInMs / 1000,
+							)} seconds.`,
 						)
 						setTimeout(async () => {
 							const geolocation = await geolocateCell(apiEndpoint)(
