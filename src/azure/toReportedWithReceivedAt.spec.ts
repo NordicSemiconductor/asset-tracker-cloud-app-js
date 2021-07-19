@@ -12,6 +12,7 @@ describe('toReportedWithReceivedAt', () => {
 				gpst: 60,
 				celt: 600,
 				acct: 0.1,
+				nod: ['gnss'],
 			},
 			dev: {
 				v: {
@@ -61,6 +62,9 @@ describe('toReportedWithReceivedAt', () => {
 						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 					},
 					acct: {
+						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
+					},
+					nod: {
 						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 					},
 				},
@@ -144,6 +148,10 @@ describe('toReportedWithReceivedAt', () => {
 			gpst: { value: 60, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			celt: { value: 600, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			acct: { value: 0.1, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
+			nod: {
+				value: ['gnss'],
+				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
+			},
 		})
 		expect(r.dev).toEqual({
 			v: {
