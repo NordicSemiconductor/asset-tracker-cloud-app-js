@@ -1,4 +1,5 @@
 import { FOTAStatus } from '../@types/azure-device'
+import { DataModules } from '../@types/device-state'
 import { toReportedWithReceivedAt } from './toReportedWithReceivedAt'
 
 describe('toReportedWithReceivedAt', () => {
@@ -12,7 +13,7 @@ describe('toReportedWithReceivedAt', () => {
 				gpst: 60,
 				celt: 600,
 				acct: 0.1,
-				nod: ['gnss'],
+				nod: [DataModules.GNSS],
 			},
 			dev: {
 				v: {
@@ -149,7 +150,7 @@ describe('toReportedWithReceivedAt', () => {
 			celt: { value: 600, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			acct: { value: 0.1, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			nod: {
-				value: ['gnss'],
+				value: [DataModules.GNSS],
 				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
 			},
 		})

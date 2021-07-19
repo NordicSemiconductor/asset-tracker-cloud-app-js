@@ -35,7 +35,6 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { getNeighboringCellMeasurementReport } from '../getNeighboringCellMeasurementReport'
 import { NeighborCellMeasurementsReport } from '../../DeviceInformation/NeighborCellMeasurementsReport'
 import { CollapsedContextProvider } from '../../Collapsable/CollapsedContext'
-import { none } from 'fp-ts/lib/Option'
 
 export const CatActions = ({ catId }: { catId: string }) => {
 	const [deleted, setDeleted] = useState(false)
@@ -118,8 +117,13 @@ export const CatActions = ({ catId }: { catId: string }) => {
 
 										const deleteCat = deleteIotThing({ iot })
 
-										const getNcellmeas = async (_: { deviceId: string }) =>
- 											Promise.resolve(none)
+										const getNcellmeas = getNeighboringCellMeasurementReport({
+											dynamoDB: new DynamoDBClient({
+												credentials,
+												region,
+											}),
+											tableName: nCellMeasReportTableName,
+										})
 
 										return (
 											<CatLoader<{

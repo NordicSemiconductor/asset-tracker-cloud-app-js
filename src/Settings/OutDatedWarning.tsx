@@ -8,11 +8,11 @@ export const OutDatedWarning = ({
 	onNotReported,
 	onOutDated,
 }: {
-	desired?: boolean | number | string
-	reported?: ReceivedProperty<boolean | number | string>
+	desired?: unknown
+	reported?: ReceivedProperty<unknown>
 	onNotReported: React.ReactElement<any>
 	onOutDated: (reported: {
-		value: boolean | number | string
+		value: unknown
 		receivedAt: Date
 	}) => React.ReactElement<any>
 }) => {

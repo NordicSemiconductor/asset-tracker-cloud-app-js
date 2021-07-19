@@ -1,3 +1,8 @@
+export enum DataModules {
+	GNSS = 'gnss',
+	NeigboringCellMeasurements = 'ncell',
+}
+
 export type DeviceConfig = {
 	act: boolean
 	actwt: number
@@ -6,7 +11,7 @@ export type DeviceConfig = {
 	gpst: number
 	celt: number
 	acct: number
-	nod: array
+	nod: DataModules[]
 }
 
 export type Gps = {
