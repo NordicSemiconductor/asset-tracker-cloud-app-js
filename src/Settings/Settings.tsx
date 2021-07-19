@@ -7,7 +7,11 @@ import { formatDistanceToNow } from 'date-fns'
 import { emojify } from '../Emojify/Emojify'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
-import { DeviceConfig, ReportedConfigState } from '../@types/device-state'
+import {
+	DataModules,
+	DeviceConfig,
+	ReportedConfigState,
+} from '../@types/device-state'
 import { default as introJs } from 'intro.js'
 
 const intro = introJs()
@@ -277,6 +281,147 @@ export const Settings = ({
 						example={60}
 					/>
 				</fieldset>
+				<fieldset data-intro={'This sets which Data Modules to sample.'}>
+					<legend>Data Sampling</legend>
+					<FormGroup>
+						<label>GPS: </label>
+						<ButtonGroup>
+							<OutDatedWarning
+								desired={newDesired.nod}
+								reported={r.nod}
+								onNotReported={
+									<Button
+										color={'danger'}
+										disabled={true}
+										title={'Device has not reported this setting, yet.'}
+									>
+										{emojify('❓')}
+									</Button>
+								}
+								onOutDated={(r) => (
+									<Button
+										color={'danger'}
+										outline={true}
+										disabled={true}
+										title={`Device has last synced this setting ${formatDistanceToNow(
+											r.receivedAt,
+										)} ago. Current value: ${JSON.stringify(r.value)}.`}
+									>
+										{emojify('⭕')}
+									</Button>
+								)}
+							/>
+							<Button
+								color={'success'}
+								data-intro={
+									'In <em>Enabled</em> mode, the tracker will use GPS to send location data to the cloud.'
+								}
+								outline={newDesired.nod?.includes(DataModules.GNSS)}
+								onClick={() => {
+									updateConfig({
+										nod: [...(newDesired.nod ?? [])].filter(
+											(s) => s !== DataModules.GNSS,
+										),
+									})
+								}}
+							>
+								Enabled
+							</Button>
+							<Button
+								color={'danger'}
+								data-intro={
+									'In <em>Disabled</em> mode, the tracker will not use GPS to send location data to the cloud.'
+								}
+								outline={
+									newDesired.nod === undefined ||
+									!newDesired.nod?.includes(DataModules.GNSS)
+								}
+								onClick={() => {
+									updateConfig({
+										nod: [
+											...new Set([...(newDesired.nod ?? []), DataModules.GNSS]),
+										],
+									})
+								}}
+							>
+								Disabled
+							</Button>
+						</ButtonGroup>
+					</FormGroup>
+					<FormGroup>
+						<label>Neighbor Cell Measurements:</label>
+						<ButtonGroup>
+							<OutDatedWarning
+								desired={newDesired.nod}
+								reported={r.nod}
+								onNotReported={
+									<Button
+										color={'danger'}
+										disabled={true}
+										title={'Device has not reported this setting, yet.'}
+									>
+										{emojify('❓')}
+									</Button>
+								}
+								onOutDated={(r) => (
+									<Button
+										color={'danger'}
+										outline={true}
+										disabled={true}
+										title={`Device has last synced this setting ${formatDistanceToNow(
+											r.receivedAt,
+										)} ago. Current value: ${JSON.stringify(r.value)}.`}
+									>
+										{emojify('⭕')}
+									</Button>
+								)}
+							/>
+							<Button
+								color={'success'}
+								data-intro={
+									'In <em>Enabled</em> mode, the tracker will use Neighbor Cell Measurements to send location data to the cloud.'
+								}
+								outline={newDesired.nod?.includes(
+									DataModules.NeigboringCellMeasurements,
+								)}
+								onClick={() => {
+									updateConfig({
+										nod: [...(newDesired.nod ?? [])].filter(
+											(s) => s !== DataModules.NeigboringCellMeasurements,
+										),
+									})
+								}}
+							>
+								Enabled
+							</Button>
+							<Button
+								color={'danger'}
+								data-intro={
+									'In <em>Disabled</em> mode, the tracker will not use Neighbor Cell Measurements to send location data to the cloud.'
+								}
+								outline={
+									newDesired.nod === undefined ||
+									!newDesired.nod?.includes(
+										DataModules.NeigboringCellMeasurements,
+									)
+								}
+								onClick={() => {
+									updateConfig({
+										nod: [
+											...new Set([
+												...(newDesired.nod ?? []),
+												DataModules.NeigboringCellMeasurements,
+											]),
+										],
+									})
+								}}
+							>
+								Disabled
+							</Button>
+						</ButtonGroup>
+					</FormGroup>
+				</fieldset>
+
 				<FooterWithFullWidthButton>
 					<Button
 						color={'primary'}

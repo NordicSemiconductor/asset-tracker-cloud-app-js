@@ -1,5 +1,6 @@
 import React from 'react'
 import { ReceivedProperty } from '../@types/device-state'
+import { isEqual } from 'lodash'
 
 export const OutDatedWarning = ({
 	desired,
@@ -7,16 +8,16 @@ export const OutDatedWarning = ({
 	onNotReported,
 	onOutDated,
 }: {
-	desired?: boolean | number
-	reported?: ReceivedProperty<boolean | number>
+	desired?: unknown
+	reported?: ReceivedProperty<unknown>
 	onNotReported: React.ReactElement<any>
 	onOutDated: (reported: {
-		value: boolean | number
+		value: unknown
 		receivedAt: Date
 	}) => React.ReactElement<any>
 }) => {
 	if (desired === undefined) return null // No config has been set by the user, yet
-	const reportedDoesMatchDesired = reported && desired === reported.value
+	const reportedDoesMatchDesired = reported && isEqual(desired, reported.value)
 	if (reportedDoesMatchDesired === true) {
 		return null
 	}
