@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { Alert } from 'reactstrap'
 import { AzureFOTAJobProgress } from '../../@types/azure-device'
-import { DisplayError as ShowError } from '../../Error/Error'
+import { ErrorInfo } from '../../Error/ErrorInfo'
 import { CreateReportedFOTAJobProgress } from './CreateFOTAJob'
 
 export type OnCreateUpgradeJob = (args: { file: File; version: string }) => void
@@ -9,24 +8,28 @@ export type OnCreateUpgradeJob = (args: { file: File; version: string }) => void
 export const FOTA = ({
 	fw,
 	onCreateUpgradeJob,
+	renderError,
 }: {
 	fw: AzureFOTAJobProgress
 	onCreateUpgradeJob: OnCreateUpgradeJob
+	renderError: (args: { error: Error | ErrorInfo }) => JSX.Element
 }) => {
 	const [error, setError] = useState<Error>()
 	const [addJobKey, setAddJobKey] = useState(1)
 
 	return (
 		<>
-			{(!fw.currentFwVersion && (
-				<Alert color={'danger'}>
-					The device has not yet reported an application version.
-				</Alert>
-			)) ||
+			{(!fw.currentFwVersion &&
+				renderError({
+					error: {
+						message: 'The device has not yet reported an application version.',
+						type: 'Warning',
+					},
+				})) ||
 				null}
 			{fw.currentFwVersion && (
 				<>
-					{error && <ShowError error={error} />}
+					{error && renderError({ error })}
 					<CreateReportedFOTAJobProgress
 						key={`uploadfile-${addJobKey}`}
 						fw={fw}

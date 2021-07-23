@@ -1,23 +1,26 @@
 import React from 'react'
-import { About } from '../../About/About'
-import { Configuration } from './Configuration'
+import { Configuration } from '../../theme/bootstrap4/aws/About/Configuration'
 import { User } from './User'
 import { Main } from '../../Styles'
-import { Cache } from './Cache'
-import { ReactAppConfigConsumer } from '../..'
+import { ClearCache } from '../../theme/bootstrap4/About/ClearCache'
 import { StackConfigConsumer, CredentialsConsumer } from '../App'
+import { Cache as AmplifyCache } from 'aws-amplify'
+import { About } from '../../theme/bootstrap4/About/About'
+import { User as UserTheme } from '../../theme/bootstrap4/aws/About/User'
 
-export const AboutPage = () => (
+export const AboutPage = ({ version }: { version: string }) => (
 	<Main>
-		<ReactAppConfigConsumer>
-			{(config) => <About config={config} />}
-		</ReactAppConfigConsumer>
+		<About version={version} />
 		<CredentialsConsumer>
-			{({ identityId }) => <User identityId={identityId} />}
+			{({ identityId }) => <User identityId={identityId} render={UserTheme} />}
 		</CredentialsConsumer>
 		<StackConfigConsumer>
 			{(config) => <Configuration config={config} />}
 		</StackConfigConsumer>
-		<Cache />
+		<ClearCache
+			onClick={() => {
+				AmplifyCache.clear()
+			}}
+		/>
 	</Main>
 )

@@ -5,14 +5,11 @@ import {
 	TimestreamQueryConsumer,
 	TimestreamQueryContextType,
 } from '../App'
-import { Card, CardBody, CardHeader } from 'reactstrap'
 import {
 	IoTClient,
 	ListThingsCommand,
 	ThingAttribute,
 } from '@aws-sdk/client-iot'
-import { Loading } from '../../Loading/Loading'
-import { DisplayError } from '../../Error/Error'
 import { connectAndListenForMessages } from '../connectAndListenForMessages'
 import { ICredentials } from '@aws-amplify/core'
 import { device } from 'aws-iot-device-sdk'
@@ -21,7 +18,6 @@ import {
 	DeviceDateMap,
 	ButtonWarningProps,
 } from '../../ButtonWarnings/ButtonWarnings'
-import { CatList } from '../../CatList/CatList'
 
 const fetchPaginated =
 	({
@@ -49,7 +45,7 @@ const fetchPaginated =
 			limit,
 		})({ startKey: nextToken })
 	}
-
+type Cat = { id: string; name: string; labels?: string[]; isTest: boolean }
 const ListCats = ({
 	iot,
 	credentials,
@@ -59,17 +55,21 @@ const ListCats = ({
 	showButtonWarning,
 	snooze,
 	setButtonPresses,
+	renderLoading,
+	renderError,
+	render,
 }: {
 	iot: IoTClient
 	credentials: ICredentials
 	timestreamQueryContext: TimestreamQueryContextType
 	region: string
 	mqttEndpoint: string
+	renderLoading: () => JSX.Element
+	renderError: (args: { error: Error }) => JSX.Element
+	render: (args: { cats: Cat[] } & ButtonWarningProps) => JSX.Element
 } & ButtonWarningProps) => {
 	const [loading, setLoading] = useState(true)
-	const [cats, setCats] = useState(
-		[] as { id: string; name: string; labels?: string[]; isTest: boolean }[],
-	)
+	const [cats, setCats] = useState([] as Cat[])
 	const [error, setError] = useState<Error>()
 
 	// Fetch list of devices
@@ -176,42 +176,20 @@ const ListCats = ({
 		}
 	}, [timestreamQueryContext, setButtonPresses])
 
-	if (loading || error)
-		return (
-			<Card>
-				<CardBody>
-					{loading && <Loading text={'Herding cats...'} />}
-					{error && <DisplayError error={error} />}
-				</CardBody>
-			</Card>
-		)
-	return (
-		<Card data-intro="This lists your cats. Click on one to see its details.">
-			<CardHeader>Cats</CardHeader>
-			{cats.length > 0 && (
-				<CatList {...{ showButtonWarning, snooze, setButtonPresses, cats }} />
-			)}
-			{!cats.length && (
-				<CardBody>
-					No cats, yet. Read more about how to create{' '}
-					<em>Device Credentials</em> for your cat trackers{' '}
-					<a
-						href={
-							'https://nordicsemiconductor.github.io/asset-tracker-cloud-docs/'
-						}
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						in the handbook
-					</a>
-					.
-				</CardBody>
-			)}
-		</Card>
-	)
+	if (loading) return renderLoading()
+	if (error) return renderError({ error })
+	return render({ cats, showButtonWarning, snooze, setButtonPresses })
 }
 
-export const List = () => (
+export const List = ({
+	renderLoading,
+	renderError,
+	render,
+}: {
+	renderLoading: () => JSX.Element
+	renderError: (args: { error: Error }) => JSX.Element
+	render: (args: { cats: Cat[] } & ButtonWarningProps) => JSX.Element
+}) => (
 	<TimestreamQueryConsumer>
 		{(timestreamQueryContext) => (
 			<CredentialsConsumer>
@@ -228,6 +206,9 @@ export const List = () => (
 											mqttEndpoint,
 											region,
 											...buttonWarningProps,
+											renderLoading,
+											renderError,
+											render,
 										}}
 									/>
 								)}

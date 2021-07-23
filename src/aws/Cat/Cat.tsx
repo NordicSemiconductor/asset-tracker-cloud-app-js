@@ -3,16 +3,11 @@ import { FOTA, OnCreateUpgradeJob } from '../FOTA/FOTA'
 import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
 import { ICredentials } from '@aws-amplify/core'
 import React, { useEffect, useState } from 'react'
-import { Card, CardBody, CardHeader } from 'reactstrap'
-import { DisplayError } from '../../Error/Error'
 import { Toggle } from '../../Toggle/Toggle'
-import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
 import { emojify } from '../../Emojify/Emojify'
 import { ReportedTime } from '../../ReportedTime/ReportedTime'
-import { Collapsable } from '../../Collapsable/Collapsable'
 import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
-import { CatCard } from '../../Cat/CatCard'
-import { CollapsedContextConsumer } from '../../Collapsable/CollapsedContext'
+import { CollapsedContextConsumer } from '../../util/CollapsedContext'
 import {
 	MobileOnlyCatHeader,
 	CatPersonalization,
@@ -22,6 +17,7 @@ import { DeviceConfig } from '../../@types/device-state'
 import { Settings } from '../../Settings/Settings'
 import { toReportedWithReceivedAt } from '../toReportedWithReceivedAt'
 import { Option, isSome } from 'fp-ts/lib/Option'
+import { ErrorInfo } from '../../Error/ErrorInfo'
 
 const intro = introJs()
 
@@ -49,6 +45,11 @@ export const Cat = ({
 	updateDeviceConfig,
 	listenForStateChange,
 	catMap,
+	renderError,
+	renderConnectionInformation,
+	render,
+	renderCollapsable,
+	renderDivider,
 }: {
 	onAvatarChange: (avatar: Blob) => void
 	onNameChange: (name: string) => void
@@ -66,11 +67,32 @@ export const Cat = ({
 	updateDeviceConfig: (cfg: Partial<DeviceConfig>) => Promise<void>
 	cat: CatInfo
 	credentials: ICredentials
-	children: React.ReactElement<any> | React.ReactElement<any>[]
+	children: JSX.Element | JSX.Element[]
 	listenForStateChange: (listeners: {
 		onNewState: (newState: ThingState) => void
 	}) => Promise<() => void>
-	catMap: (state: ThingState) => React.ReactElement<any>
+	catMap: (state: ThingState) => JSX.Element
+	renderError: (args: { error: Error | ErrorInfo }) => JSX.Element
+	renderConnectionInformation: (args: {
+		networkMode?: string
+		iccid?: string
+		rsrp: number
+		mccmnc: number
+		receivedAt: Date
+		reportedAt: Date
+		dataStaleAfterSeconds: number
+	}) => JSX.Element
+	render: (args: {
+		header: JSX.Element
+		body: JSX.Element
+		map?: JSX.Element
+	}) => JSX.Element
+	renderCollapsable: (args: {
+		title: string
+		id: string
+		children: JSX.Element | JSX.Element[]
+	}) => JSX.Element
+	renderDivider: () => JSX.Element
 }) => {
 	const [state, setState] = useState<ThingState>()
 	const [error, setError] = useState<Error>()
@@ -131,14 +153,7 @@ export const Cat = ({
 		}
 	}, [error])
 
-	if (error)
-		return (
-			<Card>
-				<CardBody>
-					{error !== undefined && <DisplayError error={error} />}
-				</CardBody>
-			</Card>
-		)
+	if (error) return renderError({ error })
 
 	const reportedWithReceived =
 		state?.reported &&
@@ -155,10 +170,10 @@ export const Cat = ({
 		(state?.reported.cfg?.gpst ?? 60) + // default GPS timeout is 60 seconds
 		60 // add 1 minute for sending and processing
 
-	return (
-		<CatCard>
-			{state && catMap(state)}
-			<CardHeader>
+	return render({
+		map: state && catMap(state),
+		header: (
+			<>
 				<CollapsedContextConsumer>
 					{({ visible: showCat }) =>
 						showCat ? (
@@ -175,15 +190,15 @@ export const Cat = ({
 					<>
 						{reportedWithReceived?.roam !== undefined && (
 							<Toggle>
-								<ConnectionInformation
-									mccmnc={reportedWithReceived.roam.v.value.mccmnc}
-									rsrp={reportedWithReceived.roam.v.value.rsrp}
-									receivedAt={reportedWithReceived.roam.v.receivedAt}
-									reportedAt={new Date(reportedWithReceived.roam.ts.value)}
-									networkMode={reportedWithReceived.dev?.v.value.nw}
-									iccid={reportedWithReceived.dev?.v.value.iccid}
-									dataStaleAfterSeconds={expectedSendIntervalInSeconds}
-								/>
+								{renderConnectionInformation({
+									mccmnc: reportedWithReceived.roam.v.value.mccmnc,
+									rsrp: reportedWithReceived.roam.v.value.rsrp,
+									receivedAt: reportedWithReceived.roam.v.receivedAt,
+									reportedAt: new Date(reportedWithReceived.roam.ts.value),
+									networkMode: reportedWithReceived.dev?.v.value.nw,
+									iccid: reportedWithReceived.dev?.v.value.iccid,
+									dataStaleAfterSeconds: expectedSendIntervalInSeconds,
+								})}
 							</Toggle>
 						)}
 						{reportedWithReceived?.gps && (
@@ -237,90 +252,97 @@ export const Cat = ({
 						)}
 					</>
 				)}
-			</CardHeader>
-			<CardBody>
-				<Collapsable
-					id={'cat:personalization'}
-					title={<h3>{emojify('⭐ Personalization')}</h3>}
-				>
-					<CatPersonalization
-						cat={cat}
-						isNameValid={isNameValid}
-						onAvatarChange={onAvatarChange}
-						onNameChange={onNameChange}
-					/>
-				</Collapsable>
+			</>
+		),
+		body: (
+			<>
+				{renderCollapsable({
+					title: '⭐ Personalization',
+					id: 'cat:personalization',
+					children: (
+						<CatPersonalization
+							cat={cat}
+							isNameValid={isNameValid}
+							onAvatarChange={onAvatarChange}
+							onNameChange={onNameChange}
+						/>
+					),
+				})}
 				{state && (
 					<>
-						<hr />
-						<Collapsable
-							id={'cat:settings'}
-							title={<h3>{emojify('⚙️ Settings')}</h3>}
-						>
-							<Settings
-								reported={reportedWithReceived?.cfg}
-								desired={state.desired?.cfg}
-								key={JSON.stringify(state?.desired?.cfg ?? {})}
-								onSave={(config) => {
-									updateDeviceConfig(config)
-										.catch(setError)
-										.then(() => {
-											setState((state) => {
-												if (state) {
-													return {
-														...state,
-														desired: {
-															...state.desired,
-															cfg: config,
-														},
+						{renderDivider()}
+						{renderCollapsable({
+							id: 'cat:settings',
+							title: '⚙️ Settings',
+							children: (
+								<Settings
+									reported={reportedWithReceived?.cfg}
+									desired={state.desired?.cfg}
+									key={JSON.stringify(state?.desired?.cfg ?? {})}
+									onSave={(config) => {
+										updateDeviceConfig(config)
+											.catch(setError)
+											.then(() => {
+												setState((state) => {
+													if (state) {
+														return {
+															...state,
+															desired: {
+																...state.desired,
+																cfg: config,
+															},
+														}
 													}
-												}
+												})
 											})
-										})
-										.catch(setError)
-								}}
-							/>
-						</Collapsable>
+											.catch(setError)
+									}}
+								/>
+							),
+						})}
 					</>
 				)}
 				{reportedWithReceived?.dev && (
 					<>
-						<hr />
-						<Collapsable
-							id={'cat:information'}
-							title={<h3>{emojify('ℹ️ Device Information')}</h3>}
-						>
-							<DeviceInfo
-								key={`${cat.version}`}
-								device={reportedWithReceived.dev}
-								roaming={reportedWithReceived.roam}
-								appV={reportedWithReceived.dev?.v?.value?.appV}
-								dataStaleAfterSeconds={expectedSendIntervalInSeconds}
-							/>
-						</Collapsable>
+						{renderDivider()}
+						{renderCollapsable({
+							id: 'cat:information',
+							title: 'ℹ️ Device Information',
+							children: (
+								<DeviceInfo
+									key={`${cat.version}`}
+									device={reportedWithReceived.dev}
+									roaming={reportedWithReceived.roam}
+									appV={reportedWithReceived.dev?.v?.value?.appV}
+									dataStaleAfterSeconds={expectedSendIntervalInSeconds}
+								/>
+							),
+						})}
 					</>
 				)}
 				{reported?.dev && (
 					<>
-						<hr />
-						<Collapsable
-							id={'cat:fota'}
-							title={<h3>{emojify('🌩️ Device Firmware Upgrade (FOTA)')}</h3>}
-						>
-							<FOTA
-								key={`${cat.version}`}
-								device={reported.dev}
-								onCreateUpgradeJob={onCreateUpgradeJob}
-								listUpgradeJobs={listUpgradeJobs}
-								cancelUpgradeJob={cancelUpgradeJob}
-								deleteUpgradeJob={deleteUpgradeJob}
-								cloneUpgradeJob={cloneUpgradeJob}
-							/>
-						</Collapsable>
+						{renderDivider()}
+						{renderCollapsable({
+							id: 'cat:fota',
+							title: '🌩️ Device Firmware Upgrade (FOTA)',
+							children: (
+								<FOTA
+									key={`${cat.version}`}
+									device={reported.dev}
+									onCreateUpgradeJob={onCreateUpgradeJob}
+									listUpgradeJobs={listUpgradeJobs}
+									cancelUpgradeJob={cancelUpgradeJob}
+									deleteUpgradeJob={deleteUpgradeJob}
+									cloneUpgradeJob={cloneUpgradeJob}
+									renderError={renderError}
+								/>
+							),
+						})}
 					</>
 				)}
 				{children}
-			</CardBody>
-		</CatCard>
-	)
+			</>
+		),
+	})
 }

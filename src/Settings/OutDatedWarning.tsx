@@ -10,11 +10,8 @@ export const OutDatedWarning = ({
 }: {
 	desired?: unknown
 	reported?: ReceivedProperty<unknown>
-	onNotReported: React.ReactElement<any>
-	onOutDated: (reported: {
-		value: unknown
-		receivedAt: Date
-	}) => React.ReactElement<any>
+	onNotReported: JSX.Element
+	onOutDated: (reported: { value: unknown; receivedAt: Date }) => JSX.Element
 }) => {
 	if (desired === undefined) return null // No config has been set by the user, yet
 	const reportedDoesMatchDesired = reported && isEqual(desired, reported.value)

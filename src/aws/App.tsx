@@ -10,10 +10,8 @@ import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 import { CatPage } from './Cat/Page'
 import { CatsPage } from './Cats/Page'
 import { CatsMapPage } from './CatsMap/Page'
-import { NavbarBrandContextProvider } from '../Navigation/NavbarBrand'
-import { ToggleNavigation } from '../Navigation/ToggleNavigation'
+import { ToggleNavigation } from '../theme/bootstrap4/Navigation/ToggleNavigation'
 import { GlobalStyle } from '../Styles'
-import { AboutPage } from './About/Page'
 import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
 import {
 	parseResult,
@@ -22,6 +20,8 @@ import {
 import { format } from 'date-fns'
 
 import '@aws-amplify/ui/dist/style.css'
+import { CloudFlavour } from '../flavour'
+import { FlavouredNavbarBrandContextProvider } from '../theme/bootstrap4/Navigation/NavbarBrand'
 
 const timeStreamFormatDate = (d: Date) => format(d, 'yyyy-MM-dd HH:mm:ss.SSS')
 
@@ -61,6 +61,7 @@ export const boot = ({
 	geolocationApiEndpoint,
 	neighboringCellGeolocationApiEndpoint,
 	nCellMeasReportTableName,
+	aboutPage,
 }: {
 	identityPoolId: string
 	userIotPolicyArn: string
@@ -77,6 +78,7 @@ export const boot = ({
 	geolocationApiEndpoint: string
 	neighboringCellGeolocationApiEndpoint: string
 	nCellMeasReportTableName: string
+	aboutPage: React.ComponentType<any>
 }) => {
 	Amplify.configure({
 		Auth: {
@@ -195,8 +197,8 @@ export const boot = ({
 
 		return (
 			<Router>
-				<GlobalStyle />
-				<NavbarBrandContextProvider>
+				<FlavouredNavbarBrandContextProvider>
+					<GlobalStyle />
 					<ToggleNavigation
 						loggedIn={true}
 						onLogout={() => {
@@ -209,6 +211,7 @@ export const boot = ({
 									console.error(error)
 								})
 						}}
+						cloudFlavour={CloudFlavour.AWS}
 					/>
 					<Route exact path="/" render={() => <Redirect to="/cats" />} />
 					{(credentials && iot && timestreamQueryContext && (
@@ -231,7 +234,7 @@ export const boot = ({
 									<TimestreamQueryContext.Provider
 										value={timestreamQueryContext}
 									>
-										<Route exact path="/about" component={AboutPage} />
+										<Route exact path="/about" component={aboutPage} />
 										<Route exact path="/cats" component={CatsPage} />
 										<Route exact path="/cats-on-map" component={CatsMapPage} />
 										<Route exact path="/cat/:catId" component={CatPage} />
@@ -241,7 +244,7 @@ export const boot = ({
 						</StackConfigContext.Provider>
 					)) ||
 						null}
-				</NavbarBrandContextProvider>
+				</FlavouredNavbarBrandContextProvider>
 			</Router>
 		)
 	}

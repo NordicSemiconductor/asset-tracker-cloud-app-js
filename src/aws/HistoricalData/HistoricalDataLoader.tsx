@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Loading } from '../../Loading/Loading'
-import { DisplayError as ShowError } from '../../Error/Error'
+import { Loading } from '../../theme/bootstrap4/Loading'
+import { DisplayError as ShowError } from '../../theme/bootstrap4/Error'
 import { TimestreamQueryContextType } from '../App'
 
 export const HistoricalDataLoader = <T extends Record<string, any>>({
@@ -13,8 +13,8 @@ export const HistoricalDataLoader = <T extends Record<string, any>>({
 	timestreamQueryContext: TimestreamQueryContextType
 	deviceId: string
 	QueryString: Parameters<TimestreamQueryContextType['query']>[0]
-	loading?: React.ReactElement<any>
-	children: (args: { data: T[] }) => React.ReactElement<any>
+	loading?: JSX.Element
+	children: (args: { data: T[] }) => JSX.Element
 }) => {
 	const [data, setData] = useState<T[]>()
 	const [error, setError] = useState<Error>()

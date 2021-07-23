@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { CatInfo } from '../aws/Cat/Cat'
-import { CollapsedContextConsumer } from '../Collapsable/CollapsedContext'
+import { CollapsedContextConsumer } from '../util/CollapsedContext'
 import { Location, CellLocation, Map, CatMapContainer } from './Map'
 import { MapSettings } from './Settings'
 import { MapSettingsType } from './Settings'

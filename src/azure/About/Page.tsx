@@ -1,16 +1,13 @@
 import React from 'react'
-import { About } from '../../About/About'
-import { Configuration } from './Configuration'
+import { Configuration } from '../../theme/bootstrap4/azure/About/Configuration'
 import { Main } from '../../Styles'
-import { User } from './User'
+import { User } from '../../theme/bootstrap4/azure/About/User'
 import { SolutionConfigConsumer, AccessTokenConsumer } from '../App'
-import { ReactAppConfigConsumer } from '../..'
+import { About } from '../../theme/bootstrap4/About/About'
 
-export const AboutPage = () => (
+export const AboutPage = ({ version }: { version: string }) => (
 	<Main>
-		<ReactAppConfigConsumer>
-			{(config) => <About config={config} />}
-		</ReactAppConfigConsumer>
+		<About version={version} />
 		<AccessTokenConsumer>
 			{(credentials) => <User accessToken={credentials} />}
 		</AccessTokenConsumer>

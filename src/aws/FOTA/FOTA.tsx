@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Alert } from 'reactstrap'
-import { DisplayError as ShowError } from '../../Error/Error'
+import { DisplayError as ShowError } from '../../theme/bootstrap4/Error'
 import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
 import { useDebouncedCallback } from 'use-debounce'
 import { Jobs } from './FOTAJob'
 import { CreateFOTAJob } from './CreateFOTAJob'
 import { AWSDeviceInformation } from '../../@types/aws-device'
+import { ErrorInfo } from '../../Error/ErrorInfo'
 
 export type OnCreateUpgradeJob = (args: {
 	file: File
@@ -20,6 +20,7 @@ export const FOTA = ({
 	cancelUpgradeJob,
 	deleteUpgradeJob,
 	cloneUpgradeJob,
+	renderError,
 }: {
 	device: AWSDeviceInformation
 	onCreateUpgradeJob: OnCreateUpgradeJob
@@ -32,6 +33,7 @@ export const FOTA = ({
 	cloneUpgradeJob: (args: {
 		jobId: string
 	}) => Promise<DeviceUpgradeFirmwareJob>
+	renderError: (args: { error: Error | ErrorInfo }) => JSX.Element
 }) => {
 	const [error, setError] = useState<Error>()
 	const [jobs, setJobs] = useState([] as DeviceUpgradeFirmwareJob[])
@@ -51,11 +53,13 @@ export const FOTA = ({
 
 	return (
 		<>
-			{(!device.v.appV && (
-				<Alert color={'danger'}>
-					The device has not yet reported an application version.
-				</Alert>
-			)) ||
+			{(!device.v.appV &&
+				renderError({
+					error: {
+						message: 'The device has not yet reported an application version.',
+						type: 'Warning',
+					},
+				})) ||
 				null}
 			{device.v.appV && (
 				<>

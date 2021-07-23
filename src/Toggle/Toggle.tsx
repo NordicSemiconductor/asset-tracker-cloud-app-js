@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 export const Toggle = ({
 	children,
 }: {
-	children: React.ReactElement<any> | (React.ReactElement<any> | null)[]
+	children: JSX.Element | (JSX.Element | null)[]
 }) => {
 	const [toggled, setToggled] = useState(false)
 

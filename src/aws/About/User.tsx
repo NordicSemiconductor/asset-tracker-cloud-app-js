@@ -1,10 +1,15 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { Card, CardBody, CardHeader } from 'reactstrap'
 import { Auth } from 'aws-amplify'
 import { CognitoUser, CognitoUserAttribute } from 'amazon-cognito-identity-js'
 
-export const User = ({ identityId }: { identityId: string }) => {
+export const User = ({
+	identityId,
+	render,
+}: {
+	identityId: string
+	render: (props: { identityId: string; email?: string }) => JSX.Element
+}) => {
 	const [user, setUser] = useState<CognitoUserAttribute[]>()
 
 	useEffect(() => {
@@ -26,27 +31,8 @@ export const User = ({ identityId }: { identityId: string }) => {
 			isCancelled = true
 		}
 	}, [])
-	return (
-		<Card data-intro="This card shows info about the current user.">
-			<CardHeader>User</CardHeader>
-			<CardBody>
-				<dl>
-					<dt>ID</dt>
-					<dd>
-						<code>{identityId}</code>
-					</dd>
-					{user && (
-						<>
-							<dt>E-Mail</dt>
-							<dd>
-								<code>
-									{user.find((attr) => attr.getName() === 'email')?.getValue()}
-								</code>
-							</dd>
-						</>
-					)}
-				</dl>
-			</CardBody>
-		</Card>
-	)
+	return render({
+		identityId,
+		email: user?.find((attr) => attr.getName() === 'email')?.getValue(),
+	})
 }

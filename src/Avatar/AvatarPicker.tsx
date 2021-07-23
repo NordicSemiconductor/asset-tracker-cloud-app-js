@@ -9,7 +9,7 @@ export const AvatarPicker = ({
 }: {
 	onChange: (data: Blob) => void
 	className?: string
-	children: React.ReactElement<any>
+	children: JSX.Element
 }) => {
 	const canvasRef = createRef<HTMLCanvasElement>()
 	const inputRef = createRef<HTMLInputElement>()

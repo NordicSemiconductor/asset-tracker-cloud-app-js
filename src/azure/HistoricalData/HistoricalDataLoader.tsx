@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Loading } from '../../Loading/Loading'
-import { DisplayError as ShowError } from '../../Error/Error'
+import { Loading } from '../../theme/bootstrap4/Loading'
+import { DisplayError as ShowError } from '../../theme/bootstrap4/Error'
 import { ApiClient } from '../api'
 import { isLeft } from 'fp-ts/lib/Either'
 import { ErrorInfo } from '../../Error/ErrorInfo'
@@ -14,9 +14,9 @@ export function HistoricalDataLoader<I, T>({
 }: {
 	apiClient: ApiClient
 	QueryString: string
-	loading?: React.ReactElement<any>
+	loading?: JSX.Element
 	formatFields: (item: I) => T
-	children: (args: { data: T[] }) => React.ReactElement<any>
+	children: (args: { data: T[] }) => JSX.Element
 }) {
 	const [data, setData] = useState<T[]>()
 	const [error, setError] = useState<ErrorInfo>()

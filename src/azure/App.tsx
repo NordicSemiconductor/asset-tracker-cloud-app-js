@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Redirect, Route, BrowserRouter as Router } from 'react-router-dom'
-import { NavbarBrandContextProvider } from '../Navigation/NavbarBrand'
-import { ToggleNavigation } from '../Navigation/ToggleNavigation'
+import { ToggleNavigation } from '../theme/bootstrap4/Navigation/ToggleNavigation'
 import { GlobalStyle } from '../Styles'
-import { AboutPage } from './About/Page'
-import { DisplayError as ErrorComponent } from '../Error/Error'
-import { Login } from './Login'
-import { CatsPage } from './Cats/Page'
 import { UserAgentApplication, AuthResponse } from 'msal'
 import { v4 } from 'uuid'
-import { CatPage } from './Cat/Page'
 import { ApiClient, fetchApiClient } from './api'
-import { CatsMapPage } from './CatsMap/Page'
+import { ErrorInfo } from '../Error/ErrorInfo'
+import { CloudFlavour } from '../flavour'
 
 const ACCESS_TOKEN = 'azure:accessToken'
 
@@ -39,10 +34,22 @@ export const boot = ({
 	clientId,
 	apiEndpoint,
 	adB2cTenant,
+	renderLogin,
+	aboutPage,
+	catsPage,
+	catPage,
+	catsMapPage,
+	renderError,
 }: {
 	clientId: string
 	apiEndpoint: string
 	adB2cTenant: string
+	renderLogin: (args: { onLogin: () => void }) => JSX.Element
+	aboutPage: React.ComponentType<any>
+	catsPage: React.ComponentType<any>
+	catPage: React.ComponentType<any>
+	catsMapPage: React.ComponentType<any>
+	renderError: (args: { error: Error | ErrorInfo }) => JSX.Element
 }) => {
 	const loc = new URL(document.location.href)
 	const redirectUri = `${loc.protocol}//${loc.host}`
@@ -126,60 +133,54 @@ export const boot = ({
 		return (
 			<Router>
 				<GlobalStyle />
-				<NavbarBrandContextProvider>
-					<ToggleNavigation
-						loggedIn={accessToken !== undefined}
-						onLogout={() => {
-							window.localStorage.clear()
-							setAccessToken(undefined)
-							setError(undefined)
-							userAgentApplication.logout()
-						}}
-					/>
-					{accessToken === undefined && (
-						<Login
-							onLogin={() => {
-								acquireAccessToken()
-									.then((token) => {
-										setAccessToken(token)
-										window.localStorage.setItem(
-											ACCESS_TOKEN,
-											JSON.stringify(token),
-										)
-									})
-									.catch(setError)
-							}}
-						/>
-					)}
-					{error !== undefined && <ErrorComponent error={error} />}
-					{accessToken && (
-						<AccessTokenContext.Provider value={accessToken}>
-							<ApiClientContext.Provider
-								value={fetchApiClient({
-									endpoint: apiEndpoint,
-									token: accessToken.accessToken,
-								})}
+				<ToggleNavigation
+					loggedIn={accessToken !== undefined}
+					onLogout={() => {
+						window.localStorage.clear()
+						setAccessToken(undefined)
+						setError(undefined)
+						userAgentApplication.logout()
+					}}
+					cloudFlavour={CloudFlavour.Azure}
+				/>
+				{accessToken === undefined &&
+					renderLogin({
+						onLogin: () => {
+							acquireAccessToken()
+								.then((token) => {
+									setAccessToken(token)
+									window.localStorage.setItem(
+										ACCESS_TOKEN,
+										JSON.stringify(token),
+									)
+								})
+								.catch(setError)
+						},
+					})}
+				{error !== undefined && renderError({ error })}
+				{accessToken && (
+					<AccessTokenContext.Provider value={accessToken}>
+						<ApiClientContext.Provider
+							value={fetchApiClient({
+								endpoint: apiEndpoint,
+								token: accessToken.accessToken,
+							})}
+						>
+							<SolutionConfigContext.Provider
+								value={{
+									apiEndpoint,
+									clientId,
+								}}
 							>
-								<SolutionConfigContext.Provider
-									value={{
-										apiEndpoint,
-										clientId,
-									}}
-								>
-									<Route
-										exact
-										path="/"
-										render={() => <Redirect to="/cats" />}
-									/>
-									<Route exact path="/about" component={AboutPage} />
-									<Route exact path="/cats" component={CatsPage} />
-									<Route exact path="/cat/:catId" component={CatPage} />
-									<Route exact path="/cats-on-map" component={CatsMapPage} />
-								</SolutionConfigContext.Provider>
-							</ApiClientContext.Provider>
-						</AccessTokenContext.Provider>
-					)}
-				</NavbarBrandContextProvider>
+								<Route exact path="/" render={() => <Redirect to="/cats" />} />
+								<Route exact path="/about" component={aboutPage} />
+								<Route exact path="/cats" component={catsPage} />
+								<Route exact path="/cat/:catId" component={catPage} />
+								<Route exact path="/cats-on-map" component={catsMapPage} />
+							</SolutionConfigContext.Provider>
+						</ApiClientContext.Provider>
+					</AccessTokenContext.Provider>
+				)}
 			</Router>
 		)
 	}
