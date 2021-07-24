@@ -71,8 +71,8 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.14.5",
-    "@commitlint/cli": "12.1.4",
-    "@commitlint/config-angular": "12.1.4",
+    "@commitlint/cli": "13.1.0",
+    "@commitlint/config-angular": "13.1.0",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "9.0.4",
     "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "8.0.3",
     "@types/aws-iot-device-sdk": "2.2.3",
