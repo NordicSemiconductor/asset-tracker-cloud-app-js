@@ -38,7 +38,7 @@
     "@aws-sdk/util-dynamodb": "3.23.0",
     "@aws-sdk/util-utf8-browser": "3.23.0",
     "@microsoft/signalr": "5.0.8",
-    "@nordicsemiconductor/cell-geolocation-helpers": "3.0.10",
+    "@nordicsemiconductor/cell-geolocation-helpers": "3.0.11",
     "@nordicsemiconductor/rsrp-bar": "3.0.1",
     "@nordicsemiconductor/timestream-helpers": "3.1.18",
     "aws-amplify": "3.4.3",
