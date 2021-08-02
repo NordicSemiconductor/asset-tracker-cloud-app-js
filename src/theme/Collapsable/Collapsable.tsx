@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { emojify } from '../../Emojify/Emojify'
 
@@ -28,60 +28,73 @@ const Content = styled.div`
 	margin-top: 1rem;
 `
 
-export const Collapsable = ({
-	id,
-	title,
-	initial,
-	children,
-	onToggle,
-}: {
-	id: string
-	title: string
-	initial?: boolean
-	children: JSX.Element | (JSX.Element | null)[]
-	onToggle?: (collapsed: boolean) => void
-}) => {
-	let initialState = initial ?? false
-	if (window.localStorage.getItem(`asset-tracker:toggle:${id}`) === '1') {
-		initialState = true
-	}
-	const [collapsed, setCollapsed] = useState(initialState)
-
-	const toggle = () => {
-		const state = !collapsed
-		setCollapsed(state)
-
-		onToggle?.(state)
-		window.localStorage.setItem(`asset-tracker:toggle:${id}`, state ? '1' : '0')
+export class Collapsable<
+	P extends {
+		id: string
+		title: string
+		initial?: boolean
+		children: JSX.Element | (JSX.Element | null)[]
+		onToggle?: (collapsed: boolean) => void
+	},
+> extends React.Component<P, { collapsed: boolean }> {
+	constructor(props: P) {
+		super(props)
+		let initialState = props.initial ?? false
+		if (
+			window.localStorage.getItem(`asset-tracker:toggle:${this.props.id}`) ===
+			'1'
+		) {
+			initialState = true
+		}
+		this.state = { collapsed: initialState }
 	}
 
-	return (
-		<>
-			{collapsed && (
-				<div>
-					<CollapsableHeader onClick={toggle}>
-						<div>
-							<h3>{emojify(title)}</h3>
-						</div>
-						<CollapsedButton title={'Expand'} onClick={toggle}>
-							⌃
-						</CollapsedButton>
-					</CollapsableHeader>
-				</div>
-			)}
-			{!collapsed && (
-				<div>
-					<CollapsableHeader onClick={toggle}>
-						<div>
-							<h3>{emojify(title)}</h3>
-						</div>
-						<ExpandedButton color={'link'} title={'Collapse'} onClick={toggle}>
-							⌃
-						</ExpandedButton>
-					</CollapsableHeader>
-					<Content>{children}</Content>
-				</div>
-			)}
-		</>
-	)
+	render() {
+		const { collapsed } = this.state
+		const { id, title, onToggle, children } = this.props
+		const toggle = () => {
+			const state = !collapsed
+			this.setState({ collapsed: state })
+
+			onToggle?.(state)
+			window.localStorage.setItem(
+				`asset-tracker:toggle:${id}`,
+				state ? '1' : '0',
+			)
+		}
+
+		return (
+			<>
+				{collapsed && (
+					<div>
+						<CollapsableHeader onClick={toggle}>
+							<div>
+								<h3>{emojify(title)}</h3>
+							</div>
+							<CollapsedButton title={'Expand'} onClick={toggle}>
+								⌃
+							</CollapsedButton>
+						</CollapsableHeader>
+					</div>
+				)}
+				{!collapsed && (
+					<div>
+						<CollapsableHeader onClick={toggle}>
+							<div>
+								<h3>{emojify(title)}</h3>
+							</div>
+							<ExpandedButton
+								color={'link'}
+								title={'Collapse'}
+								onClick={toggle}
+							>
+								⌃
+							</ExpandedButton>
+						</CollapsableHeader>
+						<Content>{children}</Content>
+					</div>
+				)}
+			</>
+		)
+	}
 }

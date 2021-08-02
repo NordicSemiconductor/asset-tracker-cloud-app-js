@@ -98,10 +98,9 @@ export const Cat = ({
 	const [error, setError] = useState<Error>()
 	const reported = state?.reported
 
+	// Fetch Thing state
 	useEffect(() => {
 		let didCancel = false
-		let stopListening: () => void
-
 		const setStateIfNotCanceled = (state: ThingState) =>
 			!didCancel && setState(state)
 		const setErrorIfNotCanceled = (error: Error) =>
@@ -114,6 +113,19 @@ export const Cat = ({
 				}
 			})
 			.catch(setErrorIfNotCanceled)
+
+		return () => {
+			didCancel = true
+		}
+	}, [credentials, getThingState])
+
+	// Once state is fetched, listen to state changes
+	useEffect(() => {
+		let didCancel = false
+		let stopListening: () => void
+		const setErrorIfNotCanceled = (error: Error) =>
+			!didCancel && setError(error)
+		if (state === undefined) return
 
 		listenForStateChange({
 			onNewState: (newState) => {
@@ -135,7 +147,7 @@ export const Cat = ({
 			}
 			didCancel = true
 		}
-	}, [credentials, getThingState, listenForStateChange])
+	}, [state, listenForStateChange])
 
 	useEffect(() => {
 		if (!error) {

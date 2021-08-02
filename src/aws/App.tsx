@@ -18,10 +18,10 @@ import {
 	queryClient,
 } from '@nordicsemiconductor/timestream-helpers'
 import { format } from 'date-fns'
+import { CloudFlavour } from '../flavour'
 
 import '@aws-amplify/ui/dist/style.css'
-import { CloudFlavour } from '../flavour'
-import { FlavouredNavbarBrandContextProvider } from '../theme/bootstrap4/Navigation/NavbarBrand'
+import { CurrentCatInfoContextProvider } from '../theme/CurrentCatInfoContext'
 
 const timeStreamFormatDate = (d: Date) => format(d, 'yyyy-MM-dd HH:mm:ss.SSS')
 
@@ -197,7 +197,7 @@ export const boot = ({
 
 		return (
 			<Router>
-				<FlavouredNavbarBrandContextProvider>
+				<CurrentCatInfoContextProvider>
 					<GlobalStyle />
 					<ToggleNavigation
 						loggedIn={true}
@@ -244,7 +244,7 @@ export const boot = ({
 						</StackConfigContext.Provider>
 					)) ||
 						null}
-				</FlavouredNavbarBrandContextProvider>
+				</CurrentCatInfoContextProvider>
 			</Router>
 		)
 	}

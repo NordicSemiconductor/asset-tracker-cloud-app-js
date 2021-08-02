@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { NavbarBrand } from 'reactstrap'
 import logo from '../../../logo.svg'
 import styled from 'styled-components'
 import { CloudFlavour } from '../../../flavour'
 import { CatNavbar } from './CatNavbar'
+import { CurrentCatInfoContext } from '../../CurrentCatInfoContext'
 
 export const LogoImg = styled.img`
 	margin-right: 0.25rem;
@@ -21,33 +22,15 @@ const Flavour = styled.small`
 		opacity: 0.75;
 	}
 `
-type CatInfo = { avatar: string; name: string }
-export const FlavouredNavbarBrandContext = React.createContext<{
-	setCatInfo: (args?: CatInfo) => void
-	catInfo?: CatInfo
-}>({
-	setCatInfo: () => undefined,
-})
-
-export const FlavouredNavbarBrandContextProvider = ({
-	children,
-}: React.PropsWithChildren<any>) => {
-	const [catInfo, setCatInfo] = useState<CatInfo>()
-	return (
-		<FlavouredNavbarBrandContext.Provider value={{ setCatInfo, catInfo }}>
-			{children}
-		</FlavouredNavbarBrandContext.Provider>
-	)
-}
-
 export const FlavouredNavbarBrand = ({
 	cloudFlavour,
 }: {
 	cloudFlavour: CloudFlavour
 }) => (
-	<FlavouredNavbarBrandContext.Consumer>
-		{({ catInfo }) => {
-			if (catInfo !== undefined) return <CatNavbar {...catInfo} />
+	<CurrentCatInfoContext.Consumer>
+		{({ avatar, name }) => {
+			if (avatar !== undefined && name !== undefined)
+				return <CatNavbar name={name} avatar={avatar} />
 			return (
 				<NavbarBrand href="/">
 					<LogoImg
@@ -61,5 +44,5 @@ export const FlavouredNavbarBrand = ({
 				</NavbarBrand>
 			)
 		}}
-	</FlavouredNavbarBrandContext.Consumer>
+	</CurrentCatInfoContext.Consumer>
 )

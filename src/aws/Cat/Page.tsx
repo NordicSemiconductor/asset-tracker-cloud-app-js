@@ -19,7 +19,10 @@ export const CatPage = (props: CatRouteProps) => (
 			renderError={DisplayError}
 			renderConnectionInformation={ConnectionInformation}
 			renderHistoricalButtonPresses={HistoricalButtonPresses}
-			renderCollapsable={Collapsable}
+			// FIXME: figure out how to pass this instead: renderCollapsable={Collapsable}
+			renderCollapsable={({ children, ...rest }) => (
+				<Collapsable {...rest}>{children}</Collapsable>
+			)}
 			renderDelete={DeleteCat}
 			renderDivider={() => <hr />}
 			render={Cat}

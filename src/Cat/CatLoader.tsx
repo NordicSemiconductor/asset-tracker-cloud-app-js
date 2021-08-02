@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { isRight, Either } from 'fp-ts/lib/Either'
 import { ErrorInfo } from '../Error/ErrorInfo'
-import { FlavouredNavbarBrandContext } from '../theme/bootstrap4/Navigation/NavbarBrand'
+import { CurrentCatInfoContext } from '../theme/CurrentCatInfoContext'
 
 export type LoadedCat = {
 	id: string
@@ -19,21 +19,21 @@ export function CatLoader<
 >({
 	catId,
 	render,
+	renderLoading,
+	renderError,
 	loader,
 }: {
 	catId: string
 	loader: (catId: string) => Promise<Either<ErrorInfo, T>>
+	renderLoading: () => JSX.Element
+	renderError: (args: { error: Error | ErrorInfo }) => JSX.Element
 	render: (args: {
-		cat?: T & LoadedCat
-		update?: (cat: T & LoadedCat) => void
-		loading: boolean
-		error?: Error | ErrorInfo
+		cat: T & LoadedCat
+		update: (cat: T & LoadedCat) => void
 	}) => JSX.Element
 }) {
 	const [cat, setCat] = useState<T & LoadedCat>()
 	const [error, setError] = useState<ErrorInfo>()
-	const { setCatInfo } = useContext(FlavouredNavbarBrandContext)
-
 	useEffect(() => {
 		let isCancelled = false
 		loader(catId)
@@ -47,7 +47,6 @@ export function CatLoader<
 							avatar: cat.right.avatar ?? 'https://placekitten.com/75/75',
 						}
 						setCat(c)
-						setCatInfo(c)
 					} else {
 						setError(cat.left)
 					}
@@ -56,15 +55,35 @@ export function CatLoader<
 			.catch((err) => {
 				if (!isCancelled) setError(err)
 			})
+
 		return () => {
 			isCancelled = true
+		}
+	}, [catId, loader])
+
+	const { setCatInfo } = useContext(CurrentCatInfoContext)
+	useEffect(() => {
+		setCatInfo(cat)
+		return () => {
 			setCatInfo(undefined)
 		}
-	}, [catId, loader, setCatInfo])
+	}, [cat, setCatInfo])
 
 	const update = (cat: T & LoadedCat) => {
 		setCat(cat)
 	}
 
-	return render({ cat, update, loading: !error && !cat, error })
+	const loading = !error && !cat
+
+	if (loading) return renderLoading()
+	if (error) return renderError({ error })
+	if (cat === undefined || update === undefined)
+		return renderError({
+			error: {
+				message: `Failed to load cat`,
+				type: 'Error',
+			},
+		})
+
+	return render({ cat, update })
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Collapse, Navbar, NavbarToggler } from 'reactstrap'
 import styled from 'styled-components'
 import { CloudFlavour } from '../../../flavour'
@@ -75,45 +75,54 @@ const DesktopOnlyNavigation = styled.div`
 }
 `
 
-export const ToggleNavigation = ({
-	loggedIn,
-	onLogout,
-	cloudFlavour,
-}: {
-	loggedIn: boolean
-	onLogout: () => void
-	cloudFlavour: CloudFlavour
-}) => {
-	const [navigationVisible, setNavigationVisible] = useState(false)
+export class ToggleNavigation<
+	P extends {
+		loggedIn: boolean
+		onLogout: () => void
+		cloudFlavour: CloudFlavour
+	},
+> extends React.Component<P, { navigationVisible: boolean }> {
+	constructor(props: P) {
+		super(props)
+		this.state = { navigationVisible: false }
+	}
 
-	const toggleNavigation = () => setNavigationVisible(!navigationVisible)
+	render() {
+		const { navigationVisible } = this.state
+		const toggleNavigation = () =>
+			this.setState({ navigationVisible: !this.state.navigationVisible })
 
-	const FlavouredHeader = flavouredHeaders[cloudFlavour]
-	return (
-		<FlavouredHeader>
-			<StyledNavbar className={navbarClassname[cloudFlavour]}>
-				<MobileNavbar>
-					<FlavouredNavbarBrand cloudFlavour={cloudFlavour} />
-					<NavbarToggler onClick={toggleNavigation} />
-				</MobileNavbar>
-				<DesktopOnly>
-					<FlavouredNavbarBrand cloudFlavour={cloudFlavour} />
-				</DesktopOnly>
-				{loggedIn && (
-					<>
-						<MobileOnlyCollapse isOpen={navigationVisible} navbar>
-							<Navigation
-								navbar={true}
-								onClick={toggleNavigation}
-								onLogout={onLogout}
-							/>
-						</MobileOnlyCollapse>
-						<DesktopOnlyNavigation>
-							<Navigation onClick={toggleNavigation} onLogout={onLogout} />
-						</DesktopOnlyNavigation>
-					</>
-				)}
-			</StyledNavbar>
-		</FlavouredHeader>
-	)
+		const { cloudFlavour, loggedIn, onLogout } = this.props
+		const FlavouredHeader = flavouredHeaders[
+			cloudFlavour
+		] as React.ComponentType
+
+		return (
+			<FlavouredHeader>
+				<StyledNavbar className={navbarClassname[cloudFlavour]}>
+					<MobileNavbar>
+						<FlavouredNavbarBrand cloudFlavour={cloudFlavour} />
+						<NavbarToggler onClick={toggleNavigation} />
+					</MobileNavbar>
+					<DesktopOnly>
+						<FlavouredNavbarBrand cloudFlavour={cloudFlavour} />
+					</DesktopOnly>
+					{loggedIn && (
+						<>
+							<MobileOnlyCollapse isOpen={navigationVisible} navbar>
+								<Navigation
+									navbar={true}
+									onClick={toggleNavigation}
+									onLogout={onLogout}
+								/>
+							</MobileOnlyCollapse>
+							<DesktopOnlyNavigation>
+								<Navigation onClick={toggleNavigation} onLogout={onLogout} />
+							</DesktopOnlyNavigation>
+						</>
+					)}
+				</StyledNavbar>
+			</FlavouredHeader>
+		)
+	}
 }

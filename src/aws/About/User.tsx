@@ -1,4 +1,3 @@
-import React from 'react'
 import { useEffect, useState } from 'react'
 import { Auth } from 'aws-amplify'
 import { CognitoUser, CognitoUserAttribute } from 'amazon-cognito-identity-js'

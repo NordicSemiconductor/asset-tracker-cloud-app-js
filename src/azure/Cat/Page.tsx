@@ -26,8 +26,7 @@ export const CatPage = (props: CatRouteProps) => (
 					renderLoading={() => (
 						<Progress title={`Deleting ${props.match.params.catId}...`} />
 					)}
-				>
-					{(cat, update) => (
+					render={({ cat, update }) => (
 						<Cat
 							cat={cat}
 							update={update}
@@ -35,7 +34,10 @@ export const CatPage = (props: CatRouteProps) => (
 							renderConnectionInformation={ConnectionInformation}
 							renderHistoricalButtonPresses={HistoricalButtonPresses}
 							renderError={DisplayError}
-							renderCollapsable={Collapsable}
+							// FIXME: figure out how to pass this instead: renderCollapsable={Collapsable}
+							renderCollapsable={({ children, ...rest }) => (
+								<Collapsable {...rest}>{children}</Collapsable>
+							)}
 							renderDelete={DeleteCat}
 							renderDivider={() => <hr />}
 							render={CatTheme}
@@ -48,7 +50,7 @@ export const CatPage = (props: CatRouteProps) => (
 							renderSignalRDisabledWarning={SignalRDisabledWarning}
 						/>
 					)}
-				</CatLoader>
+				/>
 			)}
 		</ApiClientConsumer>
 	</Main>
