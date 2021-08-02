@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Redirect, Route, BrowserRouter as Router } from 'react-router-dom'
 import { ToggleNavigation } from '../theme/bootstrap4/Navigation/ToggleNavigation'
-import { GlobalStyle } from '../Styles'
+import { GlobalStyle } from '../theme/bootstrap4/Styles'
 import { UserAgentApplication, AuthResponse } from 'msal'
 import { v4 } from 'uuid'
 import { ApiClient, fetchApiClient } from './api'

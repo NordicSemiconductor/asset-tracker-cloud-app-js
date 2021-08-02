@@ -11,7 +11,7 @@ import { CatPage } from './Cat/Page'
 import { CatsPage } from './Cats/Page'
 import { CatsMapPage } from './CatsMap/Page'
 import { ToggleNavigation } from '../theme/bootstrap4/Navigation/ToggleNavigation'
-import { GlobalStyle } from '../Styles'
+import { GlobalStyle } from '../theme/bootstrap4/Styles'
 import { attachIotPolicyToIdentity } from './attachIotPolicyToIdentity'
 import {
 	parseResult,

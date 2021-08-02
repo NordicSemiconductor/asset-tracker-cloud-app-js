@@ -12,8 +12,6 @@ import {
 import { LeafletEvent, Map as LeafletMap } from 'leaflet'
 import { NoMap } from './NoMap'
 import styled from 'styled-components'
-import { mobileBreakpoint } from '../Styles'
-import { FormGroup } from 'reactstrap'
 import { formatDistanceToNow } from 'date-fns'
 import { SignalQuality } from '../theme/ConnectionInformation'
 import { nullOrUndefined } from '../util/nullOrUndefined'
@@ -28,29 +26,6 @@ const MapContainerContainer = styled.div`
 
 export const CatMapContainer = styled.div`
 	position: relative;
-`
-
-export const SettingsFormGroup = styled(FormGroup)`
-	position: relative;
-	padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-	background-color: #f7f7f7;
-	top: 0;
-	right: 0;
-	z-index: 999;
-	display: flex;
-	flex-wrap: wrap;
-	border-bottom: 1px solid #dcdcdc;
-	@media (min-width: ${mobileBreakpoint}) {
-		top: auto;
-		right: auto;
-		bottom: 0;
-		z-index: 10000;
-		border-bottom: 1px solid #dcdcdc;
-	}
-	input[type='number'] {
-		width: 70px;
-		margin-left: 0.5rem;
-	}
 `
 
 const HistoryInfo = styled.dl`

@@ -1,6 +1,6 @@
 import React from 'react'
 import { CatActions } from './CatActions'
-import { Main } from '../../Styles'
+import { Main } from '../../theme/bootstrap4/Styles'
 import { CatRouteProps } from '../../Cat/CatRouteProps'
 import { CatDeleted } from '../../theme/bootstrap4/Cat/CatDeleted'
 import { DisplayError } from '../../theme/bootstrap4/Error'
@@ -10,6 +10,8 @@ import { Collapsable } from '../../theme/Collapsable/Collapsable'
 import { DeleteCat } from '../../theme/bootstrap4/Cat/DeleteCat'
 import { Cat } from '../../theme/bootstrap4/Cat/CatCard'
 import { Progress } from '../../theme/bootstrap4/Progress'
+import { FOTAJobs } from '../../theme/bootstrap4/aws/FOTA/FOTAJobs'
+import { CreateFOTAJob } from '../../theme/bootstrap4/CreateFOTAJob'
 
 export const CatPage = (props: CatRouteProps) => (
 	<Main>
@@ -29,6 +31,8 @@ export const CatPage = (props: CatRouteProps) => (
 			renderLoading={() => (
 				<Progress title={`Opening can for cat ${props.match.params.catId}`} />
 			)}
+			renderFOTAJobs={FOTAJobs}
+			renderCreateFOTAJob={(args) => <CreateFOTAJob {...args} />}
 		/>
 	</Main>
 )

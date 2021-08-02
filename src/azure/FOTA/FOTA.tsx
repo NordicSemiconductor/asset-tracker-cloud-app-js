@@ -19,6 +19,7 @@ export const FOTA = ({
 
 	return (
 		<>
+			{error && renderError({ error })}
 			{(!fw.currentFwVersion &&
 				renderError({
 					error: {
@@ -29,7 +30,6 @@ export const FOTA = ({
 				null}
 			{fw.currentFwVersion && (
 				<>
-					{error && renderError({ error })}
 					<CreateReportedFOTAJobProgress
 						key={`uploadfile-${addJobKey}`}
 						fw={fw}

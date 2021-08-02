@@ -1,6 +1,4 @@
 import { default as introJs } from 'intro.js'
-import { FOTA, OnCreateUpgradeJob } from '../FOTA/FOTA'
-import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
 import { ICredentials } from '@aws-amplify/core'
 import React, { useEffect, useState } from 'react'
 import { Toggle } from '../../Toggle/Toggle'
@@ -32,13 +30,8 @@ const isNameValid = (name: string) => /^[0-9a-z_.,@/:#-]{1,800}$/i.test(name)
 
 export const Cat = ({
 	cat,
-	onCreateUpgradeJob,
 	onAvatarChange,
 	onNameChange,
-	listUpgradeJobs,
-	cancelUpgradeJob,
-	deleteUpgradeJob,
-	cloneUpgradeJob,
 	credentials,
 	children,
 	getThingState,
@@ -53,16 +46,6 @@ export const Cat = ({
 }: {
 	onAvatarChange: (avatar: Blob) => void
 	onNameChange: (name: string) => void
-	onCreateUpgradeJob: OnCreateUpgradeJob
-	listUpgradeJobs: () => Promise<DeviceUpgradeFirmwareJob[]>
-	cancelUpgradeJob: (args: { jobId: string; force: boolean }) => Promise<void>
-	cloneUpgradeJob: (args: {
-		jobId: string
-	}) => Promise<DeviceUpgradeFirmwareJob>
-	deleteUpgradeJob: (args: {
-		jobId: string
-		executionNumber: number
-	}) => Promise<void>
 	getThingState: () => Promise<Option<ThingState>>
 	updateDeviceConfig: (cfg: Partial<DeviceConfig>) => Promise<void>
 	cat: CatInfo
@@ -327,27 +310,6 @@ export const Cat = ({
 									roaming={reportedWithReceived.roam}
 									appV={reportedWithReceived.dev?.v?.value?.appV}
 									dataStaleAfterSeconds={expectedSendIntervalInSeconds}
-								/>
-							),
-						})}
-					</>
-				)}
-				{reported?.dev && (
-					<>
-						{renderDivider()}
-						{renderCollapsable({
-							id: 'cat:fota',
-							title: '🌩️ Device Firmware Upgrade (FOTA)',
-							children: (
-								<FOTA
-									key={`${cat.version}`}
-									device={reported.dev}
-									onCreateUpgradeJob={onCreateUpgradeJob}
-									listUpgradeJobs={listUpgradeJobs}
-									cancelUpgradeJob={cancelUpgradeJob}
-									deleteUpgradeJob={deleteUpgradeJob}
-									cloneUpgradeJob={cloneUpgradeJob}
-									renderError={renderError}
 								/>
 							),
 						})}

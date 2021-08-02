@@ -1,5 +1,5 @@
 import React from 'react'
-import { hideOnDesktop } from '../Styles'
+import { hideOnDesktop } from '../theme/bootstrap4/Styles'
 import styled from 'styled-components'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
 import { LoadedCat } from './CatLoader'

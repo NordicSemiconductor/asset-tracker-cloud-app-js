@@ -1,5 +1,5 @@
 import React from 'react'
-import { Main } from '../../Styles'
+import { Main } from '../../theme/bootstrap4/Styles'
 import { ApiClientConsumer } from '../App'
 import { Cat } from './Cat'
 import { CatRouteProps } from '../../Cat/CatRouteProps'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Configuration } from '../../theme/bootstrap4/aws/About/Configuration'
 import { User } from './User'
-import { Main } from '../../Styles'
+import { Main } from '../../theme/bootstrap4/Styles'
 import { ClearCache } from '../../theme/bootstrap4/About/ClearCache'
 import { StackConfigConsumer, CredentialsConsumer } from '../App'
 import { Cache as AmplifyCache } from 'aws-amplify'

@@ -7,7 +7,7 @@ import {
 	mobileBreakpoint,
 	showOnDesktop,
 	wideBreakpoint,
-} from '../../../Styles'
+} from '../Styles'
 import { FlavouredNavbarBrand } from './NavbarBrand'
 import { Navigation } from './Navigation'
 

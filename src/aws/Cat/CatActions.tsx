@@ -12,7 +12,10 @@ import { HistoricalDataChart } from '../../HistoricalData/HistoricalDataChart'
 import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
 import { describeIotThing } from '../describeIotThing'
 import { upgradeFirmware } from '../upgradeFirmware'
-import { listUpgradeFirmwareJobs } from '../listUpgradeFirmwareJobs'
+import {
+	DeviceUpgradeFirmwareJob,
+	listUpgradeFirmwareJobs,
+} from '../listUpgradeFirmwareJobs'
 import { cancelUpgradeFirmwareJob } from '../cancelUpgradeFirmwareJob'
 import { deleteUpgradeFirmwareJob } from '../deleteUpgradeFirmwareJob'
 import { cloneUpgradeFirmwareJob } from '../cloneUpgradeFirmwareJob'
@@ -31,6 +34,11 @@ import { getNeighboringCellMeasurementReport } from '../getNeighboringCellMeasur
 import { NeighborCellMeasurementsReport } from '../../DeviceInformation/NeighborCellMeasurementsReport'
 import { CollapsedContextProvider } from '../../util/CollapsedContext'
 import { ErrorInfo } from '../../Error/ErrorInfo'
+import { ListFOTAJobs } from '../FOTA/ListFOTAJobs'
+import { AWSDeviceInformation, ThingState } from '../../@types/aws-device'
+import semver from 'semver'
+import { DeviceInformation } from '../../@types/device-state'
+import { isSome } from 'fp-ts/lib/Option'
 
 export const CatActions = ({
 	catId,
@@ -43,6 +51,8 @@ export const CatActions = ({
 	renderDivider,
 	render,
 	renderLoading,
+	renderFOTAJobs,
+	renderCreateFOTAJob,
 }: {
 	catId: string
 	renderOnDeleted: () => JSX.Element
@@ -75,8 +85,26 @@ export const CatActions = ({
 		map?: JSX.Element
 	}) => JSX.Element
 	renderLoading: () => JSX.Element
+	renderFOTAJobs: (args: {
+		jobs: {
+			job: DeviceUpgradeFirmwareJob
+			canCancel: boolean
+			canDelete: boolean
+			canClone: boolean
+			isInProgress: boolean
+		}[]
+		onCancel: (job: DeviceUpgradeFirmwareJob) => void
+		onClone: (job: DeviceUpgradeFirmwareJob) => void
+		onDelete: (job: DeviceUpgradeFirmwareJob) => void
+	}) => JSX.Element
+	renderCreateFOTAJob: (args: {
+		onJob: (job: { file: File; targetBoard: string; version: string }) => void
+		detectNextVersion: (file: File) => string
+		detectTargetBoard: (file: File) => string
+	}) => JSX.Element
 }) => {
 	const [deleted, setDeleted] = useState(false)
+	const [thingState, setThingState] = useState<ThingState>()
 
 	if (deleted) {
 		return renderOnDeleted()
@@ -193,7 +221,14 @@ export const CatActions = ({
 																cat={cat}
 																credentials={credentials}
 																getThingState={async () =>
-																	getThingState(iotData)(catId)
+																	getThingState(iotData)(catId).then(
+																		(maybeState) => {
+																			if (isSome(maybeState)) {
+																				setThingState(maybeState.value)
+																			}
+																			return maybeState
+																		},
+																	)
 																}
 																renderConnectionInformation={
 																	renderConnectionInformation
@@ -220,57 +255,6 @@ export const CatActions = ({
 																				version: ++cat.version,
 																			})
 																		},
-																	)
-																}
-																listUpgradeJobs={async () =>
-																	listUpgradeJobs(catId)
-																}
-																cancelUpgradeJob={async ({
-																	jobId,
-																	force,
-																}: {
-																	jobId: string
-																	force: boolean
-																}) =>
-																	cancelUpgradeJob({
-																		deviceId: catId,
-																		jobId,
-																		force,
-																	})
-																}
-																deleteUpgradeJob={async ({
-																	jobId,
-																	executionNumber,
-																}: {
-																	jobId: string
-																	executionNumber: number
-																}) =>
-																	deleteUpgradeJob({
-																		deviceId: catId,
-																		jobId,
-																		executionNumber,
-																	})
-																}
-																cloneUpgradeJob={async ({
-																	jobId,
-																}: {
-																	jobId: string
-																}) =>
-																	describeThing(catId).then(
-																		async ({ thingArn }) =>
-																			cloneUpgradeJob({
-																				thingArn,
-																				jobId,
-																			}),
-																	)
-																}
-																onCreateUpgradeJob={async (args) =>
-																	describeThing(catId).then(
-																		async ({ thingArn }) =>
-																			createUpgradeJob({
-																				...args,
-																				thingArn: thingArn,
-																			}),
 																	)
 																}
 																onAvatarChange={(avatar) => {
@@ -479,9 +463,121 @@ export const CatActions = ({
 																		},
 																	}),
 																})}
+																{renderDivider()}
+																{renderCollapsable({
+																	id: 'cat:fota',
+																	title: '🌩️ Device Firmware Upgrade (FOTA)',
+																	children: (
+																		<>
+																			{thingState !== undefined &&
+																			thingState.reported?.dev?.v?.appV ===
+																				undefined
+																				? renderError({
+																						error: {
+																							message:
+																								'The device has not yet reported an application version.',
+																							type: 'Warning',
+																						},
+																				  })
+																				: null}
+																			{thingState?.reported?.dev?.v?.appV !==
+																			undefined
+																				? renderCreateFOTAJob({
+																						onJob: (job) => {
+																							describeThing(catId)
+																								.then(async ({ thingArn }) =>
+																									createUpgradeJob({
+																										...job,
+																										thingArn: thingArn,
+																									}),
+																								)
+																								.catch(console.error)
+																						},
+																						detectNextVersion: (file) => {
+																							const semverMatch =
+																								/v([0-9]+\.[0-9]+\..+)\.[^.]+$/.exec(
+																									file.name,
+																								)
+																							if (semverMatch) {
+																								return semverMatch[1]
+																							}
+																							return (
+																								semver.inc(
+																									(
+																										thingState.reported
+																											.dev as AWSDeviceInformation
+																									).v.appV,
+																									'patch',
+																								) ??
+																								(
+																									thingState.reported
+																										.dev as AWSDeviceInformation
+																								).v.appV
+																							)
+																						},
+																						detectTargetBoard: (file) => {
+																							const targetMatch =
+																								/pca[0-9]+/i.exec(file.name)
+																							if (targetMatch)
+																								return targetMatch[0]
+																							return (
+																								thingState.reported
+																									.dev as DeviceInformation
+																							).v.brdV
+																						},
+																				  })
+																				: null}
+																			<ListFOTAJobs
+																				key={`${cat.version}`}
+																				listUpgradeJobs={async () =>
+																					listUpgradeJobs(catId)
+																				}
+																				cancelUpgradeJob={async ({
+																					jobId,
+																					force,
+																				}: {
+																					jobId: string
+																					force: boolean
+																				}) =>
+																					cancelUpgradeJob({
+																						deviceId: catId,
+																						jobId,
+																						force,
+																					})
+																				}
+																				deleteUpgradeJob={async ({
+																					jobId,
+																					executionNumber,
+																				}: {
+																					jobId: string
+																					executionNumber: number
+																				}) =>
+																					deleteUpgradeJob({
+																						deviceId: catId,
+																						jobId,
+																						executionNumber,
+																					})
+																				}
+																				cloneUpgradeJob={async ({
+																					jobId,
+																				}: {
+																					jobId: string
+																				}) =>
+																					describeThing(catId).then(
+																						async ({ thingArn }) =>
+																							cloneUpgradeJob({
+																								thingArn,
+																								jobId,
+																							}),
+																					)
+																				}
+																				render={renderFOTAJobs}
+																			/>
+																		</>
+																	),
+																})}
 															</Cat>
 														</CollapsedContextProvider>
-														)
 													</>
 												)}
 											/>

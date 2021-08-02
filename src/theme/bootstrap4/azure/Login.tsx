@@ -7,7 +7,7 @@ import {
 	Form,
 	CardFooter,
 } from 'reactstrap'
-import { Main } from '../../../Styles'
+import { Main } from '../Styles'
 import styled from 'styled-components'
 
 const FormFooter = styled(CardFooter)`

@@ -1,8 +1,7 @@
-import { SettingsFormGroup } from './Map'
 import React, { useState } from 'react'
-import { Input, Label } from 'reactstrap'
+import { Input, Label, FormGroup } from 'reactstrap'
 import styled from 'styled-components'
-import { mobileBreakpoint } from '../Styles'
+import { mobileBreakpoint } from '../theme/bootstrap4/Styles'
 
 const CheckboxContainer = styled.div`
 	width: 100%;
@@ -20,6 +19,29 @@ const CheckboxContainer = styled.div`
 	}
 	label {
 		font-weight: 400;
+	}
+`
+
+export const SettingsFormGroup = styled(FormGroup)`
+	position: relative;
+	padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+	background-color: #f7f7f7;
+	top: 0;
+	right: 0;
+	z-index: 999;
+	display: flex;
+	flex-wrap: wrap;
+	border-bottom: 1px solid #dcdcdc;
+	@media (min-width: ${mobileBreakpoint}) {
+		top: auto;
+		right: auto;
+		bottom: 0;
+		z-index: 10000;
+		border-bottom: 1px solid #dcdcdc;
+	}
+	input[type='number'] {
+		width: 70px;
+		margin-left: 0.5rem;
 	}
 `
 

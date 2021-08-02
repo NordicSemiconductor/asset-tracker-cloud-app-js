@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { Card } from 'reactstrap'
-import { mobileBreakpoint } from '../../../Styles'
+import { mobileBreakpoint } from '../Styles'
 import { CardBody, CardHeader } from 'reactstrap'
 
 const CatCard = styled(Card)`
