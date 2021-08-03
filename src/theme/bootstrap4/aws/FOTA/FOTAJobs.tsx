@@ -2,7 +2,7 @@ import { Button } from 'reactstrap'
 import React from 'react'
 import styled from 'styled-components'
 import { DeviceUpgradeFirmwareJob } from '../../../../aws/listUpgradeFirmwareJobs'
-import { emojify } from '../../../../Emojify/Emojify'
+import { emojify } from '../../../Emojify/Emojify'
 import { RelativeTime } from '../../../../RelativeTime/RelativeTime'
 
 const JobItem = styled.div`

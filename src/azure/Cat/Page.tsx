@@ -20,8 +20,7 @@ export const CatPage = (props: CatRouteProps) => (
 		<ApiClientConsumer>
 			{(apiClient) => (
 				<CatLoader<Device>
-					catId={props.match.params.catId}
-					loader={async (catId) => apiClient.getDevice(catId)}
+					loader={async () => apiClient.getDevice(props.match.params.catId)}
 					renderError={DisplayError}
 					renderLoading={() => (
 						<Progress title={`Deleting ${props.match.params.catId}...`} />

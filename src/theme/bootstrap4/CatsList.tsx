@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import { Table, Badge, Card, CardHeader } from 'reactstrap'
 import { ButtonWarningProps } from '../../ButtonWarnings/ButtonWarnings'
-import { emojify } from '../../Emojify/Emojify'
+import { emojify } from '../Emojify/Emojify'
 import { RelativeTime } from '../../RelativeTime/RelativeTime'
 
 const Cat = styled.td`

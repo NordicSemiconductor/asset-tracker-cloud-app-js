@@ -2,7 +2,7 @@ import React from 'react'
 import { hideOnDesktop } from '../theme/bootstrap4/Styles'
 import styled from 'styled-components'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
-import { LoadedCat } from './CatLoader'
+import { LoadedCatWithIdentity } from './CatLoader'
 import { Editable } from '../Editable/Editable'
 
 const MobileOnlyAvatarPicker = hideOnDesktop(AvatarPicker)
@@ -14,7 +14,7 @@ export const MobileOnlyCatHeader = ({
 	onNameChange,
 	isNameValid,
 }: {
-	cat: LoadedCat
+	cat: LoadedCatWithIdentity
 	onAvatarChange: (avatar: Blob) => void
 	onNameChange: (name: string) => void
 	isNameValid: (name: string) => boolean
@@ -42,7 +42,7 @@ export const CatPersonalization = ({
 	onNameChange,
 	isNameValid,
 }: {
-	cat: LoadedCat
+	cat: LoadedCatWithIdentity
 	onAvatarChange: (avatar: Blob) => void
 	onNameChange: (name: string) => void
 	isNameValid: (name: string) => boolean

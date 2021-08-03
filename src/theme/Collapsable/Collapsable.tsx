@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { emojify } from '../../Emojify/Emojify'
+import { emojify } from '../Emojify/Emojify'
 
 const CollapsableHeader = styled.div`
 	display: flex;

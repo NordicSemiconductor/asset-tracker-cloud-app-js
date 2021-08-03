@@ -4,7 +4,7 @@ import equal from 'fast-deep-equal'
 import { OutDatedWarning } from './OutDatedWarning'
 import { NumberConfigSetting } from './NumberConfigSetting'
 import { formatDistanceToNow } from 'date-fns'
-import { emojify } from '../Emojify/Emojify'
+import { emojify } from '../theme/Emojify/Emojify'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../theme/bootstrap4/Styles'
 import {

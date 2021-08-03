@@ -16,6 +16,7 @@ const toQueryString = (obj: any): string => {
 }
 
 export type Device = {
+	id: string
 	name?: string
 	avatar?: string
 	version: number
@@ -200,6 +201,7 @@ export const fetchApiClient = ({
 			const d = await get<IotHubDevice>(`device/${id}`)()
 			if (isLeft(d)) return d
 			return right({
+				id,
 				name: d.right.tags?.name,
 				avatar: d.right.tags?.avatar,
 				version: d.right.version,

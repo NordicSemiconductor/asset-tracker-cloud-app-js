@@ -9,7 +9,7 @@ import {
 } from 'reactstrap'
 import { OutDatedWarning } from './OutDatedWarning'
 import { formatDistanceToNow } from 'date-fns'
-import { emojify } from '../Emojify/Emojify'
+import { emojify } from '../theme/Emojify/Emojify'
 
 export const NumberConfigSetting = ({
 	label,

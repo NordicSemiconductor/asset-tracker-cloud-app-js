@@ -4,17 +4,17 @@ import {
 	MobileOnlyCatHeader,
 	CatPersonalization,
 } from '../../Cat/CatPersonality'
-import { emojify } from '../../Emojify/Emojify'
+import { emojify } from '../../theme/Emojify/Emojify'
 import { ErrorInfo } from '../../Error/ErrorInfo'
 import { Either, isLeft, isRight, left } from 'fp-ts/lib/Either'
-import { LoadedCat } from '../../Cat/CatLoader'
+import { LoadedCatWithIdentity } from '../../Cat/CatLoader'
 import { Settings } from '../../Settings/Settings'
 import * as signalR from '@microsoft/signalr'
 import { connect } from '../signalr'
 import * as merge from 'deepmerge'
 import { DeviceTwin } from '../../@types/azure-device'
 import { CatMapContainer, Location, CellLocation } from '../../Map/Map'
-import { Toggle } from '../../Toggle/Toggle'
+import { Toggle } from '../../theme/Toggle/Toggle'
 import { ReportedTime } from '../../ReportedTime/ReportedTime'
 import {
 	toReportedWithReceivedAt,
@@ -48,8 +48,8 @@ export const Cat = ({
 	renderDelete,
 }: {
 	apiClient: ApiClient
-	cat: Device & LoadedCat
-	update: (cat: Device & LoadedCat) => void
+	cat: Device & LoadedCatWithIdentity
+	update: (cat: Device & LoadedCatWithIdentity) => void
 	renderConnectionInformation: (args: {
 		networkMode?: string
 		iccid?: string

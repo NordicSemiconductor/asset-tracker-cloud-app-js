@@ -1,5 +1,5 @@
 import { AzureFOTAJob, AzureFOTAJobProgress } from '../../@types/azure-device'
-import { emojify } from '../../Emojify/Emojify'
+import { emojify } from '../../theme/Emojify/Emojify'
 import { RelativeTime } from '../../RelativeTime/RelativeTime'
 import React from 'react'
 import styled from 'styled-components'

@@ -1,5 +1,5 @@
 import React from 'react'
-import { emojify } from '../Emojify/Emojify'
+import { emojify } from '../theme/Emojify/Emojify'
 import styled from 'styled-components'
 
 const NoMapDiv = styled.div`

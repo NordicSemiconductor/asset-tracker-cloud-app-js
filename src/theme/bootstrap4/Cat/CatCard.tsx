@@ -3,7 +3,7 @@ import { Card } from 'reactstrap'
 import { mobileBreakpoint } from '../Styles'
 import { CardBody, CardHeader } from 'reactstrap'
 
-const CatCard = styled(Card)`
+export const CatCard = styled(Card)`
 	img.avatar {
 		width: 75px;
 		border-radius: 100%;

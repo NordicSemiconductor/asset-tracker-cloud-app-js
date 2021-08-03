@@ -5,45 +5,41 @@ import { CurrentCatInfoContext } from '../theme/CurrentCatInfoContext'
 
 export type LoadedCat = {
 	id: string
-	name: string
-	avatar: string
+	name?: string
+	avatar?: string
 	version: number
 }
 
-export function CatLoader<
-	T extends {
-		name?: string
-		avatar?: string
-		version: number
-	},
->({
-	catId,
+export type LoadedCatWithIdentity = LoadedCat & {
+	name: string
+	avatar: string
+}
+
+export function CatLoader<T extends LoadedCat>({
 	render,
 	renderLoading,
 	renderError,
 	loader,
 }: {
-	catId: string
-	loader: (catId: string) => Promise<Either<ErrorInfo, T>>
+	loader: () => Promise<Either<ErrorInfo, T>>
 	renderLoading: () => JSX.Element
 	renderError: (args: { error: Error | ErrorInfo }) => JSX.Element
 	render: (args: {
-		cat: T & LoadedCat
-		update: (cat: T & LoadedCat) => void
+		cat: T & LoadedCatWithIdentity
+		update: (cat: T & LoadedCatWithIdentity) => void
 	}) => JSX.Element
 }) {
-	const [cat, setCat] = useState<T & LoadedCat>()
+	const [cat, setCat] = useState<T & LoadedCatWithIdentity>()
 	const [error, setError] = useState<ErrorInfo>()
 	useEffect(() => {
 		let isCancelled = false
-		loader(catId)
+		loader()
 			.then((cat) => {
 				if (!isCancelled) {
 					if (isRight(cat)) {
-						const c = {
+						const c: T & LoadedCatWithIdentity = {
 							...cat.right,
-							id: catId,
-							name: cat.right.name ?? catId,
+							name: cat.right.name ?? cat.right.id,
 							avatar: cat.right.avatar ?? 'https://placekitten.com/75/75',
 						}
 						setCat(c)
@@ -59,7 +55,7 @@ export function CatLoader<
 		return () => {
 			isCancelled = true
 		}
-	}, [catId, loader])
+	}, [loader])
 
 	const { setCatInfo } = useContext(CurrentCatInfoContext)
 	useEffect(() => {
@@ -69,7 +65,7 @@ export function CatLoader<
 		}
 	}, [cat, setCatInfo])
 
-	const update = (cat: T & LoadedCat) => {
+	const update = (cat: T & LoadedCatWithIdentity) => {
 		setCat(cat)
 	}
 

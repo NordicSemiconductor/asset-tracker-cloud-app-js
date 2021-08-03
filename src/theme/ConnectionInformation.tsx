@@ -1,7 +1,7 @@
 import React from 'react'
 import { filter as filterOperator, Operator as Op } from 'mcc-mnc-list'
 import { ReportedTime } from '../ReportedTime/ReportedTime'
-import { emojify } from '../Emojify/Emojify'
+import { emojify } from './Emojify/Emojify'
 import styled from 'styled-components'
 import { RSRP, RSRPBar } from '@nordicsemiconductor/rsrp-bar'
 import { identifyIssuer } from 'e118-iin-list'
