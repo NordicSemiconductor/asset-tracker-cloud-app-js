@@ -336,7 +336,7 @@ export const Map = ({
 													<HistoryInfo>
 														<dt>Connection</dt>
 														<dd style={{ textAlign: 'right' }}>
-															<SignalQuality rsrp={roaming.roaming.rsrp} />
+															<SignalQuality dbm={roaming.roaming.rsrp} />
 														</dd>
 														<dt>MCC/MNC</dt>
 														<dd>{roaming.roaming.mccmnc}</dd>

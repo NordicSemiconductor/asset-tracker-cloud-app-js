@@ -30,7 +30,6 @@ import { HistoricalButtonPresses } from '../../HistoricalButtonPresses/Historica
 import { CatLoader } from '../../Cat/CatLoader'
 import { left, right } from 'fp-ts/lib/Either'
 import { HttpRequest } from '@aws-sdk/protocol-http'
-import { dbmToRSRP } from '@nordicsemiconductor/rsrp-bar'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { getNeighboringCellMeasurementReport } from '../getNeighboringCellMeasurementReport'
 import { NeighborCellMeasurementsReport } from '../../DeviceInformation/NeighborCellMeasurementsReport'
@@ -319,7 +318,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																			<HistoricalDataChart
 																				data={data.map(({ value, date }) => ({
 																					date,
-																					value: -dbmToRSRP(value),
+																					value,
 																				}))}
 																				type={'line'}
 																				max={-70}

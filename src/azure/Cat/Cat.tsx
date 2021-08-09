@@ -37,7 +37,6 @@ import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
 import { pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { SignalRDisabledWarning } from '../SignalRDisabledWarning'
-import { dbmToRSRP } from '@nordicsemiconductor/rsrp-bar'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -459,7 +458,7 @@ export const Cat = ({
 							v: number
 							ts: string
 						}): { value: number; date: Date } => ({
-							value: -dbmToRSRP(-v),
+							value: v,
 							date: new Date(ts),
 						})}
 					>
