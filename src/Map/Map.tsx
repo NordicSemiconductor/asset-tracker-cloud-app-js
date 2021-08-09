@@ -341,11 +341,13 @@ export const Map = ({
 														<dt>MCC/MNC</dt>
 														<dd>{roaming.roaming.mccmnc}</dd>
 														<dt>Area Code</dt>
-														<dd>{roaming.roaming.rsrp}</dd>
-														<dt>Cell ID</dt>
 														<dd>{roaming.roaming.area}</dd>
+														<dt>Cell ID</dt>
+														<dd>{roaming.roaming.cell}</dd>
 														<dt>IP</dt>
 														<dd>{roaming.roaming.ip}</dd>
+														<dt>RSRP</dt>
+														<dd>{roaming.roaming.rsrp}</dd>
 														<dt>Time</dt>
 														<dd>
 															<time
