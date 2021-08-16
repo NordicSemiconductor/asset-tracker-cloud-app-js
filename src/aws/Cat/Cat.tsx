@@ -186,7 +186,8 @@ export const Cat = ({
 								/>
 							</Toggle>
 						)}
-						{reportedWithReceived?.gps && (
+						{(reportedWithReceived?.gps?.v?.value?.spd !== undefined ||
+							reportedWithReceived?.gps?.v?.value?.alt !== undefined) && (
 							<Toggle>
 								<div className={'info'}>
 									{reportedWithReceived.gps.v.value.spd !== undefined &&
