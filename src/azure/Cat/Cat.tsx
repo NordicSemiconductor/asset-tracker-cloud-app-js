@@ -463,7 +463,12 @@ export const Cat = ({
 						})}
 					>
 						{({ data }) => (
-							<HistoricalDataChart data={data} type={'line'} max={-70} />
+							<HistoricalDataChart
+								data={data}
+								type={'line'}
+								min={-140}
+								max={-40}
+							/>
 						)}
 					</HistoricalDataLoader>
 				</Collapsable>

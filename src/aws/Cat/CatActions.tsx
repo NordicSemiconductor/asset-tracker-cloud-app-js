@@ -306,7 +306,7 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																		QueryString={(table) => `
 																		SELECT
 																		time as date,
-																		-measure_value::double as value
+																		measure_value::double as value
 																		FROM ${table}
 																		WHERE deviceId='${catId}' 
 																		AND measure_name='roam.rsrp'
@@ -321,7 +321,8 @@ export const CatActions = ({ catId }: { catId: string }) => {
 																					value,
 																				}))}
 																				type={'line'}
-																				max={-70}
+																				min={-140}
+																				max={-40}
 																			/>
 																		)}
 																	</HistoricalDataLoader>
