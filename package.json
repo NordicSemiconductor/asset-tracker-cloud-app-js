@@ -78,7 +78,7 @@
     "@types/aws-iot-device-sdk": "2.2.3",
     "@types/intro.js": "3.0.2",
     "@types/jest": "27.0.1",
-    "@types/lodash": "4.14.172",
+    "@types/lodash": "4.14.173",
     "@types/node": "16.7.10",
     "@types/react": "17.0.21",
     "@types/react-dom": "17.0.9",
