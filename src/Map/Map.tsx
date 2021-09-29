@@ -209,7 +209,6 @@ export const Map = ({
 				<Marker position={center}>
 					<Popup>{label}</Popup>
 				</Marker>
-
 				{deviceLocation?.position.accuracy !== undefined && (
 					<Circle
 						center={deviceLocation.position}
@@ -238,7 +237,7 @@ export const Map = ({
 							mapZoom={mapZoom}
 						/>
 					)}
-				{deviceLocation &&
+				{(history?.length ?? 0) > 0 &&
 					history?.map(
 						(
 							{
@@ -255,6 +254,7 @@ export const Map = ({
 								16,
 							)
 							const color = `#1f56d2${alpha}`
+
 							return (
 								<React.Fragment key={`history-${k}`}>
 									<Circle center={{ lat, lng }} radius={1} color={color} />
