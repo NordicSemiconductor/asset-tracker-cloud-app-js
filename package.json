@@ -32,7 +32,7 @@
     "@aws-sdk/client-dynamodb": "3.40.0",
     "@aws-sdk/client-iot": "3.40.0",
     "@aws-sdk/client-iot-data-plane": "3.40.0",
-    "@aws-sdk/client-s3": "3.40.0",
+    "@aws-sdk/client-s3": "3.40.1",
     "@aws-sdk/client-timestream-query": "3.40.0",
     "@aws-sdk/protocol-http": "3.40.0",
     "@aws-sdk/util-dynamodb": "3.40.0",
