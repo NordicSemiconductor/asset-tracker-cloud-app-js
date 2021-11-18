@@ -75,7 +75,7 @@
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "9.2.18",
     "@types/aws-iot-device-sdk": "2.2.3",
     "@types/intro.js": "3.0.2",
-    "@types/jest": "27.0.2",
+    "@types/jest": "27.0.3",
     "@types/lodash": "4.14.177",
     "@types/node": "16.11.7",
     "@types/react": "17.0.35",
