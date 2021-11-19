@@ -46,7 +46,7 @@
     "aws-amplify-react": "4.2.35",
     "aws-iot-device-sdk": "2.2.11",
     "azure-iothub": "1.14.6",
-    "date-fns": "2.25.0",
+    "date-fns": "2.26.0",
     "deepmerge": "4.2.2",
     "e118-iin-list": "1.7.0",
     "fast-deep-equal": "3.1.3",
