@@ -40,7 +40,7 @@
     "@microsoft/signalr": "6.0.0",
     "@nordicsemiconductor/cell-geolocation-helpers": "3.1.6",
     "@nordicsemiconductor/rsrp-bar": "4.1.2",
-    "@nordicsemiconductor/timestream-helpers": "3.2.17",
+    "@nordicsemiconductor/timestream-helpers": "3.2.18",
     "@react-leaflet/core": "1.0.2",
     "aws-amplify": "3.4.3",
     "aws-amplify-react": "4.2.35",
