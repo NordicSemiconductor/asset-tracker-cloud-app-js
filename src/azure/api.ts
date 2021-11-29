@@ -5,8 +5,9 @@ import * as TE from 'fp-ts/lib/TaskEither'
 import { pipe } from 'fp-ts/lib/pipeable'
 import { ErrorInfo } from '../Error/ErrorInfo'
 import { DeviceTwin } from '../@types/azure-device'
-import { DeviceConfig } from '../@types/device-state'
+import { DeviceConfig, NCellMeasReport } from '../@types/device-state'
 import { v4 } from 'uuid'
+import { none, Option, some } from 'fp-ts/lib/Option'
 
 const toQueryString = (obj: any): string => {
 	if (Object.keys(obj).length === 0) {
@@ -75,6 +76,9 @@ export type ApiClient = {
 	}) => Promise<
 		Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
 	>
+	getNcellmeas: (args: {
+		deviceId: string
+	}) => Promise<Either<ErrorInfo, Option<NCellMeasReport>>>
 }
 
 export type IotHubDevice = Twin & {
@@ -160,14 +164,15 @@ export const fetchApiClient = ({
 	const post =
 		<A extends { [key: string]: any }>(
 			resource: string,
-			properties: { [key: string]: any },
+			properties?: { [key: string]: any },
 		) =>
 		async (): Promise<Either<ErrorInfo, A>> =>
 			handleResponse(
 				fetch(`${endpoint}/api/${resource}`, {
 					method: 'POST',
 					headers: iotHubRequestHeaders,
-					body: JSON.stringify(properties),
+					body:
+						properties === undefined ? undefined : JSON.stringify(properties),
 				}),
 			)
 
@@ -307,5 +312,61 @@ export const fetchApiClient = ({
 					...args,
 				},
 			)(),
+		getNcellmeas: async ({
+			deviceId,
+		}: {
+			deviceId: string
+		}): Promise<Either<ErrorInfo, Option<NCellMeasReport>>> => {
+			const params = new URLSearchParams()
+			params.set('deviceId', deviceId)
+			params.set('limit', '1')
+			const res = await post(
+				`neighborcellgeolocation/reports?${params.toString()}`,
+			)()
+			if (isLeft(res)) return res
+			if (res.right.items.length === 0) return right(none)
+
+			const report: {
+				report: {
+					area: number
+					adv: number
+					nmr: {
+						rsrp: number
+						cell: number
+						rsrq: number
+						earfcn: number
+					}[]
+					mnc: number
+					rsrq: number
+					rsrp: number
+					mcc: number
+					cell: number
+					earfcn: number
+					ts: number
+				}
+				deviceId: string
+				nw: string
+				timestamp: string
+				id: string
+			} = res.right.items[0]
+
+			const transformed: NCellMeasReport = {
+				reportId: report.id,
+				receivedAt: new Date(report.timestamp),
+				reportedAt: new Date(report.report.ts),
+				nw: report.nw,
+				area: report.report.area,
+				adv: report.report.adv,
+				mnc: report.report.mnc,
+				rsrq: report.report.rsrq,
+				rsrp: report.report.rsrp,
+				mcc: report.report.mcc,
+				cell: report.report.cell,
+				earfcn: report.report.earfcn,
+				nmr: report.report.nmr,
+			}
+
+			return right(some(transformed))
+		},
 	}
 }

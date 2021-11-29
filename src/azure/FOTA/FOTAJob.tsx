@@ -32,6 +32,7 @@ export const Jobs = ({
 		<>
 			<hr />
 			<h4>Jobs for this device</h4>
+
 			{jobs.map(({ job: { fwVersion, fwPackageURI }, status }) => (
 				<JobItem key={fwVersion.value}>
 					<strong>{fwVersion.value}</strong>
@@ -52,13 +53,15 @@ export const Jobs = ({
 						</TimeInfo>
 					)}
 					<br />
-					<DownloadLink
-						href={fwPackageURI.value}
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Download
-					</DownloadLink>
+					{fwPackageURI !== undefined && (
+						<DownloadLink
+							href={fwPackageURI.value}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Download
+						</DownloadLink>
+					)}
 				</JobItem>
 			))}
 		</>

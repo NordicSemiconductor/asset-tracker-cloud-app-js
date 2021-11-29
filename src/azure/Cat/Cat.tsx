@@ -37,6 +37,8 @@ import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
 import { pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { SignalRDisabledWarning } from '../SignalRDisabledWarning'
+import { NeighborCellMeasurementsReport } from '../../DeviceInformation/NeighborCellMeasurementsReport'
+import { none } from 'fp-ts/lib/Option'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -428,6 +430,24 @@ export const Cat = ({
 						</Collapsable>
 					</>
 				)}
+				<hr />
+				<Collapsable
+					id={'cat:ncell'}
+					title={<h3>{emojify('🗧 Neighboring cells')}</h3>}
+				>
+					<NeighborCellMeasurementsReport
+						key={cat.version}
+						getNeighboringCellMeasurementReport={async () => {
+							const r = await apiClient.getNcellmeas({ deviceId: cat.id })
+							if (isLeft(r)) {
+								console.error(r.left)
+								return none
+							}
+							console.log(r.right)
+							return r.right
+						}}
+					/>
+				</Collapsable>
 				{cat.state.reported.firmware && (
 					<>
 						<hr />
