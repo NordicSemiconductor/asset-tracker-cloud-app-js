@@ -38,7 +38,8 @@ import { pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { SignalRDisabledWarning } from '../SignalRDisabledWarning'
 import { NeighborCellMeasurementsReport } from '../../DeviceInformation/NeighborCellMeasurementsReport'
-import { none } from 'fp-ts/lib/Option'
+import { isSome, none } from 'fp-ts/lib/Option'
+import { NCellMeasReport } from '../../@types/device-state'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -69,6 +70,9 @@ export const Cat = ({
 	const [deleting, setDeleting] = useState(false)
 	const [error, setError] = useState<ErrorInfo>()
 	const [cellLocation, setCellLocation] = useState<CellLocation>()
+	const [ncellMeasReport, setNcellMeasReport] = useState<NCellMeasReport>()
+	const [neighboringCellGeoLocation, setNeighboringCellGeoLocation] =
+		useState<CellLocation>()
 
 	// Listen for state changes
 	useEffect(() => {
@@ -89,6 +93,19 @@ export const Cat = ({
 						})
 					}
 				})
+				c.on(
+					`deviceMessage:${cat.id}`,
+					({ deviceId, message, propertiesArray }) => {
+						if (propertiesArray.ncellmeas !== undefined && !isCancelled) {
+							console.log(
+								'[Ncellmeas]',
+								`device ${deviceId} published a new report`,
+								message,
+							)
+							setNcellMeasReport(undefined)
+						}
+					},
+				)
 			}),
 			TE.mapLeft((error) => {
 				if (error.type === 'LimitExceededError') {
@@ -148,6 +165,42 @@ export const Cat = ({
 			removed = true
 		}
 	}, [roamingInfo, devInfo, apiClient])
+
+	// Fetch neighboring cell location
+	useEffect(() => {
+		let isMounted = true
+		if (ncellMeasReport !== undefined) return
+		apiClient
+			.getNcellmeas(cat.id)
+			.then((res) => {
+				if (isRight(res) && isSome(res.right) && isMounted) {
+					setNcellMeasReport(res.right.value)
+					console.log('[NcellMeas]', res.right.value.reportId)
+				}
+			})
+			.catch(console.error.bind('[NcellMeas]'))
+		return () => {
+			isMounted = false
+		}
+	}, [apiClient, cat, ncellMeasReport])
+
+	useEffect(() => {
+		let isMounted = true
+		if (ncellMeasReport === undefined) return
+		apiClient
+			.geolocateNcellMeasReportFromNrfCloud(ncellMeasReport.reportId)
+			.then((res) => {
+				if (isRight(res) && isMounted)
+					setNeighboringCellGeoLocation({
+						ts: ncellMeasReport.reportedAt,
+						position: res.right,
+					})
+			})
+			.catch(console.error.bind('[NcellMeas]'))
+		return () => {
+			isMounted = false
+		}
+	}, [ncellMeasReport, apiClient])
 
 	if (deleting) {
 		return (
@@ -272,6 +325,7 @@ export const Cat = ({
 				<HistoricalDataMap
 					deviceLocation={deviceLocation}
 					cellLocation={cellLocation}
+					neighboringCellGeoLocation={neighboringCellGeoLocation}
 					cat={cat}
 					fetchHistory={async (numEntries) =>
 						apiClient
@@ -438,7 +492,7 @@ export const Cat = ({
 					<NeighborCellMeasurementsReport
 						key={cat.version}
 						getNeighboringCellMeasurementReport={async () => {
-							const r = await apiClient.getNcellmeas({ deviceId: cat.id })
+							const r = await apiClient.getNcellmeas(cat.id)
 							if (isLeft(r)) {
 								console.error(r.left)
 								return none

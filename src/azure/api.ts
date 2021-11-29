@@ -76,9 +76,14 @@ export type ApiClient = {
 	}) => Promise<
 		Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
 	>
-	getNcellmeas: (args: {
-		deviceId: string
-	}) => Promise<Either<ErrorInfo, Option<NCellMeasReport>>>
+	getNcellmeas: (
+		deviceId: string,
+	) => Promise<Either<ErrorInfo, Option<NCellMeasReport>>>
+	geolocateNcellMeasReportFromNrfCloud: (
+		reportId: string,
+	) => Promise<
+		Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
+	>
 }
 
 export type IotHubDevice = Twin & {
@@ -312,11 +317,9 @@ export const fetchApiClient = ({
 					...args,
 				},
 			)(),
-		getNcellmeas: async ({
+		getNcellmeas: async (
 			deviceId,
-		}: {
-			deviceId: string
-		}): Promise<Either<ErrorInfo, Option<NCellMeasReport>>> => {
+		): Promise<Either<ErrorInfo, Option<NCellMeasReport>>> => {
 			const params = new URLSearchParams()
 			params.set('deviceId', deviceId)
 			params.set('limit', '1')
@@ -368,5 +371,14 @@ export const fetchApiClient = ({
 
 			return right(some(transformed))
 		},
+
+		geolocateNcellMeasReportFromNrfCloud: async (
+			reportId: string,
+		): Promise<
+			Either<ErrorInfo, { lat: number; lng: number; accuracy: number }>
+		> =>
+			get<{ lat: number; lng: number; accuracy: number }>(
+				`neighborcellgeolocation/${reportId}/nrfcloud?ts=${Date.now()}`,
+			)(),
 	}
 }
