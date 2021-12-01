@@ -152,6 +152,7 @@ export const Map = ({
 	label,
 	history,
 	enabledLayers,
+	follow,
 }: {
 	deviceLocation?: Location
 	cellLocation?: CellLocation
@@ -162,6 +163,7 @@ export const Map = ({
 		roaming?: Roaming
 	}[]
 	enabledLayers: MapSettingsType['enabledLayers']
+	follow: boolean
 }) => {
 	let zoom = 13
 	const userZoom = window.localStorage.getItem('asset-tracker:zoom')
@@ -169,6 +171,7 @@ export const Map = ({
 		zoom = parseInt(userZoom, 10)
 	}
 	const [mapZoom, setMapZoom] = useState(zoom)
+	const [map, setmap] = useState<LeafletMap>()
 
 	if (
 		[
@@ -190,9 +193,17 @@ export const Map = ({
 		})) ?? []),
 	])
 
+	if (follow && map) {
+		map.flyTo(center, zoom)
+	}
+
 	return (
 		<MapContainerContainer>
-			<MapContainer center={[center.lat, center.lng]} zoom={zoom}>
+			<MapContainer
+				center={[center.lat, center.lng]}
+				zoom={zoom}
+				whenCreated={setmap}
+			>
 				<EventHandler
 					onZoomEnd={({ map }) => {
 						window.localStorage.setItem(

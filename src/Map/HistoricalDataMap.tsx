@@ -13,6 +13,7 @@ const LoadHistoricalMapData = ({
 	cellLocation,
 	fetchHistory,
 	numEntries,
+	follow,
 	visibleMapLayers,
 	fetchHistoricalData,
 	onSettings,
@@ -24,6 +25,7 @@ const LoadHistoricalMapData = ({
 	numEntries: number
 	visibleMapLayers: MapSettingsType['enabledLayers']
 	fetchHistoricalData: boolean
+	follow: boolean
 	fetchHistory: (numEntries: number) => Promise<{ location: Location }[]>
 	onSettings: (args: MapSettingsType) => void
 }) => {
@@ -53,12 +55,12 @@ const LoadHistoricalMapData = ({
 		}
 	}, [fetchHistory, numEntries, fetchHistoricalData])
 
-
 	const settings = showSettings ? (
 		<MapSettings
 			initial={{
 				numEntries,
 				enabledLayers: visibleMapLayers,
+				follow,
 			}}
 			onSettings={(newSettings) => {
 				onSettings(newSettings)
@@ -75,6 +77,7 @@ const LoadHistoricalMapData = ({
 				neighboringCellGeoLocation={neighboringCellGeoLocation}
 				label={cat.id}
 				enabledLayers={visibleMapLayers}
+				follow={follow}
 			/>
 		) : (
 			<Map
@@ -84,6 +87,7 @@ const LoadHistoricalMapData = ({
 				label={cat.id}
 				history={history}
 				enabledLayers={visibleMapLayers}
+				follow={follow}
 			/>
 		)
 
@@ -166,6 +170,14 @@ export const HistoricalDataMap = ({
 		MapSettingsType['enabledLayers']
 	>(visibleMapLayerDefaultState)
 
+	// By default, follow position changes
+	let followPosition = true
+	if (window.localStorage.getItem(`asset-tracker:catmap:follow`) === '0') {
+		// override from user setting in local storage
+		followPosition = false
+	}
+	const [follow, setFollow] = useState(followPosition)
+
 	return (
 		<LoadHistoricalMapData
 			cat={cat}
@@ -174,9 +186,10 @@ export const HistoricalDataMap = ({
 			cellLocation={cellLocation}
 			fetchHistory={fetchHistory}
 			numEntries={numEntries}
+			follow={follow}
 			visibleMapLayers={visibleMapLayers}
 			fetchHistoricalData={fetchHistoricalData}
-			onSettings={({ enabledLayers, numEntries }) => {
+			onSettings={({ enabledLayers, numEntries, follow }) => {
 				setNumEntries(numEntries)
 				window.localStorage.setItem(
 					'asset-tracker:catmap:numEntries',
@@ -193,6 +206,13 @@ export const HistoricalDataMap = ({
 				window.localStorage.setItem(
 					`asset-tracker:catmap:fetchPastPositions`,
 					enabledLayers.FetchHistory ? '1' : '0',
+				)
+
+				setFollow(follow)
+				console.log(`asset-tracker:catmap:follow`, follow ? '1' : '0')
+				window.localStorage.setItem(
+					`asset-tracker:catmap:follow`,
+					follow ? '1' : '0',
 				)
 			}}
 		/>

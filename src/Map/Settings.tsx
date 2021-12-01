@@ -31,6 +31,7 @@ export type MapSettingsType = {
 		FetchHistory: boolean
 	}
 	numEntries: number
+	follow: boolean
 }
 
 export const MapSettings = ({
@@ -68,11 +69,30 @@ export const MapSettings = ({
 		onSettings({
 			numEntries: newState.numEntries,
 			enabledLayers: settings.enabledLayers,
+			follow: settings.follow,
 		})
 	}
 
 	return (
 		<SettingsFormGroup check>
+			<CheckboxContainer>
+				<Label>
+					<Input
+						type="checkbox"
+						name="follow"
+						onChange={() => {
+							const newSettings = {
+								...settings,
+								follow: !settings.follow,
+							}
+							updateSettings(newSettings)
+							onSettings(newSettings)
+						}}
+						checked={settings.follow}
+					/>{' '}
+					Re-center on position
+				</Label>
+			</CheckboxContainer>
 			<CheckboxContainer>
 				<Label>
 					<Input
