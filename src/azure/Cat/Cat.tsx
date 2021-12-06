@@ -497,7 +497,6 @@ export const Cat = ({
 								console.error(r.left)
 								return none
 							}
-							console.log(r.right)
 							return r.right
 						}}
 					/>
