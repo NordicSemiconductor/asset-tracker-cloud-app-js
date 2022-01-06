@@ -85,7 +85,7 @@
     "@types/semver": "7.3.9",
     "@types/styled-components": "5.1.19",
     "@types/twemoji": "12.1.2",
-    "@types/uuid": "8.3.3",
+    "@types/uuid": "8.3.4",
     "eslint-config-react-app": "7.0.0",
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-jsx-a11y": "6.5.1",
