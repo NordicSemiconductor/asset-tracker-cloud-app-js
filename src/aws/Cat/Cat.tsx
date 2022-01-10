@@ -1,27 +1,27 @@
-import { default as introJs } from 'intro.js'
-import { FOTA, OnCreateUpgradeJob } from '../FOTA/FOTA'
-import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
 import { ICredentials } from '@aws-amplify/core'
+import { isSome, Option } from 'fp-ts/lib/Option'
+import { default as introJs } from 'intro.js'
 import React, { useEffect, useState } from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import { DisplayError } from '../../Error/Error'
-import { Toggle } from '../../Toggle/Toggle'
-import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
-import { emojify } from '../../Emojify/Emojify'
-import { ReportedTime } from '../../ReportedTime/ReportedTime'
-import { Collapsable } from '../../Collapsable/Collapsable'
-import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
-import { CatCard } from '../../Cat/CatCard'
-import { CollapsedContextConsumer } from '../../Collapsable/CollapsedContext'
-import {
-	MobileOnlyCatHeader,
-	CatPersonalization,
-} from '../../Cat/CatPersonality'
 import { ThingState } from '../../@types/aws-device'
 import { DeviceConfig } from '../../@types/device-state'
+import { CatCard } from '../../Cat/CatCard'
+import {
+	CatPersonalization,
+	MobileOnlyCatHeader,
+} from '../../Cat/CatPersonality'
+import { Collapsable } from '../../Collapsable/Collapsable'
+import { CollapsedContextConsumer } from '../../Collapsable/CollapsedContext'
+import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
+import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
+import { emojify } from '../../Emojify/Emojify'
+import { DisplayError } from '../../Error/Error'
+import { ReportedTime } from '../../ReportedTime/ReportedTime'
 import { Settings } from '../../Settings/Settings'
+import { Toggle } from '../../Toggle/Toggle'
+import { FOTA, OnCreateUpgradeJob } from '../FOTA/FOTA'
+import { DeviceUpgradeFirmwareJob } from '../listUpgradeFirmwareJobs'
 import { toReportedWithReceivedAt } from '../toReportedWithReceivedAt'
-import { Option, isSome } from 'fp-ts/lib/Option'
 
 const intro = introJs()
 
@@ -152,7 +152,7 @@ export const Cat = ({
 		(state?.reported.cfg?.act ?? true // default device mode is active
 			? state?.reported.cfg?.actwt ?? 120 // default active wait time is 120 seconds
 			: state?.reported.cfg?.mvt ?? 3600) + // default movement timeout is 3600
-		(state?.reported.cfg?.gpst ?? 60) + // default GPS timeout is 60 seconds
+		(state?.reported.cfg?.gnsst ?? 60) + // default GNSS timeout is 60 seconds
 		60 // add 1 minute for sending and processing
 
 	return (
@@ -186,23 +186,25 @@ export const Cat = ({
 								/>
 							</Toggle>
 						)}
-						{(reportedWithReceived?.gps?.v?.value?.spd !== undefined ||
-							reportedWithReceived?.gps?.v?.value?.alt !== undefined) && (
+						{(reportedWithReceived?.gnss?.v?.value?.spd !== undefined ||
+							reportedWithReceived?.gnss?.v?.value?.alt !== undefined) && (
 							<Toggle>
 								<div className={'info'}>
-									{reportedWithReceived.gps.v.value.spd !== undefined &&
+									{reportedWithReceived.gnss.v.value.spd !== undefined &&
 										emojify(
 											` 🏃${Math.round(
-												reportedWithReceived.gps.v.value.spd,
+												reportedWithReceived.gnss.v.value.spd,
 											)}m/s`,
 										)}
-									{reportedWithReceived.gps.v.value.alt !== undefined &&
+									{reportedWithReceived.gnss.v.value.alt !== undefined &&
 										emojify(
-											`✈️ ${Math.round(reportedWithReceived.gps.v.value.alt)}m`,
+											`✈️ ${Math.round(
+												reportedWithReceived.gnss.v.value.alt,
+											)}m`,
 										)}
 									<ReportedTime
-										receivedAt={reportedWithReceived.gps.v.receivedAt}
-										reportedAt={new Date(reportedWithReceived.gps.ts.value)}
+										receivedAt={reportedWithReceived.gnss.v.receivedAt}
+										reportedAt={new Date(reportedWithReceived.gnss.ts.value)}
 										staleAfterSeconds={expectedSendIntervalInSeconds}
 									/>
 								</div>

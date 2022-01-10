@@ -1,12 +1,12 @@
 import {
-	DeviceConfig,
-	Gps,
 	Battery,
+	DeviceConfig,
 	DeviceInformation,
-	RoamingInformation,
 	Environment,
-	ReportedState,
+	Gnss,
 	MakeReceivedProperty,
+	ReportedState,
+	RoamingInformation,
 } from './device-state'
 
 export type AWSDeviceInformation = DeviceInformation & {
@@ -17,7 +17,7 @@ export type AWSDeviceInformation = DeviceInformation & {
 
 export type ReportedThingState = {
 	cfg?: Partial<DeviceConfig>
-	gps?: Gps
+	gnss?: Gnss
 	bat?: Battery
 	dev?: AWSDeviceInformation
 	roam?: RoamingInformation

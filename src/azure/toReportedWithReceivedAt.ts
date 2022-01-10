@@ -1,10 +1,10 @@
 import {
-	DeviceTwinReported,
-	PropertyMetadata,
-	MakePropertyMetadata,
 	AzureReportedState,
+	DeviceTwinReported,
+	MakePropertyMetadata,
+	PropertyMetadata,
 } from '../@types/azure-device'
-import { MakeReceivedProperty, DeviceConfig } from '../@types/device-state'
+import { DeviceConfig, MakeReceivedProperty } from '../@types/device-state'
 
 export const toReceivedProps = <A extends { [key: string]: any }>(
 	v: A,
@@ -36,9 +36,9 @@ export const toReportedWithReceivedAt = (
 					>,
 			  }
 			: undefined),
-		...(reported.gps !== undefined && $metadata.gps !== undefined
+		...(reported.gnss !== undefined && $metadata.gnss !== undefined
 			? {
-					gps: toReceivedProps(reported.gps, $metadata.gps),
+					gnss: toReceivedProps(reported.gnss, $metadata.gnss),
 			  }
 			: undefined),
 		...(reported.bat !== undefined && $metadata.bat !== undefined

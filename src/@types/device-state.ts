@@ -8,12 +8,12 @@ export type DeviceConfig = {
 	actwt: number
 	mvres: number
 	mvt: number
-	gpst: number
+	gnsst: number
 	acct: number
 	nod: DataModules[]
 }
 
-export type Gps = {
+export type Gnss = {
 	v: {
 		lat: number
 		lng: number
@@ -70,7 +70,7 @@ export type MakeReceivedProperty<Type> = {
 }
 
 export type ReportedConfigState = Partial<MakeReceivedProperty<DeviceConfig>>
-export type ReportedGps = MakeReceivedProperty<Gps>
+export type ReportedGnss = MakeReceivedProperty<Gnss>
 export type ReportedBattery = MakeReceivedProperty<Battery>
 export type ReportedEnvironment = MakeReceivedProperty<Environment>
 export type ReportedDeviceInformation = MakeReceivedProperty<DeviceInformation>
@@ -79,7 +79,7 @@ export type ReportedRoamingInformation =
 
 export type ReportedState = {
 	cfg?: ReportedConfigState
-	gps?: ReportedGps
+	gnss?: ReportedGnss
 	bat?: ReportedBattery
 	dev?: ReportedDeviceInformation
 	roam?: ReportedRoamingInformation

@@ -5,7 +5,7 @@ describe('toReportedWithReceivedAt', () => {
 		expect(
 			toReportedWithReceivedAt({
 				reported: {
-					gps: {
+					gnss: {
 						v: {
 							lng: 10.437087,
 							lat: 63.42156,
@@ -22,7 +22,7 @@ describe('toReportedWithReceivedAt', () => {
 				},
 				metadata: {
 					reported: {
-						gps: {
+						gnss: {
 							v: {
 								lng: {
 									timestamp: 1564568351,
@@ -56,7 +56,7 @@ describe('toReportedWithReceivedAt', () => {
 				},
 			}),
 		).toEqual({
-			gps: {
+			gnss: {
 				v: {
 					value: {
 						lng: 10.437087,

@@ -1,45 +1,45 @@
-import React, { useState, useEffect } from 'react'
-import { ApiClient, Device } from '../api'
-import { CatCard } from '../../Cat/CatCard'
-import {
-	MobileOnlyCatHeader,
-	CatPersonalization,
-} from '../../Cat/CatPersonality'
-import { CardHeader, CardBody, Alert, Card } from 'reactstrap'
-import { emojify } from '../../Emojify/Emojify'
-import { Collapsable } from '../../Collapsable/Collapsable'
-import { DeleteCat } from '../../Cat/DeleteCat'
-import { DisplayError } from '../../Error/Error'
-import { ErrorInfo } from '../../Error/ErrorInfo'
-import { Either, isLeft, isRight, left } from 'fp-ts/lib/Either'
-import { Loading } from '../../Loading/Loading'
-import { LoadedCat } from '../../Cat/CatLoader'
-import { Settings } from '../../Settings/Settings'
 import * as signalR from '@microsoft/signalr'
-import { connect } from '../signalr'
 import * as merge from 'deepmerge'
+import { Either, isLeft, isRight, left } from 'fp-ts/lib/Either'
+import { pipe } from 'fp-ts/lib/function'
+import { isSome, none } from 'fp-ts/lib/Option'
+import * as TE from 'fp-ts/lib/TaskEither'
+import React, { useEffect, useState } from 'react'
+import { Alert, Card, CardBody, CardHeader } from 'reactstrap'
 import { DeviceTwin } from '../../@types/azure-device'
-import { CatMapContainer, Location, CellLocation } from '../../Map/Map'
-import { Toggle } from '../../Toggle/Toggle'
-import { ReportedTime } from '../../ReportedTime/ReportedTime'
+import { NCellMeasReport } from '../../@types/device-state'
+import { CatCard } from '../../Cat/CatCard'
+import { LoadedCat } from '../../Cat/CatLoader'
 import {
-	toReportedWithReceivedAt,
-	toReceivedProps,
-} from '../toReportedWithReceivedAt'
+	CatPersonalization,
+	MobileOnlyCatHeader,
+} from '../../Cat/CatPersonality'
+import { DeleteCat } from '../../Cat/DeleteCat'
+import { Collapsable } from '../../Collapsable/Collapsable'
 import { ConnectionInformation } from '../../ConnectionInformation/ConnectionInformation'
 import { DeviceInfo } from '../../DeviceInformation/DeviceInformation'
+import { NeighborCellMeasurementsReport } from '../../DeviceInformation/NeighborCellMeasurementsReport'
+import { emojify } from '../../Emojify/Emojify'
+import { DisplayError } from '../../Error/Error'
+import { ErrorInfo } from '../../Error/ErrorInfo'
+import { HistoricalButtonPresses } from '../../HistoricalButtonPresses/HistoricalButtonPresses'
+import { HistoricalDataChart } from '../../HistoricalData/HistoricalDataChart'
+import { Loading } from '../../Loading/Loading'
+import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
+import { CatMapContainer, CellLocation, Location } from '../../Map/Map'
+import { ReportedTime } from '../../ReportedTime/ReportedTime'
+import { Settings } from '../../Settings/Settings'
+import { Toggle } from '../../Toggle/Toggle'
+import { ApiClient, Device } from '../api'
 import { FOTA } from '../FOTA/FOTA'
 import { Jobs } from '../FOTA/FOTAJob'
 import { HistoricalDataLoader } from '../HistoricalData/HistoricalDataLoader'
-import { HistoricalDataChart } from '../../HistoricalData/HistoricalDataChart'
-import { HistoricalButtonPresses } from '../../HistoricalButtonPresses/HistoricalButtonPresses'
-import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
-import { pipe } from 'fp-ts/lib/function'
-import * as TE from 'fp-ts/lib/TaskEither'
+import { connect } from '../signalr'
 import { SignalRDisabledWarning } from '../SignalRDisabledWarning'
-import { NeighborCellMeasurementsReport } from '../../DeviceInformation/NeighborCellMeasurementsReport'
-import { isSome, none } from 'fp-ts/lib/Option'
-import { NCellMeasReport } from '../../@types/device-state'
+import {
+	toReceivedProps,
+	toReportedWithReceivedAt,
+} from '../toReportedWithReceivedAt'
 
 const isNameValid = (name: string) => /^.{1,255}$/i.test(name)
 
@@ -298,14 +298,14 @@ export const Cat = ({
 	}
 
 	let deviceLocation: Location | undefined = undefined
-	if (reportedWithTime.gps?.v?.value?.lat !== undefined) {
+	if (reportedWithTime.gnss?.v?.value?.lat !== undefined) {
 		deviceLocation = {
-			ts: new Date(reportedWithTime.gps?.ts?.value ?? Date.now()),
+			ts: new Date(reportedWithTime.gnss?.ts?.value ?? Date.now()),
 			position: {
-				lat: reportedWithTime.gps.v?.value.lat,
-				lng: reportedWithTime.gps.v?.value.lng,
-				accuracy: reportedWithTime.gps?.v?.value.acc,
-				heading: reportedWithTime.gps?.v?.value.hdg,
+				lat: reportedWithTime.gnss.v?.value.lat,
+				lng: reportedWithTime.gnss.v?.value.lng,
+				accuracy: reportedWithTime.gnss?.v?.value.acc,
+				heading: reportedWithTime.gnss?.v?.value.hdg,
 			},
 		}
 	}
@@ -315,7 +315,7 @@ export const Cat = ({
 		(reportedWithTime.cfg?.act?.value ?? true // default device mode is active
 			? reportedWithTime.cfg?.actwt?.value ?? 120 // default active wait time is 120 seconds
 			: reportedWithTime.cfg?.mvt?.value ?? 3600) + // default movement timeout is 3600
-		(reportedWithTime.cfg?.gpst?.value ?? 60) + // default GPS timeout is 60 seconds
+		(reportedWithTime.cfg?.gnsst?.value ?? 60) + // default GNSS timeout is 60 seconds
 		60 // add 1 minute for sending and processing
 
 	return (
@@ -330,7 +330,7 @@ export const Cat = ({
 					fetchHistory={async (numEntries) =>
 						apiClient
 							.queryHistoricalDeviceData(
-								`SELECT c.deviceUpdate.properties.reported.gps.v AS v, c.deviceUpdate.properties.reported.gps.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.gps.v != null AND c.deviceId = "${cat.id}" ORDER BY c.timestamp DESC OFFSET 0 LIMIT ${numEntries}`,
+								`SELECT c.deviceUpdate.properties.reported.gnss.v AS v, c.deviceUpdate.properties.reported.gnss.ts AS ts FROM c WHERE c.deviceUpdate.properties.reported.gnss.v != null AND c.deviceId = "${cat.id}" ORDER BY c.timestamp DESC OFFSET 0 LIMIT ${numEntries}`,
 							)
 							.then((res) => {
 								if (isLeft(res)) return []
@@ -389,21 +389,21 @@ export const Cat = ({
 						/>
 					</Toggle>
 				)}
-				{reportedWithTime.gps?.v && (
+				{reportedWithTime.gnss?.v && (
 					<Toggle>
 						<div className={'info'}>
-							{reportedWithTime.gps?.v?.value.spd &&
+							{reportedWithTime.gnss?.v?.value.spd &&
 								emojify(
-									` 🏃${Math.round(reportedWithTime.gps?.v?.value.spd)}m/s`,
+									` 🏃${Math.round(reportedWithTime.gnss?.v?.value.spd)}m/s`,
 								)}
-							{reportedWithTime.gps?.v?.value.alt &&
+							{reportedWithTime.gnss?.v?.value.alt &&
 								emojify(
-									`✈️ ${Math.round(reportedWithTime.gps?.v?.value.alt)}m`,
+									`✈️ ${Math.round(reportedWithTime.gnss?.v?.value.alt)}m`,
 								)}
 							<ReportedTime
-								receivedAt={reportedWithTime.gps?.v.receivedAt}
+								receivedAt={reportedWithTime.gnss?.v.receivedAt}
 								reportedAt={
-									new Date(reportedWithTime.gps?.ts?.value ?? Date.now())
+									new Date(reportedWithTime.gnss?.ts?.value ?? Date.now())
 								}
 								staleAfterSeconds={expectedSendIntervalInSeconds}
 							/>

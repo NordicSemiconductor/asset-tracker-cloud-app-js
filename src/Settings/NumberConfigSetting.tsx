@@ -1,3 +1,4 @@
+import { formatDistanceToNow } from 'date-fns'
 import React, { useState } from 'react'
 import {
 	FormGroup,
@@ -7,9 +8,8 @@ import {
 	InputGroupText,
 	Label,
 } from 'reactstrap'
-import { OutDatedWarning } from './OutDatedWarning'
-import { formatDistanceToNow } from 'date-fns'
 import { emojify } from '../Emojify/Emojify'
+import { OutDatedWarning } from './OutDatedWarning'
 
 export const NumberConfigSetting = ({
 	label,
@@ -29,7 +29,7 @@ export const NumberConfigSetting = ({
 	unit?: string
 	example?: number
 	step?: number
-	id: 'actwt' | 'mvres' | 'mvt' | 'gpst' | 'acct'
+	id: 'actwt' | 'mvres' | 'mvt' | 'gnsst' | 'acct'
 	onChange: (v: string) => any
 	desired?: number
 	reported?: {
