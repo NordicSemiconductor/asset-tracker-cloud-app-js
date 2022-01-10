@@ -1,12 +1,12 @@
 import {
-	DeviceConfig,
-	Gps,
 	Battery,
+	DeviceConfig,
 	DeviceInformation,
-	RoamingInformation,
 	Environment,
+	Gnss,
 	MakeReceivedProperty,
 	ReportedState,
+	RoamingInformation,
 } from './device-state'
 
 export type PropertyMetadata = Record<string, any> & {
@@ -52,7 +52,7 @@ export type MakePropertyMetadata<Type> = {
 
 export type DeviceTwinReported = {
 	cfg?: Partial<DeviceConfig>
-	gps?: Gps
+	gnss?: Gnss
 	bat?: Battery
 	dev?: DeviceInformation
 	roam?: RoamingInformation
@@ -60,7 +60,7 @@ export type DeviceTwinReported = {
 	firmware?: AzureFOTAJobProgress
 	$metadata: PropertyMetadata & {
 		cfg?: PropertyMetadata & MakePropertyMetadata<DeviceConfig>
-		gps?: PropertyMetadata & MakePropertyMetadata<Gps>
+		gnss?: PropertyMetadata & MakePropertyMetadata<Gnss>
 		bat?: PropertyMetadata & MakePropertyMetadata<Battery>
 		dev?: PropertyMetadata & MakePropertyMetadata<DeviceInformation>
 		roam?: PropertyMetadata & MakePropertyMetadata<RoamingInformation>

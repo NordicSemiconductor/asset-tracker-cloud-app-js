@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { IotConsumer } from '../App'
 import { IoTClient, ListThingsCommand } from '@aws-sdk/client-iot'
 import {
-	IoTDataPlaneClient,
 	GetThingShadowCommand,
+	IoTDataPlaneClient,
 } from '@aws-sdk/client-iot-data-plane'
-import { Map, CatLocation } from '../../CatsMap/Map'
 import { toUtf8 } from '@aws-sdk/util-utf8-browser'
+import React, { useEffect, useState } from 'react'
+import { CatLocation, Map } from '../../CatsMap/Map'
+import { IotConsumer } from '../App'
 
 const CatsMapLoader = ({
 	iot,
@@ -31,7 +31,7 @@ const CatsMapLoader = ({
 									return
 								}
 								const p = JSON.parse(toUtf8(payload))
-								const { lat, lng } = p.state.reported.gps.v
+								const { lat, lng } = p.state.reported.gnss.v
 								if (lat !== undefined && lng !== undefined) {
 									return {
 										id: thingName as string,

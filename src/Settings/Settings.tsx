@@ -1,18 +1,18 @@
-import React, { useState } from 'react'
-import { Button, ButtonGroup, Form, FormGroup, Alert } from 'reactstrap'
-import equal from 'fast-deep-equal'
-import { OutDatedWarning } from './OutDatedWarning'
-import { NumberConfigSetting } from './NumberConfigSetting'
 import { formatDistanceToNow } from 'date-fns'
-import { emojify } from '../Emojify/Emojify'
+import equal from 'fast-deep-equal'
+import { default as introJs } from 'intro.js'
+import React, { useState } from 'react'
+import { Alert, Button, ButtonGroup, Form, FormGroup } from 'reactstrap'
 import styled from 'styled-components'
-import { mobileBreakpoint } from '../Styles'
 import {
 	DataModules,
 	DeviceConfig,
 	ReportedConfigState,
 } from '../@types/device-state'
-import { default as introJs } from 'intro.js'
+import { emojify } from '../Emojify/Emojify'
+import { mobileBreakpoint } from '../Styles'
+import { NumberConfigSetting } from './NumberConfigSetting'
+import { OutDatedWarning } from './OutDatedWarning'
 
 const intro = introJs()
 
@@ -209,14 +209,14 @@ export const Settings = ({
 						</ButtonGroup>
 					</FormGroup>
 				</fieldset>
-				<fieldset data-intro={'How long to try to acquire a GPS fix.'}>
-					<legend>GPS Timeout</legend>
+				<fieldset data-intro={'How long to try to acquire a GNSS fix.'}>
+					<legend>GNSS Timeout</legend>
 					<NumberConfigSetting
-						id={'gpst'}
-						desired={newDesired.gpst}
-						reported={r.gpst}
+						id={'gnsst'}
+						desired={newDesired.gnsst}
+						reported={r.gnsst}
 						example={60}
-						onChange={updateConfigProperty('gpst')}
+						onChange={updateConfigProperty('gnsst')}
 						minimum={1}
 						maximum={MAX_INT32}
 					/>
@@ -270,7 +270,7 @@ export const Settings = ({
 					<NumberConfigSetting
 						label={'Active Wait Time'}
 						intro={
-							'Wait this amount of seconds until sending the next update. The actual interval will be this time plus the time it takes to get a GPS fix.'
+							'Wait this amount of seconds until sending the next update. The actual interval will be this time plus the time it takes to get a GNSS fix.'
 						}
 						id={'actwt'}
 						desired={newDesired.actwt}
@@ -284,7 +284,7 @@ export const Settings = ({
 				<fieldset data-intro={'This sets which Data Modules to sample.'}>
 					<legend>Data Sampling</legend>
 					<FormGroup>
-						<label>GPS: </label>
+						<label>GNSS:</label>
 						<ButtonGroup>
 							<OutDatedWarning
 								desired={newDesired.nod}
@@ -314,7 +314,7 @@ export const Settings = ({
 							<Button
 								color={'success'}
 								data-intro={
-									'In <em>Enabled</em> mode, the tracker will use GPS to send location data to the cloud.'
+									'In <em>Enabled</em> mode, the tracker will use GNSS to send location data to the cloud.'
 								}
 								outline={newDesired.nod?.includes(DataModules.GNSS)}
 								onClick={() => {
@@ -330,7 +330,7 @@ export const Settings = ({
 							<Button
 								color={'danger'}
 								data-intro={
-									'In <em>Disabled</em> mode, the tracker will not use GPS to send location data to the cloud.'
+									'In <em>Disabled</em> mode, the tracker will not use GNSS to send location data to the cloud.'
 								}
 								outline={
 									newDesired.nod === undefined ||

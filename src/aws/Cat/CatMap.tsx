@@ -1,14 +1,14 @@
-import { Location, CellLocation, Roaming } from '../../Map/Map'
-import React, { useState, useEffect } from 'react'
+import { isRight } from 'fp-ts/lib/Either'
+import { isSome, Option } from 'fp-ts/lib/Option'
+import React, { useEffect, useState } from 'react'
+import { ThingState } from '../../@types/aws-device'
+import { NCellMeasReport } from '../../@types/device-state'
+import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
+import { CellLocation, Location, Roaming } from '../../Map/Map'
 import { TimestreamQueryContextType } from '../App'
 import { geolocateCell } from '../geolocateCell'
-import { isRight } from 'fp-ts/lib/Either'
-import { CatInfo } from './Cat'
-import { ThingState } from '../../@types/aws-device'
-import { HistoricalDataMap } from '../../Map/HistoricalDataMap'
-import { NCellMeasReport } from '../../@types/device-state'
-import { isSome, Option } from 'fp-ts/lib/Option'
 import { geolocatNeighboringCellReport } from '../geolocatNeighboringCellReport'
+import { CatInfo } from './Cat'
 
 export const CatMap = ({
 	timestreamQueryContext,
@@ -120,20 +120,20 @@ export const CatMap = ({
 	let deviceLocation: Location | undefined = undefined
 
 	if (
-		reported.gps?.v !== undefined &&
-		typeof reported.gps.v === 'object' &&
-		'lat' in reported.gps.v &&
-		'lng' in reported.gps.v
+		reported.gnss?.v !== undefined &&
+		typeof reported.gnss.v === 'object' &&
+		'lat' in reported.gnss.v &&
+		'lng' in reported.gnss.v
 	) {
 		deviceLocation = {
-			ts: new Date(reported.gps.ts),
+			ts: new Date(reported.gnss.ts),
 			position: {
-				lat: reported.gps.v.lat,
-				lng: reported.gps.v.lng,
-				accuracy: reported.gps.v.acc,
-				altitude: reported.gps.v.alt,
-				heading: reported.gps.v.hdg,
-				speed: reported.gps.v.spd,
+				lat: reported.gnss.v.lat,
+				lng: reported.gnss.v.lng,
+				accuracy: reported.gnss.v.acc,
+				altitude: reported.gnss.v.alt,
+				heading: reported.gnss.v.hdg,
+				speed: reported.gnss.v.spd,
 			},
 		}
 	}
@@ -164,12 +164,12 @@ export const CatMap = ({
 								measureGroup
 								FROM ${table}
 								WHERE deviceId='${cat.id}' 
-								AND substr(measure_name, 1, 4) = 'gps.'
+								AND substr(measure_name, 1, 4) = 'gnss.'
 								GROUP BY measureGroup, time
 								ORDER BY time DESC
 								LIMIT ${numEntries}
 							)
-							AND substr(measure_name, 1, 4) = 'gps.'
+							AND substr(measure_name, 1, 4) = 'gnss.'
 							GROUP BY measureGroup, time
 							ORDER BY time DESC`,
 					)

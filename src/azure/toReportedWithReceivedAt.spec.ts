@@ -10,7 +10,7 @@ describe('toReportedWithReceivedAt', () => {
 				actwt: 103,
 				mvres: 300,
 				mvt: 3600,
-				gpst: 60,
+				gnsst: 60,
 				acct: 0.1,
 				nod: [DataModules.GNSS],
 			},
@@ -55,7 +55,7 @@ describe('toReportedWithReceivedAt', () => {
 					mvt: {
 						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 					},
-					gpst: {
+					gnsst: {
 						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 					},
 					acct: {
@@ -142,7 +142,7 @@ describe('toReportedWithReceivedAt', () => {
 			},
 			mvres: { value: 300, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			mvt: { value: 3600, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
-			gpst: { value: 60, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
+			gnsst: { value: 60, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			acct: { value: 0.1, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			nod: {
 				value: [DataModules.GNSS],
