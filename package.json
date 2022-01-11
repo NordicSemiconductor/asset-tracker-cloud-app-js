@@ -1,7 +1,7 @@
 {
   "name": "@nordicsemiconductor/asset-tracker-cloud-app",
   "version": "0.0.0-development",
-  "description": "Cat Tracker Web Application",
+  "description": "The nRF Asset Tracker Web Application is a reference single-page application (SPA) developed using create-react-app in TypeScript.",
   "scripts": {
     "start": "PUBLIC_URL=/ react-scripts --max_old_space_size=4096 start",
     "build": "react-scripts --max_old_space_size=4096 build",
@@ -20,10 +20,9 @@
   },
   "homepage": "https://github.com/NordicSemiconductor/asset-tracker-cloud-app-js#readme",
   "keywords": [
-    "Cloud",
-    "IoT",
-    "nRF Asset Tracker",
-    "Nordic Semiconductor"
+    "nrf-asset-tracker",
+    "iot",
+    "web-app"
   ],
   "author": "Nordic Semiconductor ASA | nordicsemi.no",
   "license": "BSD-3-Clause",
