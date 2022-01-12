@@ -1,5 +1,5 @@
-import styled from 'styled-components'
 import { Card } from 'reactstrap'
+import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
 
 export const CatCard = styled(Card)`
@@ -33,7 +33,8 @@ export const CatCard = styled(Card)`
 			@media (min-width: ${mobileBreakpoint}) {
 				display: grid;
 				grid-template: auto / 1fr 1fr 2fr;
-				&.connection-information {
+				&.connection-information,
+				&.environment-information {
 					grid-template: auto / 1fr 1fr 1fr 1fr;
 				}
 			}

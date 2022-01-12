@@ -42,7 +42,7 @@ export const CatMap = ({
 			const { v, ts } = reported.roam
 			geolocateCell(geolocationApiEndpoint)({
 				...v,
-				nw: reported.dev?.v?.nw?.includes('NB-IoT') ? 'nbiot' : 'ltem',
+				nw: reported.roam?.v?.nw?.includes('NB-IoT') ? 'nbiot' : 'ltem',
 			})
 				.then((geolocation) => {
 					if (isCancelled) return

@@ -29,6 +29,7 @@ export type Environment = {
 	v: {
 		temp: number
 		hum: number
+		atmp: number
 	}
 	ts: number
 }
@@ -40,9 +41,8 @@ export type Battery = {
 
 export type DeviceInformation = {
 	v: {
-		band: number
-		nw: string
 		iccid: string
+		imei: string
 		modV: string
 		brdV: string
 	}
@@ -51,6 +51,8 @@ export type DeviceInformation = {
 
 export type RoamingInformation = {
 	v: {
+		band: number
+		nw: string
 		area: number
 		mccmnc: number
 		cell: number

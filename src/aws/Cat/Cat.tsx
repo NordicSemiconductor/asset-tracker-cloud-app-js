@@ -180,7 +180,7 @@ export const Cat = ({
 									rsrp={reportedWithReceived.roam.v.value.rsrp}
 									receivedAt={reportedWithReceived.roam.v.receivedAt}
 									reportedAt={new Date(reportedWithReceived.roam.ts.value)}
-									networkMode={reportedWithReceived.dev?.v.value.nw}
+									networkMode={reportedWithReceived.roam?.v.value.nw}
 									iccid={reportedWithReceived.dev?.v.value.iccid}
 									dataStaleAfterSeconds={expectedSendIntervalInSeconds}
 								/>
@@ -225,10 +225,15 @@ export const Cat = ({
 						)}
 						{reportedWithReceived?.env && (
 							<Toggle>
-								<div className={'info'}>
+								<div className={'info environment-information'}>
 									{emojify(`🌡️ ${reportedWithReceived.env.v.value.temp}°C`)}
 									{emojify(
 										`💦 ${Math.round(reportedWithReceived.env.v.value.hum)}%`,
+									)}
+									{emojify(
+										`🌤️ ${Math.round(
+											reportedWithReceived.env.v.value.atmp * 10,
+										)} hPa`,
 									)}
 									<ReportedTime
 										receivedAt={reportedWithReceived.env.v.receivedAt}
