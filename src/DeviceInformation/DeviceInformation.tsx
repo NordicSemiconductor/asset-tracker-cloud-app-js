@@ -1,10 +1,10 @@
 import React from 'react'
-import { ReportedTime } from '../ReportedTime/ReportedTime'
 import styled from 'styled-components'
 import {
-	ReportedRoamingInformation,
 	ReportedDeviceInformation,
+	ReportedRoamingInformation,
 } from '../@types/device-state'
+import { ReportedTime } from '../ReportedTime/ReportedTime'
 
 const StyledReportedTime = styled(ReportedTime)`
 	font-size: 85%;
@@ -55,19 +55,23 @@ export const DeviceInfo = ({
 			<dd>
 				<code>{appV ?? '—'}</code>
 			</dd>
+			<dt>IMEI</dt>
+			<dd>
+				<code>{device.v.value.imei}</code>
+			</dd>
 		</DeviceInformationDl>
 		<h4>Connection</h4>
 		<DeviceInformationDl>
-			<dt>Band</dt>
-			<dd>
-				<code>{device.v.value.band}</code>
-			</dd>
 			<dt>ICCID</dt>
 			<dd>
 				<code>{device.v.value.iccid}</code>
 			</dd>
 			{roaming && (
 				<>
+					<dt>Band</dt>
+					<dd>
+						<code>{roaming.v.value.band}</code>
+					</dd>
 					<dt>RSRP</dt>
 					<dd>
 						<code>{roaming.v.value.rsrp}</code>

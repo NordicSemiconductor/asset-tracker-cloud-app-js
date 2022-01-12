@@ -152,7 +152,7 @@ export const Cat = ({
 
 		void locatCell({
 			...roamingInfo.v,
-			nw: devInfo?.v.nw.includes('NB-IoT') ? 'nbiot' : 'ltem',
+			nw: roamingInfo?.v.nw.includes('NB-IoT') ? 'nbiot' : 'ltem',
 		})
 			.then((res) => {
 				if (isRight(res) && !removed) {
@@ -383,7 +383,7 @@ export const Cat = ({
 							rsrp={reportedWithTime.roam.v.value.rsrp}
 							receivedAt={reportedWithTime.roam.v.receivedAt}
 							reportedAt={new Date(reportedWithTime.roam.ts.value)}
-							networkMode={reportedWithTime.dev.v.value.nw}
+							networkMode={reportedWithTime.roam.v.value.nw}
 							iccid={reportedWithTime.dev.v.value.iccid}
 							dataStaleAfterSeconds={expectedSendIntervalInSeconds}
 						/>
@@ -428,6 +428,10 @@ export const Cat = ({
 						<div className={'info'}>
 							{emojify(`🌡️ ${reportedWithTime.env.v.value.temp}°C`)}
 							{emojify(`💦 ${Math.round(reportedWithTime.env.v.value.hum)}%`)}
+							{emojify(
+								`🌤️ ${Math.round(reportedWithTime.env.v.value.atmp * 10)} hPa`,
+							)}
+
 							<ReportedTime
 								receivedAt={reportedWithTime.env.v.receivedAt}
 								reportedAt={new Date(reportedWithTime.env.ts.value)}

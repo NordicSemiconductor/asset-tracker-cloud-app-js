@@ -16,11 +16,10 @@ describe('toReportedWithReceivedAt', () => {
 			},
 			dev: {
 				v: {
-					band: 666,
-					nw: 'LAN',
 					modV: 'device-simulator',
 					brdV: 'device-simulator',
 					iccid: '12345678901234567890',
+					imei: '352656106111232',
 				},
 				ts: 1587480111020,
 			},
@@ -31,6 +30,8 @@ describe('toReportedWithReceivedAt', () => {
 			},
 			roam: {
 				v: {
+					band: 666,
+					nw: 'LAN',
 					rsrp: 70,
 					area: 30401,
 					mccmnc: 24201,
@@ -69,12 +70,6 @@ describe('toReportedWithReceivedAt', () => {
 					$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 					v: {
 						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
-						band: {
-							$lastUpdated: '2020-04-21T14:41:51.6278473Z',
-						},
-						nw: {
-							$lastUpdated: '2020-04-21T14:41:51.6278473Z',
-						},
 						modV: {
 							$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 						},
@@ -96,6 +91,12 @@ describe('toReportedWithReceivedAt', () => {
 					$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 					v: {
 						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
+						band: {
+							$lastUpdated: '2020-04-21T14:41:51.6278473Z',
+						},
+						nw: {
+							$lastUpdated: '2020-04-21T14:41:51.6278473Z',
+						},
 						rsrp: {
 							$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 						},
@@ -152,11 +153,10 @@ describe('toReportedWithReceivedAt', () => {
 		expect(r.dev).toEqual({
 			v: {
 				value: {
-					band: 666,
-					nw: 'LAN',
 					modV: 'device-simulator',
 					brdV: 'device-simulator',
 					iccid: '12345678901234567890',
+					imei: '352656106111232',
 				},
 				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
 			},
@@ -165,6 +165,25 @@ describe('toReportedWithReceivedAt', () => {
 				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
 			},
 		})
+		expect(r.roam).toEqual({
+			v: {
+				value: {
+					band: 666,
+					nw: 'LAN',
+					rsrp: 70,
+					area: 30401,
+					mccmnc: 24201,
+					cell: 16964098,
+					ip: '0.0.0.0',
+				},
+				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
+			},
+			ts: {
+				value: 1587480111020,
+				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
+			},
+		})
+
 		expect(r.firmware).toEqual({
 			fwUpdateStatus: {
 				value: FOTAStatus.CURRENT,
