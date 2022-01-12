@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.16.7",
-    "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.4",
+    "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.5",
     "@types/aws-iot-device-sdk": "2.2.4",
     "@types/intro.js": "3.0.2",
     "@types/jest": "27.4.0",
