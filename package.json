@@ -56,7 +56,7 @@
     "io-ts-types": "0.5.16",
     "leaflet": "1.7.1",
     "lodash": "4.17.21",
-    "mcc-mnc-list": "1.1.7",
+    "mcc-mnc-list": "1.1.8",
     "memoize-one": "6.0.0",
     "msal": "1.4.15",
     "react": "17.0.2",
