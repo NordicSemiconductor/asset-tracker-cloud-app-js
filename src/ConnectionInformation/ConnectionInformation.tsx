@@ -1,12 +1,11 @@
-import React from 'react'
+import { RSRP, SignalQualityTriangle } from '@nordicsemiconductor/rsrp-bar'
+import { identifyIssuer } from 'e118-iin-list/dist/index.js'
 import { filter as filterOperator, Operator as Op } from 'mcc-mnc-list'
+import React from 'react'
+import styled from 'styled-components'
+import { emojify } from '../Emojify/Emojify'
 import { ReportedTime } from '../ReportedTime/ReportedTime'
 import { TextWithIcon } from '../TextWithIcon/TextWithIcon'
-import { emojify } from '../Emojify/Emojify'
-import styled from 'styled-components'
-import { RSRP, SignalQualityTriangle } from '@nordicsemiconductor/rsrp-bar'
-import { identifyIssuer } from 'e118-iin-list'
-import { isSome, none } from 'fp-ts/lib/Option'
 
 const StyledSignalQualityTriangle = styled(SignalQualityTriangle)`
 	width: 20px;
@@ -49,7 +48,7 @@ export const ConnectionInformation = ({
 	reportedAt: Date
 	dataStaleAfterSeconds: number
 }) => {
-	const maybeSimIssuer = iccid !== undefined ? identifyIssuer(iccid) : none
+	const maybeSimIssuer = iccid !== undefined ? identifyIssuer(iccid) : undefined
 	return (
 		<div className={'info connection-information'}>
 			<TextWithIcon icon={SignalQuality({ dbm: rsrp })}>
@@ -62,7 +61,7 @@ export const ConnectionInformation = ({
 			<abbr title={'SIM issuer'}>
 				{emojify(
 					`📱 ${
-						isSome(maybeSimIssuer) ? maybeSimIssuer.value.companyName : '?'
+						maybeSimIssuer !== undefined ? maybeSimIssuer.companyName : '?'
 					}`,
 				)}
 			</abbr>
