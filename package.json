@@ -36,7 +36,7 @@
     "@aws-sdk/protocol-http": "3.49.0",
     "@aws-sdk/util-dynamodb": "3.49.0",
     "@aws-sdk/util-utf8-browser": "3.49.0",
-    "@microsoft/signalr": "6.0.1",
+    "@microsoft/signalr": "6.0.2",
     "@nordicsemiconductor/cell-geolocation-helpers": "4.0.2",
     "@nordicsemiconductor/rsrp-bar": "5.0.0",
     "@nordicsemiconductor/timestream-helpers": "4.0.4",
