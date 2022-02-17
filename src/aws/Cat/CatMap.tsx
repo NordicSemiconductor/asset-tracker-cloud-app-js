@@ -164,12 +164,12 @@ export const CatMap = ({
 								measureGroup
 								FROM ${table}
 								WHERE deviceId='${cat.id}' 
-								AND substr(measure_name, 1, 4) = 'gnss.'
+								AND substr(measure_name, 1, 5) = 'gnss.'
 								GROUP BY measureGroup, time
 								ORDER BY time DESC
 								LIMIT ${numEntries}
 							)
-							AND substr(measure_name, 1, 4) = 'gnss.'
+							AND substr(measure_name, 1, 5) = 'gnss.'
 							GROUP BY measureGroup, time
 							ORDER BY time DESC`,
 					)
