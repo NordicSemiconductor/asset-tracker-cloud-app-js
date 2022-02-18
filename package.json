@@ -82,7 +82,7 @@
     "@types/react-leaflet": "2.8.2",
     "@types/react-router-dom": "5.3.3",
     "@types/semver": "7.3.9",
-    "@types/styled-components": "5.1.22",
+    "@types/styled-components": "5.1.23",
     "@types/twemoji": "12.1.2",
     "@types/uuid": "8.3.4",
     "eslint-config-react-app": "7.0.0",
