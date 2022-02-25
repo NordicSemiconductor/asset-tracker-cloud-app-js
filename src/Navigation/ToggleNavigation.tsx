@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Collapse, Navbar, NavbarToggler } from 'reactstrap'
 import styled from 'styled-components'
-import { CloudFlavour, ReactAppConfigConsumer } from '..'
 import {
 	hideOnDesktop,
 	mobileBreakpoint,
@@ -47,20 +46,6 @@ const AzureHeader = styled.header`
 	}
 `
 
-const AWSHeader = styled(AzureHeader)`
-	background-color: #f90;
-`
-
-const flavouredHeaders = {
-	[CloudFlavour.Azure]: AzureHeader,
-	[CloudFlavour.AWS]: AWSHeader,
-}
-
-const navbarClassname = {
-	[CloudFlavour.Azure]: 'navbar-dark',
-	[CloudFlavour.AWS]: 'navbar-light',
-}
-
 const MobileOnlyCollapse = hideOnDesktop(Collapse)
 
 const DesktopOnly = showOnDesktop(styled.div``)
@@ -87,44 +72,30 @@ export const ToggleNavigation = ({
 	const toggleNavigation = () => setNavigationVisible(!navigationVisible)
 
 	return (
-		<ReactAppConfigConsumer>
-			{({ cloudFlavour }) => {
-				const FlavouredHeader = flavouredHeaders[cloudFlavour]
-				return (
-					<FlavouredHeader>
-						<StyledNavbar className={navbarClassname[cloudFlavour]}>
-							<MobileNavbar>
-								<NavbarBrandConsumer>
-									{({ navbar }) => navbar}
-								</NavbarBrandConsumer>
-								<NavbarToggler onClick={toggleNavigation} />
-							</MobileNavbar>
-							<DesktopOnly>
-								<NavbarBrandConsumer>
-									{({ navbar }) => navbar}
-								</NavbarBrandConsumer>
-							</DesktopOnly>
-							{loggedIn && (
-								<>
-									<MobileOnlyCollapse isOpen={navigationVisible} navbar>
-										<Navigation
-											navbar={true}
-											onClick={toggleNavigation}
-											onLogout={onLogout}
-										/>
-									</MobileOnlyCollapse>
-									<DesktopOnlyNavigation>
-										<Navigation
-											onClick={toggleNavigation}
-											onLogout={onLogout}
-										/>
-									</DesktopOnlyNavigation>
-								</>
-							)}
-						</StyledNavbar>
-					</FlavouredHeader>
-				)
-			}}
-		</ReactAppConfigConsumer>
+		<AzureHeader>
+			<StyledNavbar className="navbar-dark">
+				<MobileNavbar>
+					<NavbarBrandConsumer>{({ navbar }) => navbar}</NavbarBrandConsumer>
+					<NavbarToggler onClick={toggleNavigation} />
+				</MobileNavbar>
+				<DesktopOnly>
+					<NavbarBrandConsumer>{({ navbar }) => navbar}</NavbarBrandConsumer>
+				</DesktopOnly>
+				{loggedIn && (
+					<>
+						<MobileOnlyCollapse isOpen={navigationVisible} navbar>
+							<Navigation
+								navbar={true}
+								onClick={toggleNavigation}
+								onLogout={onLogout}
+							/>
+						</MobileOnlyCollapse>
+						<DesktopOnlyNavigation>
+							<Navigation onClick={toggleNavigation} onLogout={onLogout} />
+						</DesktopOnlyNavigation>
+					</>
+				)}
+			</StyledNavbar>
+		</AzureHeader>
 	)
 }

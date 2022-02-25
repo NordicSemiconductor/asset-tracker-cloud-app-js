@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react'
-import { CatInfo } from '../aws/Cat/Cat'
+import React, { useEffect, useState } from 'react'
 import { CollapsedContextConsumer } from '../Collapsable/CollapsedContext'
-import { Location, CellLocation, Map, CatMapContainer } from './Map'
-import { MapSettings } from './Settings'
-import { MapSettingsType } from './Settings'
+import { CatMapContainer, CellLocation, Location, Map } from './Map'
+import { MapSettings, MapSettingsType } from './Settings'
 import { ShowSettingsButton } from './ShowSettingsButton'
+
+type CatInfo = {
+	id: string
+	name: string
+	avatar: string
+	version: number
+}
 
 const LoadHistoricalMapData = ({
 	cat,
