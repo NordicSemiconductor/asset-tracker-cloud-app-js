@@ -33,7 +33,7 @@
     "@aws-sdk/client-iot-data-plane": "3.52.0",
     "@aws-sdk/client-s3": "3.52.0",
     "@aws-sdk/client-timestream-query": "3.52.0",
-    "@aws-sdk/protocol-http": "3.52.0",
+    "@aws-sdk/protocol-http": "3.53.0",
     "@aws-sdk/util-dynamodb": "3.52.0",
     "@aws-sdk/util-utf8-browser": "3.52.0",
     "@microsoft/signalr": "6.0.2",
