@@ -53,7 +53,7 @@
     "react-leaflet": "3.1.0",
     "react-router-dom": "5.3.0",
     "reactstrap": "8.10.1",
-    "styled-components": "5.3.3",
+    "styled-components": "5.3.5",
     "twemoji": "13.1.0",
     "use-debounce": "7.0.1",
     "uuid": "8.3.2"
