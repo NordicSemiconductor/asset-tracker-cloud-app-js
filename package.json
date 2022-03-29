@@ -30,7 +30,7 @@
     "@amcharts/amcharts4": "4.10.24",
     "@microsoft/signalr": "6.0.3",
     "@nordicsemiconductor/cell-geolocation-helpers": "4.0.3",
-    "@nordicsemiconductor/rsrp-bar": "5.0.0",
+    "@nordicsemiconductor/rsrp-bar": "5.0.1",
     "@nordicsemiconductor/timestream-helpers": "4.1.1",
     "@react-leaflet/core": "1.0.2",
     "azure-iothub": "1.14.6",
