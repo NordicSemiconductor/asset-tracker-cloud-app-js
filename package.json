@@ -61,6 +61,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.16.7",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.56",
+    "@swc/jest": "0.2.20",
     "@types/intro.js": "3.0.2",
     "@types/jest": "27.4.1",
     "@types/lodash": "4.14.182",
@@ -79,8 +80,7 @@
     "eslint-plugin-react": "7.29.4",
     "eslint-plugin-react-hooks": "4.4.0",
     "jest": "28.0.3",
-    "react-scripts": "4.0.3",
-    "ts-jest": "27.1.4"
+    "react-scripts": "4.0.3"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -114,7 +114,11 @@
     "not op_mini all"
   ],
   "jest": {
-    "preset": "ts-jest"
+    "transform": {
+      "^.+\\.(t|j)sx?$": [
+        "@swc/jest"
+      ]
+    }
   },
   "babelMacros": {
     "styledComponents": {
