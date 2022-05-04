@@ -31,7 +31,7 @@
     "@microsoft/signalr": "6.0.4",
     "@nordicsemiconductor/cell-geolocation-helpers": "4.0.3",
     "@nordicsemiconductor/rsrp-bar": "5.0.3",
-    "@nordicsemiconductor/timestream-helpers": "4.1.1",
+    "@nordicsemiconductor/timestream-helpers": "4.1.2",
     "@react-leaflet/core": "1.0.2",
     "azure-iothub": "1.15.0",
     "date-fns": "2.28.0",
