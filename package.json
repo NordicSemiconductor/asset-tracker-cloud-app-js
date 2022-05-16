@@ -59,7 +59,7 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-chaining": "7.16.7",
+    "@babel/plugin-proposal-optional-chaining": "7.17.12",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.67",
     "@swc/jest": "0.2.21",
     "@types/intro.js": "3.0.2",
