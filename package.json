@@ -66,7 +66,7 @@
     "@types/jest": "28.1.1",
     "@types/lodash": "4.14.182",
     "@types/node": "17.0.9",
-    "@types/react": "18.0.11",
+    "@types/react": "18.0.12",
     "@types/react-dom": "18.0.5",
     "@types/react-leaflet": "2.8.2",
     "@types/react-router-dom": "5.3.3",
