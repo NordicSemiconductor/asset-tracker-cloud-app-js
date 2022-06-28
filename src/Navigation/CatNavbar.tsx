@@ -1,6 +1,5 @@
-import React from 'react'
-import { LogoImg } from './NavbarBrand'
 import styled from 'styled-components'
+import { LogoImg } from './NavbarBrand'
 
 const CatName = styled.span`
 	white-space: nowrap;

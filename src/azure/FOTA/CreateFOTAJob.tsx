@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { Button, Form, FormGroup, Label, Input } from 'reactstrap'
+import { useState } from 'react'
+import { Button, Form, FormGroup, Input, Label } from 'reactstrap'
+import semver from 'semver'
+import { AzureFOTAJobProgress } from '../../@types/azure-device'
 import { FilePicker } from '../../FilePicker/FilePicker'
 import { FooterWithFullWidthButton } from '../../Settings/Settings'
 import { OnCreateUpgradeJob } from './FOTA'
-import semver from 'semver'
-import { AzureFOTAJobProgress } from '../../@types/azure-device'
 
 const getNextAppVersion = (fw: AzureFOTAJobProgress): string =>
 	semver.inc(fw.currentFwVersion, 'patch') ?? fw.currentFwVersion

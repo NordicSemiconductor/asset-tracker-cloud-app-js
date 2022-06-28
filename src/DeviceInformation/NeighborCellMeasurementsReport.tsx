@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { ReportedTime } from '../ReportedTime/ReportedTime'
-import { NCellMeasReport } from '../@types/device-state'
 import { isSome, Option } from 'fp-ts/lib/Option'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { NCellMeasReport } from '../@types/device-state'
+import { ReportedTime } from '../ReportedTime/ReportedTime'
 import { DeviceInformationDl } from './DeviceInformation'
 
 const StyledReportedTime = styled(ReportedTime)`

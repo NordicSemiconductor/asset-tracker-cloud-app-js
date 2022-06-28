@@ -1,4 +1,3 @@
-import React from 'react'
 import { Alert } from 'reactstrap'
 import { ErrorInfo } from './ErrorInfo'
 

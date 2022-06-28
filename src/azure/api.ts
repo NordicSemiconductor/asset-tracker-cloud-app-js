@@ -1,13 +1,13 @@
-import * as querystring from 'querystring'
 import { Twin } from 'azure-iothub'
-import { Either, right, left, isLeft } from 'fp-ts/lib/Either'
-import * as TE from 'fp-ts/lib/TaskEither'
+import { Either, isLeft, left, right } from 'fp-ts/lib/Either'
+import { none, Option, some } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
-import { ErrorInfo } from '../Error/ErrorInfo'
+import * as TE from 'fp-ts/lib/TaskEither'
+import * as querystring from 'querystring'
+import { v4 } from 'uuid'
 import { DeviceTwin } from '../@types/azure-device'
 import { DeviceConfig, NCellMeasReport } from '../@types/device-state'
-import { v4 } from 'uuid'
-import { none, Option, some } from 'fp-ts/lib/Option'
+import { ErrorInfo } from '../Error/ErrorInfo'
 
 const toQueryString = (obj: any): string => {
 	if (Object.keys(obj).length === 0) {

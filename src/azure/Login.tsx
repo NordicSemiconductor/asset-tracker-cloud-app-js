@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { Button, CardHeader, CardBody, Card, Form } from 'reactstrap'
-import { FormFooter } from '../User/FormFooter'
+import { useState } from 'react'
+import { Button, Card, CardBody, CardHeader, Form } from 'reactstrap'
 import { Main } from '../Styles'
+import { FormFooter } from '../User/FormFooter'
 
 export const Login = ({ onLogin }: { onLogin: () => void }) => {
 	const [loggingIn, setLoggingIn] = useState<boolean>(false)

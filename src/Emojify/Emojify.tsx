@@ -1,6 +1,5 @@
-import React from 'react'
-import twemoji from 'twemoji'
 import styled from 'styled-components'
+import twemoji from 'twemoji'
 
 const Twemoji = styled.span`
 	img.emoji {

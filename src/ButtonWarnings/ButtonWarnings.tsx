@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
 import { isAfter } from 'date-fns'
+import React, { useEffect, useState } from 'react'
 
 export type DeviceDateMap = {
 	[key: string]: Date

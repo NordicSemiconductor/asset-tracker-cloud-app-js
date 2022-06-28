@@ -1,6 +1,5 @@
-import React from 'react'
-import { emojify } from '../Emojify/Emojify'
 import styled from 'styled-components'
+import { emojify } from '../Emojify/Emojify'
 
 const NoMapDiv = styled.div`
 	background-color: #ccc;

@@ -1,5 +1,5 @@
 import { isRight } from 'fp-ts/lib/Either'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CatLocation, Map } from '../../CatsMap/Map'
 import { ApiClient } from '../api'
 

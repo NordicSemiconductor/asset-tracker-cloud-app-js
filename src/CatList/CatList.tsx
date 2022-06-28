@@ -1,10 +1,9 @@
-import React from 'react'
-import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-import { Table, Badge } from 'reactstrap'
-import { RelativeTime } from '../RelativeTime/RelativeTime'
-import { emojify } from '../Emojify/Emojify'
+import { Badge, Table } from 'reactstrap'
+import styled from 'styled-components'
 import { ButtonWarningProps } from '../ButtonWarnings/ButtonWarnings'
+import { emojify } from '../Emojify/Emojify'
+import { RelativeTime } from '../RelativeTime/RelativeTime'
 
 const Cat = styled.td`
 	display: flex;

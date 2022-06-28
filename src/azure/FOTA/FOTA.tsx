@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Alert } from 'reactstrap'
 import { AzureFOTAJobProgress } from '../../@types/azure-device'
 import { DisplayError as ShowError } from '../../Error/Error'

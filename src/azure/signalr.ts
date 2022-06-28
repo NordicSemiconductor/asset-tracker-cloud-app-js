@@ -1,9 +1,9 @@
-import { ApiClient } from './api'
 import * as signalR from '@microsoft/signalr'
+import * as E from 'fp-ts/Either'
+import { pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { ErrorInfo } from '../Error/ErrorInfo'
-import { pipe } from 'fp-ts/lib/function'
-import * as E from 'fp-ts/Either'
+import { ApiClient } from './api'
 
 export const connect = (
 	apiClient: ApiClient,

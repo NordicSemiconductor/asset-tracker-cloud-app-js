@@ -1,12 +1,12 @@
 import { isRight } from 'fp-ts/lib/Either'
 import * as t from 'io-ts'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Button, CardBody, FormGroup, Input, Label } from 'reactstrap'
 
 import { DisplayError as ErrorComponent } from '../Error/Error'
+import { Success } from '../Success/Success'
 import { FormFooter } from './FormFooter'
 import { Email } from './validation/Email'
-import { Success } from '../Success/Success'
 
 const LostPasswordInput = t.exact(
 	t.type({

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Alert } from 'reactstrap'
 
 export const Success = ({ children }: { children: string }) => (

@@ -1,7 +1,6 @@
 import { RSRP, SignalQualityTriangle } from '@nordicsemiconductor/rsrp-bar'
 import { identifyIssuer } from 'e118-iin-list/dist/index.js'
 import { filter as filterOperator, Operator as Op } from 'mcc-mnc-list'
-import React from 'react'
 import styled from 'styled-components'
 import { emojify } from '../Emojify/Emojify'
 import { ReportedTime } from '../ReportedTime/ReportedTime'

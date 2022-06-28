@@ -1,23 +1,23 @@
+import { formatDistanceToNow } from 'date-fns'
+import { LeafletEvent, Map as LeafletMap } from 'leaflet'
 import React, { useState } from 'react'
 import {
-	MapContainer,
-	TileLayer,
-	Marker,
-	Popup,
 	Circle,
-	Polyline,
 	MapConsumer,
+	MapContainer,
+	Marker,
+	Polyline,
+	Popup,
+	TileLayer,
 	useMapEvents,
 } from 'react-leaflet'
-import { LeafletEvent, Map as LeafletMap } from 'leaflet'
-import { NoMap } from './NoMap'
-import styled from 'styled-components'
-import { mobileBreakpoint } from '../Styles'
 import { FormGroup } from 'reactstrap'
-import { formatDistanceToNow } from 'date-fns'
+import styled from 'styled-components'
 import { SignalQuality } from '../ConnectionInformation/ConnectionInformation'
+import { mobileBreakpoint } from '../Styles'
 import { nullOrUndefined } from '../util/nullOrUndefined'
 import { centerOnLatestLocation } from './centerOnLatestLocation'
+import { NoMap } from './NoMap'
 import { MapSettingsType } from './Settings'
 
 const MapContainerContainer = styled.div`

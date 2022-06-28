@@ -1,10 +1,9 @@
 import { LeafletEvent, Map as LeafletMap } from 'leaflet'
-import React from 'react'
 import {
 	MapContainer,
-	TileLayer,
 	Marker,
 	Popup,
+	TileLayer,
 	useMapEvents,
 } from 'react-leaflet'
 

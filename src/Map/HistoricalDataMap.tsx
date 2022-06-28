@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CollapsedContextConsumer } from '../Collapsable/CollapsedContext'
 import { CatMapContainer, CellLocation, Location, Map } from './Map'
 import { MapSettings, MapSettingsType } from './Settings'
