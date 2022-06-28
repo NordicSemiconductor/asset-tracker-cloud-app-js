@@ -1,8 +1,7 @@
-import React from 'react'
+import { ButtonWarnings } from '../../ButtonWarnings/ButtonWarnings'
 import { Main } from '../../Styles'
 import { ApiClientConsumer } from '../App'
 import { List } from './List'
-import { ButtonWarnings } from '../../ButtonWarnings/ButtonWarnings'
 
 export const CatsPage = () => (
 	<Main>

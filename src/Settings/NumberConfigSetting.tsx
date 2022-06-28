@@ -1,5 +1,5 @@
 import { formatDistanceToNow } from 'date-fns'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
 	FormGroup,
 	Input,

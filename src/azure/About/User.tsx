@@ -1,6 +1,5 @@
-import React from 'react'
-import { Card, CardBody, CardHeader } from 'reactstrap'
 import { AuthResponse } from 'msal'
+import { Card, CardBody, CardHeader } from 'reactstrap'
 
 export const User = ({ accessToken }: { accessToken: AuthResponse }) => (
 	<Card data-intro="This card shows info about the current user.">

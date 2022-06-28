@@ -1,4 +1,3 @@
-import React from 'react'
 import { Card, CardBody, CardHeader } from 'reactstrap'
 import { ReactAppConfigType } from '..'
 

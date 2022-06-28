@@ -1,6 +1,6 @@
+import { isEqual } from 'lodash'
 import React from 'react'
 import { ReceivedProperty } from '../@types/device-state'
-import { isEqual } from 'lodash'
 
 export const OutDatedWarning = ({
 	desired,

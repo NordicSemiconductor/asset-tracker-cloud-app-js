@@ -1,9 +1,8 @@
-import React from 'react'
-import { hideOnDesktop } from '../Styles'
 import styled from 'styled-components'
 import { AvatarPicker } from '../Avatar/AvatarPicker'
-import { LoadedCat } from './CatLoader'
 import { Editable } from '../Editable/Editable'
+import { hideOnDesktop } from '../Styles'
+import { LoadedCat } from './CatLoader'
 
 const MobileOnlyAvatarPicker = hideOnDesktop(AvatarPicker)
 const MobileOnlyH2 = hideOnDesktop(styled.h2``)

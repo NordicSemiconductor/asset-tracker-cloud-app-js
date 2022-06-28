@@ -1,8 +1,8 @@
-import * as am4core from '@amcharts/amcharts4/core'
 import * as am4charts from '@amcharts/amcharts4/charts'
-import React, { useEffect, useRef } from 'react'
-import { v4 } from 'uuid'
+import * as am4core from '@amcharts/amcharts4/core'
+import { useEffect, useRef } from 'react'
 import styled from 'styled-components'
+import { v4 } from 'uuid'
 
 const HistoricalDataChartDiv = styled.div`
 	width: 100%;

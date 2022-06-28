@@ -8,9 +8,10 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier/)
 [![ESLint: TypeScript](https://img.shields.io/badge/ESLint-TypeScript-blue.svg)](https://github.com/typescript-eslint/typescript-eslint)
 
-The nRF Asset Tracker Web Application is a reference single-page application (SPA)
-developed using [create-react-app](https://github.com/facebook/create-react-app)
-in [TypeScript](https://www.typescriptlang.org/).
+The nRF Asset Tracker Web Application is a reference single-page application
+(SPA) developed using
+[create-react-app](https://github.com/facebook/create-react-app) in
+[TypeScript](https://www.typescriptlang.org/).
 
 > :information_source:
 > [Read the complete nRF Asset Tracker documentation](https://nordicsemiconductor.github.io/asset-tracker-cloud-docs/).

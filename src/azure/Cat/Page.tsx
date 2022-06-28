@@ -1,10 +1,9 @@
-import React from 'react'
+import { CatLoader } from '../../Cat/CatLoader'
+import { CatRouteProps } from '../../Cat/CatRouteProps'
 import { Main } from '../../Styles'
+import { Device } from '../api'
 import { ApiClientConsumer } from '../App'
 import { Cat } from './Cat'
-import { CatRouteProps } from '../../Cat/CatRouteProps'
-import { CatLoader } from '../../Cat/CatLoader'
-import { Device } from '../api'
 
 export const CatPage = (props: CatRouteProps) => (
 	<Main>

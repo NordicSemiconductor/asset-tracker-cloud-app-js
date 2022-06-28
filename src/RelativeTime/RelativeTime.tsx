@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
 import { formatDistanceToNow } from 'date-fns'
+import { useEffect, useState } from 'react'
 
 const getDiffInSeconds = (ts: Date) => (Date.now() - ts.getTime()) / 1000
 

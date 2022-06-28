@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { Loading } from '../../Loading/Loading'
-import { DisplayError as ShowError } from '../../Error/Error'
-import { ApiClient } from '../api'
 import { isLeft } from 'fp-ts/lib/Either'
+import React, { useEffect, useState } from 'react'
+import { DisplayError as ShowError } from '../../Error/Error'
 import { ErrorInfo } from '../../Error/ErrorInfo'
+import { Loading } from '../../Loading/Loading'
+import { ApiClient } from '../api'
 
 export function HistoricalDataLoader<I, T>({
 	apiClient,

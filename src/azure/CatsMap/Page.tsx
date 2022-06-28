@@ -1,6 +1,5 @@
-import React from 'react'
-import { ApiClientConsumer } from '../App'
 import { CatMapMain } from '../../CatsMap/Container'
+import { ApiClientConsumer } from '../App'
 import { CatMapLoader } from './Loader'
 
 export const CatsMapPage = () => (

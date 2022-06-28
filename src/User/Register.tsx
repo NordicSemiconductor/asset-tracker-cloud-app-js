@@ -2,7 +2,7 @@ import { chain, isRight, left } from 'fp-ts/lib/Either'
 import { pipe } from 'fp-ts/lib/pipeable'
 import * as t from 'io-ts'
 import { NonEmptyString } from 'io-ts-types/lib/NonEmptyString'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Button, CardBody, FormGroup, Input, Label } from 'reactstrap'
 
 import { DisplayError as ErrorComponent } from '../Error/Error'

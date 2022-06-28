@@ -1,11 +1,11 @@
+import { Either, isRight } from 'fp-ts/lib/Either'
 import React, { useContext, useEffect, useState } from 'react'
-import { DisplayError } from '../Error/Error'
 import { Card, CardBody } from 'reactstrap'
+import { DisplayError } from '../Error/Error'
+import { ErrorInfo } from '../Error/ErrorInfo'
 import { Loading } from '../Loading/Loading'
 import { CatNavbar } from '../Navigation/CatNavbar'
 import { NavbarBrandContext } from '../Navigation/NavbarBrand'
-import { isRight, Either } from 'fp-ts/lib/Either'
-import { ErrorInfo } from '../Error/ErrorInfo'
 
 export type LoadedCat = {
 	id: string

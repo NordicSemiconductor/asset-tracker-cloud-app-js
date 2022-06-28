@@ -1,10 +1,9 @@
-import React from 'react'
-import { About } from '../../About/About'
-import { Configuration } from './Configuration'
-import { Main } from '../../Styles'
-import { User } from './User'
-import { SolutionConfigConsumer, AccessTokenConsumer } from '../App'
 import { ReactAppConfigConsumer } from '../..'
+import { About } from '../../About/About'
+import { Main } from '../../Styles'
+import { AccessTokenConsumer, SolutionConfigConsumer } from '../App'
+import { Configuration } from './Configuration'
+import { User } from './User'
 
 export const AboutPage = () => (
 	<Main>

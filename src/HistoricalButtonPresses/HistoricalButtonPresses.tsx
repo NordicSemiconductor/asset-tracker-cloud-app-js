@@ -1,4 +1,3 @@
-import React from 'react'
 import { Table } from 'reactstrap'
 import { RelativeTime } from '../RelativeTime/RelativeTime'
 

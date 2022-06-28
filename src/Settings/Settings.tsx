@@ -1,7 +1,7 @@
 import { formatDistanceToNow } from 'date-fns'
 import equal from 'fast-deep-equal'
 import { default as introJs } from 'intro.js'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Alert, Button, ButtonGroup, Form, FormGroup } from 'reactstrap'
 import styled from 'styled-components'
 import {

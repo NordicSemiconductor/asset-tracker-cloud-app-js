@@ -1,4 +1,3 @@
-import React from 'react'
 import { Progress } from 'reactstrap'
 import styled from 'styled-components'
 

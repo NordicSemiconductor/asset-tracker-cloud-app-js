@@ -1,8 +1,8 @@
-import { SettingsFormGroup } from './Map'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Input, Label } from 'reactstrap'
 import styled from 'styled-components'
 import { mobileBreakpoint } from '../Styles'
+import { SettingsFormGroup } from './Map'
 
 const CheckboxContainer = styled.div`
 	width: 100%;

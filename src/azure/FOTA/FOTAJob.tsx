@@ -1,9 +1,8 @@
+import styled from 'styled-components'
 import { AzureFOTAJob, AzureFOTAJobProgress } from '../../@types/azure-device'
+import { MakeReceivedProperty } from '../../@types/device-state'
 import { emojify } from '../../Emojify/Emojify'
 import { RelativeTime } from '../../RelativeTime/RelativeTime'
-import React from 'react'
-import styled from 'styled-components'
-import { MakeReceivedProperty } from '../../@types/device-state'
 
 const JobItem = styled.div`
 	display: flex;
