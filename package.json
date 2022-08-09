@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.18.9",
-    "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.108",
+    "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.109",
     "@swc/jest": "0.2.22",
     "@types/intro.js": "5.1.0",
     "@types/jest": "28.1.6",
