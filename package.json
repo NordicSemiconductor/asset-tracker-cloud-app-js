@@ -28,7 +28,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@amcharts/amcharts4": "4.10.26",
-    "@microsoft/signalr": "6.0.7",
+    "@microsoft/signalr": "6.0.8",
     "@nordicsemiconductor/cell-geolocation-helpers": "5.0.1",
     "@nordicsemiconductor/rsrp-bar": "5.0.4",
     "@nordicsemiconductor/timestream-helpers": "4.1.2",
