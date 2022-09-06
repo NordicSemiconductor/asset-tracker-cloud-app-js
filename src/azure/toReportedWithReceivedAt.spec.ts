@@ -11,7 +11,9 @@ describe('toReportedWithReceivedAt', () => {
 				mvres: 300,
 				mvt: 3600,
 				gnsst: 60,
-				acct: 0.1,
+				accath: 10.5,
+				accith: 5.2,
+				accito: 1.7,
 				nod: [DataModules.GNSS],
 			},
 			dev: {
@@ -59,7 +61,13 @@ describe('toReportedWithReceivedAt', () => {
 					gnsst: {
 						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 					},
-					acct: {
+					accath: {
+						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
+					},
+					accith: {
+						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
+					},
+					accito: {
 						$lastUpdated: '2020-04-21T14:41:51.6278473Z',
 					},
 					nod: {
@@ -144,7 +152,9 @@ describe('toReportedWithReceivedAt', () => {
 			mvres: { value: 300, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			mvt: { value: 3600, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			gnsst: { value: 60, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
-			acct: { value: 0.1, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
+			accath: { value: 10.5, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
+			accith: { value: 5.2, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
+			accito: { value: 1.7, receivedAt: new Date('2020-04-21T14:41:51.627Z') },
 			nod: {
 				value: [DataModules.GNSS],
 				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
