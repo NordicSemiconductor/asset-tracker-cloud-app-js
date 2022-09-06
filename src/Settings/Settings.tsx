@@ -250,19 +250,47 @@ export const Settings = ({
 						/>
 					</SideBySide>
 					<NumberConfigSetting
-						label={'Accelerometer threshold'}
+						label={'Accelerometer activity threshold'}
 						intro={
-							'Minimal absolute value for an accelerometer reading to be considered movement. Range: 0 to 19.6133 m/s².'
+							'Minimal absolute value for an accelerometer reading to be considered movement.'
 						}
-						id={'acct'}
-						example={0.1}
-						step={0.1}
+						id={'accath'}
+						example={10.0}
+						step={1}
 						minimum={0}
-						maximum={19.6133}
+						maximum={78.4532}
 						unit={'m/s²'}
-						desired={newDesired.acct}
-						reported={r.acct}
-						onChange={updateConfigProperty('acct', parseFloat)}
+						desired={newDesired.accath}
+						reported={r.accath}
+						onChange={updateConfigProperty('accath', parseFloat)}
+					/>
+					<NumberConfigSetting
+						label={'Accelerometer inactivity threshold'}
+						intro={
+							'Maximum absolute value for an accelerometer reading to be considered stillness. Should be lower than the activity threshold.'
+						}
+						id={'accith'}
+						example={5.0}
+						step={1}
+						minimum={0}
+						maximum={78.4532}
+						unit={'m/s²'}
+						desired={newDesired.accith}
+						reported={r.accith}
+						onChange={updateConfigProperty('accith', parseFloat)}
+					/>
+					<NumberConfigSetting
+						label={'Accelerometer inactivity timeout'}
+						intro={'Hysteresis timeout for stillness detection.'}
+						id={'accito'}
+						example={1.0}
+						step={1}
+						minimum={0.08}
+						maximum={5242.88}
+						unit={'s'}
+						desired={newDesired.accito}
+						reported={r.accito}
+						onChange={updateConfigProperty('accito', parseFloat)}
 					/>
 				</fieldset>
 				<fieldset data-intro={'This configures the <em>active</em> mode.'}>

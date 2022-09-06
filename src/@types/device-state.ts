@@ -9,7 +9,9 @@ export type DeviceConfig = {
 	mvres: number
 	mvt: number
 	gnsst: number
-	acct: number
+	accath: number
+	accith: number
+	accito: number
 	nod: DataModules[]
 }
 
