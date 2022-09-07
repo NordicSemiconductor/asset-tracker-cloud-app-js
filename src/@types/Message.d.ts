@@ -5,4 +5,5 @@ export type Button = {
 
 export type Message = {
 	btn?: Button
+	impact?: Button
 }

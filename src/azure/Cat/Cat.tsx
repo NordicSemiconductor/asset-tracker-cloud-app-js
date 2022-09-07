@@ -591,6 +591,28 @@ export const Cat = ({
 					</HistoricalDataLoader>
 				</Collapsable>
 				<hr />
+				<Collapsable
+					id={'cat:impacts'}
+					title={<h3>{emojify('⚠️ Impacts')}</h3>}
+				>
+					<HistoricalDataLoader
+						apiClient={apiClient}
+						QueryString={`SELECT c.deviceUpdate.impact.v AS v, c.deviceUpdate.impact.ts AS ts FROM c WHERE c.deviceId = "${cat.id}" AND c.deviceUpdate.impact.v != null ORDER BY c.timestamp DESC OFFSET 0 LIMIT 100`}
+						formatFields={({
+							v,
+							ts,
+						}: {
+							v: number
+							ts: string
+						}): { value: number; date: Date } => ({
+							value: v,
+							date: new Date(ts),
+						})}
+					>
+						{({ data }) => <HistoricalDataChart data={data} type={'column'} />}
+					</HistoricalDataLoader>
+				</Collapsable>
+				<hr />
 				<Collapsable id={'cat:button'} title={<h3>{emojify('🚨 Button')}</h3>}>
 					<HistoricalDataLoader
 						apiClient={apiClient}
