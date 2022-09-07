@@ -5,13 +5,17 @@ import { Message } from '../@types/Message'
  */
 export const parseMessage = (message: {
 	[key: string]: { v: any; ts: number }
-}): Message => ({
-	...(message.btn !== undefined
-		? {
-				btn: {
-					v: message.btn.v,
-					ts: new Date(message.btn.ts),
-				},
-		  }
-		: undefined),
+}): Message | undefined => ({
+	...(message.btn !== undefined && {
+		btn: {
+			v: message.btn.v,
+			ts: new Date(message.btn.ts),
+		},
+	}),
+	...(message.impact !== undefined && {
+		impact: {
+			v: message.impact.v,
+			ts: new Date(message.impact.ts),
+		},
+	}),
 })
