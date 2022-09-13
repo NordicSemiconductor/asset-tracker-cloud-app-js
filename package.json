@@ -7,9 +7,7 @@
     "build": "react-scripts --max_old_space_size=4096 build",
     "test": "jest",
     "eject": "react-scripts eject",
-    "postinstall": "husky install",
-    "prepublishOnly": "pinst --disable",
-    "postpublish": "pinst --enable"
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
