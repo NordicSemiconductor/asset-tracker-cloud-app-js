@@ -52,7 +52,7 @@
     "react-router-dom": "5.3.3",
     "reactstrap": "8.10.1",
     "styled-components": "5.3.5",
-    "twemoji": "13.1.0",
+    "twemoji": "14.0.2",
     "use-debounce": "8.0.4",
     "uuid": "9.0.0"
   },
