@@ -61,7 +61,7 @@
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.140",
     "@swc/jest": "0.2.23",
     "@types/intro.js": "5.1.0",
-    "@types/jest": "29.2.2",
+    "@types/jest": "29.2.3",
     "@types/lodash": "4.14.188",
     "@types/node": "18.11.9",
     "@types/react": "18.0.25",
