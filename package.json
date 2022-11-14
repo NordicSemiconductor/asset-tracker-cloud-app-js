@@ -25,7 +25,7 @@
   "author": "Nordic Semiconductor ASA | nordicsemi.no",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@amcharts/amcharts4": "4.10.29",
+    "@amcharts/amcharts4": "4.10.30",
     "@microsoft/signalr": "7.0.0",
     "@nordicsemiconductor/cell-geolocation-helpers": "5.0.2",
     "@nordicsemiconductor/rsrp-bar": "5.0.5",
