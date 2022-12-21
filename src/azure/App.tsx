@@ -1,7 +1,7 @@
 import { AuthResponse, UserAgentApplication } from 'msal'
+import { randomUUID } from 'node:crypto'
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
-import { v4 } from 'uuid'
 import { DisplayError as ErrorComponent } from '../Error/Error'
 import { NavbarBrandContextProvider } from '../Navigation/NavbarBrand'
 import { ToggleNavigation } from '../Navigation/ToggleNavigation'
@@ -74,7 +74,7 @@ export const boot = ({
 
 	const tokenRequest = {
 		scopes,
-		sid: v4(),
+		sid: randomUUID(),
 	}
 
 	const acquireAccessToken = async () =>

@@ -2,7 +2,7 @@ import * as am4charts from '@amcharts/amcharts4/charts'
 import * as am4core from '@amcharts/amcharts4/core'
 import { useEffect, useRef } from 'react'
 import styled from 'styled-components'
-import { v4 } from 'uuid'
+import { randomUUID } from 'node:crypto'
 
 const HistoricalDataChartDiv = styled.div`
 	width: 100%;
@@ -21,7 +21,7 @@ export const HistoricalDataChart = ({
 	max?: number
 }) => {
 	const chartRef = useRef<am4charts.XYChart>()
-	const uuid = useRef<string>(v4())
+	const uuid = useRef<string>(randomUUID())
 
 	useEffect(() => {
 		const chart = am4core.create(uuid.current, am4charts.XYChart)

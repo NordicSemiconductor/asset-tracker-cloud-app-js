@@ -3,8 +3,8 @@ import { Either, isLeft, left, right } from 'fp-ts/lib/Either'
 import { none, Option, some } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
 import * as TE from 'fp-ts/lib/TaskEither'
+import { randomUUID } from 'node:crypto'
 import * as querystring from 'querystring'
-import { v4 } from 'uuid'
 import { DeviceTwin } from '../@types/azure-device'
 import { DeviceConfig, NCellMeasReport } from '../@types/device-state'
 import { ErrorInfo } from '../Error/ErrorInfo'
@@ -274,7 +274,7 @@ export const fetchApiClient = ({
 			url: string
 			version: string
 		}): Promise<Either<ErrorInfo, { success: boolean; jobId: string }>> => {
-			const jobId = v4()
+			const jobId = randomUUID()
 			return pipe(
 				patch<{ success: boolean }>(`device/${id}`, {
 					firmware: {
