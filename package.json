@@ -4,7 +4,7 @@
   "description": "The nRF Asset Tracker Web Application is a reference single-page application (SPA) developed using create-react-app in TypeScript.",
   "scripts": {
     "start": "PUBLIC_URL=/ react-scripts --max_old_space_size=4096 start",
-    "build": "react-scripts --max_old_space_size=4096 build",
+    "build": "react-scripts --openssl-legacy-provider --max_old_space_size=4096 build",
     "test": "jest",
     "eject": "react-scripts eject",
     "prepare": "husky install"
