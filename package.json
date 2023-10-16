@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.21.0",
+    "@commitlint/config-conventional": "17.8.0",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.182",
     "@swc/jest": "0.2.24",
     "@types/intro.js": "5.1.1",
