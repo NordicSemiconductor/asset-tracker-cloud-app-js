@@ -1,9 +1,11 @@
+import assert from 'node:assert'
+import { describe, test as it } from 'node:test'
 import { FOTAStatus } from '../@types/azure-device'
 import { DataModules } from '../@types/device-state'
 import { toReportedWithReceivedAt } from './toReportedWithReceivedAt'
 
 describe('toReportedWithReceivedAt', () => {
-	it('should convert a digital twin shadow document to the format used in the generic app components', () => {
+	void it('should convert a digital twin shadow document to the format used in the generic app components', () => {
 		const r = toReportedWithReceivedAt({
 			cfg: {
 				act: false,
@@ -140,7 +142,7 @@ describe('toReportedWithReceivedAt', () => {
 			},
 			$version: 85,
 		})
-		expect(r.cfg).toEqual({
+		assert.deepStrictEqual(r.cfg, {
 			act: {
 				value: false,
 				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
@@ -160,7 +162,7 @@ describe('toReportedWithReceivedAt', () => {
 				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
 			},
 		})
-		expect(r.dev).toEqual({
+		assert.deepStrictEqual(r.dev, {
 			v: {
 				value: {
 					modV: 'device-simulator',
@@ -175,7 +177,7 @@ describe('toReportedWithReceivedAt', () => {
 				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
 			},
 		})
-		expect(r.roam).toEqual({
+		assert.deepStrictEqual(r.roam, {
 			v: {
 				value: {
 					band: 666,
@@ -193,8 +195,7 @@ describe('toReportedWithReceivedAt', () => {
 				receivedAt: new Date('2020-04-21T14:41:51.627Z'),
 			},
 		})
-
-		expect(r.firmware).toEqual({
+		assert.deepStrictEqual(r.firmware, {
 			fwUpdateStatus: {
 				value: FOTAStatus.CURRENT,
 				receivedAt: new Date('2020-11-23T11:04:00.8352873Z'),
