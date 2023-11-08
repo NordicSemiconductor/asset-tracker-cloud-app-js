@@ -5,7 +5,7 @@
   "scripts": {
     "start": "PUBLIC_URL=/ react-scripts --max_old_space_size=4096 start",
     "build": "react-scripts --openssl-legacy-provider --max_old_space_size=4096 build",
-    "test": "find ./ -type f -name '*.spec.ts' ! -path '*/node_modules/*' -exec npx tsx {} ';'",
+    "test": "npx tsx --test ./src/**/*.spec.ts",
     "eject": "react-scripts eject",
     "prepare": "husky install"
   },
