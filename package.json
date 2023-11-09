@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.21.0",
-    "@commitlint/config-conventional": "17.8.0",
+    "@commitlint/config-conventional": "17.8.1",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.186",
     "@types/intro.js": "5.1.1",
     "@types/lodash": "4.14.191",
