@@ -53,7 +53,7 @@
     "reactstrap": "8.10.1",
     "styled-components": "5.3.11",
     "twemoji": "14.0.2",
-    "use-debounce": "9.0.3",
+    "use-debounce": "9.0.4",
     "uuid": "9.0.0"
   },
   "devDependencies": {
