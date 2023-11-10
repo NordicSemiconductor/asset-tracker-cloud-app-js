@@ -41,7 +41,7 @@
     "intro.js": "6.0.0",
     "io-ts": "2.2.20",
     "io-ts-types": "0.5.19",
-    "leaflet": "1.9.3",
+    "leaflet": "1.9.4",
     "lodash": "4.17.21",
     "mcc-mnc-list": "1.1.10",
     "memoize-one": "6.0.0",
