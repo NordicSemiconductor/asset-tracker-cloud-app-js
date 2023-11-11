@@ -54,7 +54,7 @@
     "styled-components": "5.3.11",
     "twemoji": "14.0.2",
     "use-debounce": "9.0.4",
-    "uuid": "9.0.0"
+    "uuid": "9.0.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.21.0",
@@ -70,7 +70,7 @@
     "@types/semver": "7.3.13",
     "@types/styled-components": "5.1.30",
     "@types/twemoji": "13.1.1",
-    "@types/uuid": "9.0.1",
+    "@types/uuid": "9.0.7",
     "eslint-config-react-app": "7.0.1",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-jsx-a11y": "6.7.1",
