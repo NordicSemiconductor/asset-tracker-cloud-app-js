@@ -67,7 +67,7 @@
     "@types/react-dom": "18.0.11",
     "@types/react-leaflet": "2.8.3",
     "@types/react-router-dom": "5.3.3",
-    "@types/semver": "7.3.13",
+    "@types/semver": "7.5.5",
     "@types/styled-components": "5.1.30",
     "@types/twemoji": "13.1.1",
     "@types/uuid": "9.0.7",
