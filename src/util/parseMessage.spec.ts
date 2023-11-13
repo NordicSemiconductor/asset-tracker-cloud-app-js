@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import { describe, test as it } from 'node:test'
 import { parseMessage } from './parseMessage'
-describe('parseMessage', () => {
+void describe('parseMessage', () => {
 	void it('should parse generic device messages with known properties', () => {
 		assert.deepStrictEqual(
 			parseMessage({

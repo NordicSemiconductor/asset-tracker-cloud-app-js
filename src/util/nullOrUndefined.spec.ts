@@ -2,7 +2,7 @@ import assert from 'node:assert'
 import { describe, test as it } from 'node:test'
 import { nullOrUndefined } from './nullOrUndefined'
 
-describe('nullOrUndefined', () => {
+void describe('nullOrUndefined', () => {
 	void it('should return true for undefined', () => {
 		assert.equal(nullOrUndefined(), true)
 	})
