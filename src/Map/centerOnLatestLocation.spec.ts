@@ -2,7 +2,7 @@ import assert from 'node:assert'
 import { describe, test as it } from 'node:test'
 import { centerOnLatestLocation } from './centerOnLatestLocation'
 
-describe('centerOnLatestLocation', () => {
+void describe('centerOnLatestLocation', () => {
 	void it('should return the position of the latest location', () => {
 		assert.deepStrictEqual(
 			centerOnLatestLocation([

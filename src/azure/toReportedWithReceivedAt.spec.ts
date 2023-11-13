@@ -4,7 +4,7 @@ import { FOTAStatus } from '../@types/azure-device'
 import { DataModules } from '../@types/device-state'
 import { toReportedWithReceivedAt } from './toReportedWithReceivedAt'
 
-describe('toReportedWithReceivedAt', () => {
+void describe('toReportedWithReceivedAt', () => {
 	void it('should convert a digital twin shadow document to the format used in the generic app components', () => {
 		const r = toReportedWithReceivedAt({
 			cfg: {
