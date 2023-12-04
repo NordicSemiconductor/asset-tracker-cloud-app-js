@@ -15,7 +15,7 @@ export const CatMapLoader = ({ apiClient }: { apiClient: ApiClient }) => {
 			.queryHistoricalDeviceData(
 				'SELECT c.deviceId, MAX(c.timestamp) AS max_timestamp FROM c WHERE c.deviceUpdate.properties.reported.gnss != null GROUP BY c.deviceId',
 			)
-			.then((res) => {
+			.then(async (res) => {
 				if (isRight(res)) {
 					const q = `SELECT c.deviceId, c.deviceUpdate.properties.reported.gnss.v FROM c WHERE c.deviceId IN (${(
 						res.right.result as { deviceId: string }[]

@@ -82,7 +82,7 @@ export const boot = ({
 			userAgentApplication
 				.acquireTokenSilent(tokenRequest)
 				.then(resolve)
-				.catch((error: Record<string, string>) => {
+				.catch(async (error: Record<string, string>) => {
 					//Acquire token silent failure, and send an interactive request
 					if (
 						(error.errorMessage?.includes('interaction_required') ?? false) ||
