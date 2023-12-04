@@ -27,9 +27,9 @@ const defaultNavbarBrand: React.ReactElement<any> = (
 			width="30"
 			height="30"
 			className="d-inline-block align-top"
-			alt={`Cat Tracker (Azure)`}
+			alt={`nRF Asset Tracker (Azure)`}
 		/>
-		Cat Tracker <Flavour>Azure</Flavour>
+		nRF Asset <Flavour>Azure</Flavour>
 	</NavbarBrand>
 )
 

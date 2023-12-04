@@ -1,6 +1,6 @@
 {
-  "short_name": "Cat Tracker",
-  "name": "Cat Tracker Web Application",
+  "short_name": "nRF Asset Tracker",
+  "name": "nRF Asset Tracker Web Application",
   "icons": [
     {
       "src": "favicon.svg",

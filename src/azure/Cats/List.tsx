@@ -109,7 +109,7 @@ export const List = ({
 			{!cats.length && (
 				<CardBody>
 					No cats, yet. Read more about how to create{' '}
-					<em>Device Credentials</em> for your cat trackers{' '}
+					<em>Device Credentials</em> for your trackers{' '}
 					<a
 						href={
 							'https://nordicsemiconductor.github.io/asset-tracker-cloud-docs/'
