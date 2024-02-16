@@ -58,8 +58,9 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "7.21.0",
+    "@bifravst/prettier-config": "1.0.0",
     "@commitlint/config-conventional": "18.4.3",
-    "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.186",
+    "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "^17.0.0",
     "@types/intro.js": "5.1.5",
     "@types/lodash": "4.14.202",
     "@types/node": "20.10.1",
@@ -71,11 +72,14 @@
     "@types/styled-components": "5.1.34",
     "@types/twemoji": "13.1.1",
     "@types/uuid": "9.0.8",
+    "eslint-config-prettier": "9.1.0",
     "eslint-config-react-app": "7.0.1",
     "eslint-plugin-import": "2.29.0",
     "eslint-plugin-jsx-a11y": "6.8.0",
+    "eslint-plugin-prefer-arrow": "1.2.3",
     "eslint-plugin-react": "7.33.2",
     "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-unicorn": "51.0.1",
     "husky": "9.0.7",
     "react-scripts": "4.0.3"
   },
@@ -120,5 +124,6 @@
     "styledComponents": {
       "pure": true
     }
-  }
+  },
+  "prettier": "@bifravst/prettier-config"
 }
