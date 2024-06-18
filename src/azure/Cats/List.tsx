@@ -112,7 +112,7 @@ export const List = ({
 					<em>Device Credentials</em> for your trackers{' '}
 					<a
 						href={
-							'https://nordicsemiconductor.github.io/asset-tracker-cloud-docs/'
+							'https://docs.nordicsemi.com/bundle/nrf-asset-tracker-saga/'
 						}
 						target="_blank"
 						rel="noopener noreferrer"

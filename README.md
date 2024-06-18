@@ -13,4 +13,4 @@ The nRF Asset Tracker Web Application is a reference single-page application
 [TypeScript](https://www.typescriptlang.org/).
 
 > :information_source:
-> [Read the complete nRF Asset Tracker documentation](https://nordicsemiconductor.github.io/asset-tracker-cloud-docs/).
+> [Read the complete nRF Asset Tracker documentation](https://docs.nordicsemi.com/bundle/nrf-asset-tracker-saga/).
