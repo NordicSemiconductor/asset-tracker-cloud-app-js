@@ -34,37 +34,37 @@ export const toReportedWithReceivedAt = (
 					cfg: toReceivedProps(reported.cfg, $metadata.cfg) as Partial<
 						MakeReceivedProperty<DeviceConfig>
 					>,
-			  }
+				}
 			: undefined),
 		...(reported.gnss !== undefined && $metadata.gnss !== undefined
 			? {
 					gnss: toReceivedProps(reported.gnss, $metadata.gnss),
-			  }
+				}
 			: undefined),
 		...(reported.bat !== undefined && $metadata.bat !== undefined
 			? {
 					bat: toReceivedProps(reported.bat, $metadata.bat),
-			  }
+				}
 			: undefined),
 		...(reported.roam !== undefined && $metadata.roam !== undefined
 			? {
 					roam: toReceivedProps(reported.roam, $metadata.roam),
-			  }
+				}
 			: undefined),
 		...(reported.dev !== undefined && $metadata.dev !== undefined
 			? {
 					dev: toReceivedProps(reported.dev, $metadata.dev),
-			  }
+				}
 			: undefined),
 		...(reported.env !== undefined && $metadata.env !== undefined
 			? {
 					env: toReceivedProps(reported.env, $metadata.env),
-			  }
+				}
 			: undefined),
 		...(reported.firmware !== undefined && $metadata.firmware !== undefined
 			? {
 					firmware: toReceivedProps(reported.firmware, $metadata.firmware),
-			  }
+				}
 			: undefined),
 	}
 }

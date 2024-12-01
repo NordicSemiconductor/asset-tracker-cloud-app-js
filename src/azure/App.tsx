@@ -109,13 +109,16 @@ export const boot = ({
 			if (accessToken === undefined) {
 				return
 			}
-			const i = setTimeout(async () => {
-				console.log('Token timeout')
-				window.localStorage.removeItem(ACCESS_TOKEN)
-				const token = await acquireAccessToken()
-				window.localStorage.setItem(ACCESS_TOKEN, JSON.stringify(token))
-				if (!isCancelled) setAccessToken(token)
-			}, new Date(accessToken.expiresOn).getTime() - Date.now())
+			const i = setTimeout(
+				async () => {
+					console.log('Token timeout')
+					window.localStorage.removeItem(ACCESS_TOKEN)
+					const token = await acquireAccessToken()
+					window.localStorage.setItem(ACCESS_TOKEN, JSON.stringify(token))
+					if (!isCancelled) setAccessToken(token)
+				},
+				new Date(accessToken.expiresOn).getTime() - Date.now(),
+			)
 
 			return () => {
 				isCancelled = true

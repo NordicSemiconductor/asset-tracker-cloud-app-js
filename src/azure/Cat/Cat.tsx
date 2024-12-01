@@ -139,9 +139,8 @@ export const Cat = ({
 		> => {
 			const cellFromDevices = await apiClient.geolocateCell(cell)
 			if (isRight(cellFromDevices)) return cellFromDevices
-			const cellFromUnwiredLabs = await apiClient.geolocateCellFromUnwiredLabs(
-				cell,
-			)
+			const cellFromUnwiredLabs =
+				await apiClient.geolocateCellFromUnwiredLabs(cell)
 			if (isRight(cellFromUnwiredLabs)) return cellFromUnwiredLabs
 			return left({
 				type: 'Not found',
